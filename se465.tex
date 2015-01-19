@@ -1,0 +1,181 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{pgfplots}
+\usepackage[lined]{algorithm2e}
+\usepackage{qtree}
+\usepackage{xytree}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={SE 465: Testing},
+  pdfsubject={Lecture notes from SE 465 at the University of Waterloo},
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{SE 465: Testing}}
+	\date{Winter 2015, University of Waterloo \\ \center Notes written from Patrick Lam's lectures.}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+	\section{Introduction}
+		\subsection{Types of Problems}
+			\begin{itemize}
+				\item \textbf{fault}: static defect in the software
+				\begin{itemize}
+					\item \textbf{design fault}
+					\item \textbf{mechanical fault}
+				\end{itemize}				 
+				\item \textbf{error}: have incorrect state
+				\item \textbf{failure}: external incorrect behavior
+			\end{itemize}
+			\begin{ex}
+				Faults
+				\begin{lstlisting}{language=Java}
+	static public int findLast (int[] x, int y) {
+		for (int i=x.length-1; i>0; --i){
+	    	if (x[i] == y){
+	        	return i;
+	        }
+	   	}
+	   	return -1;
+	}			
+				\end{lstlisting}
+				
+				\textbf{fault}: should be \lstinline|i >= 0| \\
+				no \textbf{fault} input: \lstinline|x = null| \\
+				\textbf{fault} but not \textbf{error} input: \lstinline|x[0] != y| \\
+				\textbf{error} but not \textbf{failure} input: \lstinline|y not in x|
+			\end{ex}
+		\subsection{RIP model}
+			\textbf{RIP model}: three things necessary to observe a failure
+			\begin{enumerate}
+				\item \textbf{Reachability}: PC must reach that point in the program
+				\item \textbf{Infection}: after fault, program state must be incorrect
+				\item \textbf{Propogation}: infected state propogates to cause bad output
+			\end{enumerate}
+		\subsection{Dealing with faults}
+			We have three ways to deal with faults:
+			\begin{itemize}
+				\item \textbf{avoidance}: design, use better language
+				\item \textbf{detection}: testing
+				\item \textbf{tolerance}: redundancy, isolation
+			\end{itemize}								
+	\section{Testing}
+		\subsection{Testables}
+			\begin{itemize}
+				\item code coverage
+				\item output of a function
+				\item logic coverage
+				\item input space coverage
+			\end{itemize}
+		\subsection{Types of testing}
+			\textbf{static} testing: testing without running the code
+			\begin{itemize}
+				\item compilation
+				\item semantic verification
+				\item code reviews
+			\end{itemize}
+			\textbf{dynamic} testing: testing by running and observing the code
+			\begin{itemize}
+				\item \textbf{test cases}: single input, single output (wrt to some code)
+				\item \textbf{black-box testing}: don't look at system implementation
+				\item \textbf{white-box testing}: base tests on system's design
+			\end{itemize}
+		\subsection{Coverage}
+			We find a reduced space and cover that space with our tests\\
+			\textbf{test requirement}: a specific element (of software) that a test case must satisfy or cover
+			\textbf{infeasable test requirement}: impossible coverage e.g. unreachable code \\
+			\textbf{subsumption}: when one testing criterion is strictly more powerful than another criterion
+	\section{Graph Coverage}
+		\textbf{test path}: considering our test as some path through our program from some initial node in $N_0$, along different nodes that ends up at a final node in $N_f$ \\
+		\textbf{subpath}: a path which is a subsequence of a path
+		\subsection{Behaviours}
+			\begin{itemize}	
+				\item \textbf{deterministic}: 	1 test path per test case
+				\item \textbf{non-deterministic}: 	multiple test paths are possible
+			\end{itemize}
+		\subsection{Reachability}
+			\begin{itemize}
+				\item \textbf{syntactically}:	reachable via edges and nodes
+				\item \textbf{semantically}:	there exist input that gets to a certain node
+			\end{itemize}
+		\subsection{Coverage Criterion}
+			\textbf{Node Coverage}: for every statement (node), there must be a test case that executes it
+			\textbf{Edge Coverage}: for every branch (edge), there must be a test case that goes through it
+			\textbf{Edge-Pair Coverage}: for every path of length up to 2, there must be a test case that goes through it
+	\section{Paths}
+		\subsection{Definitions}
+			\textbf{simple path}: no node appears more than once in the path (but first and last can be the same) \\
+			\textbf{prime path}: a simple path that is not a proper subpath of any other simple path
+		\subsection{Coverage Criterion}
+			\textbf{Complete Path Coverage}: test cases cover paths of all lengths
+			\textbf{Prime Path Coverage}: a test case for every prime path
+			
+\end{document}

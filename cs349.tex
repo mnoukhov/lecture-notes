@@ -1,0 +1,200 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{pgfplots}
+\usepackage[lined]{algorithm2e}
+\usepackage{qtree}
+\usepackage{xytree}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={CS 349: Algorithms},
+  pdfsubject={Lecture notes from CS 349 at the University of Waterloo},
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{CS 349: Algorithms}}
+	\date{Winter 2015, University of Waterloo \\ \center Notes written from Michael Terry's lectures.}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+	\section{Introduction}
+		\subsection{Definitions}
+			\textbf{Interface}: external presentation to user
+			\begin{itemize}
+				\item \textbf{controls}: manipulated to communicate intent
+				\item \textbf{presentation}: what communicates response
+			\end{itemize}
+			\textbf{Interaction}: the actions a user must do to elicit corresponding response
+			\begin{enumerate}
+				\item action and dialog
+				\item unfolds over time
+			\end{enumerate}
+	\section{Events}
+		\subsection{Event Loop}
+			\begin{lstlisting}
+while(true) {
+	if there is an event on queue:
+		dequeue it 
+		dispatch it
+}
+			\end{lstlisting}
+		\subsection{Timer}
+			Some events are triggered by a timer, if that event's execution time is longer than the timer interval 
+			then by the end of the event execution, you should add another of your event to the queue!
+		\subsection{Interactor Tree}			
+			We need a way to send information about what object is clicked \\
+			\textbf{interactor tree}: hierarchical tree-based organization of widgets
+			\begin{itemize}
+				\item each component's location is specified relative to parent
+				\item we use \textbf{containers} whose sole purpose is to contain components
+				\item events go \textbf{down} the tree to \textbf{capture} the target clicked
+				\item event bubble \textbf{up} the tree to \textbf{handle} an event (e.g. EventListener)
+			\end{itemize}
+		\subsection{Event Propogation}
+			when an event happens:
+			\begin{enumerate}
+				\item calculate the parent node path
+				\item loop through it and execute capture phase handlers
+				\item execute DOM level 1 phase handler
+				\item execute bubble phase handlers 
+				\item execute default browser behaviour
+			\end{enumerate}
+	\section{Model View Controller}
+		\subsection{Idea}
+			We decouple presentation from data using the \textbf{observer} design pattern. This separation allots benefits:
+			\begin{itemize}
+				\item \textbf{change the UI}: easy to change how we interact with data
+				\item \textbf{multiple view}: have different views of same data
+				\item \textbf{code reuse}: different logic for same view etc..
+				\item \textbf{testing}: data separation allows better logic testing
+			\end{itemize}
+		\subsection{Description}
+			\textbf{Model}: manages the data
+			\begin{itemize}
+				\item represent the data
+				\item methods to manipulate data
+				\item create and notify listeners
+			\end{itemize}
+			\textbf{View}: manages the presentation
+			\begin{itemize}
+				\item renders the data in a model
+				\item references to the model
+				\item is a listener to the model
+			\end{itemize}
+			\textbf{Controller}: manages user interaction
+			\begin{itemize}
+				\item between the model and view
+				\item helps interpret input and model events
+			\end{itemize}
+	\section{Layout}
+		\subsection{Layout Manager}
+			\textbf{Layout Manager}: keeps the layout for components given their constraints and preferences
+			\begin{itemize}
+				\item uses composite and strategy design pattern
+			\end{itemize}
+			\subsubsection{Dynamic Layout}
+				\textbf{Dynamic Layout}: maintain consistency with spatial layout
+				\begin{itemize}
+					\item reallocate space for widget
+					\item adjust location and size
+					\item change visibility, look, feel
+				\end{itemize}			
+			\subsubsection{Layout Strategies}
+				\begin{itemize}
+					\item \textbf{fixed layout}
+					\item \textbf{intrinsic size}:	find each item's preferred size and the container will grow to perfectly contain each item
+					\item \textbf{variable intrinsic size}:	layout determined in bottom-up and top-down phases
+					\item \textbf{struts and spring}:	items can either be fixed (strut) or variable (spring)
+				\end{itemize}
+		\subsection{Responsive Design}
+			\textbf{Responsive Design}: change layout to adapt to screen sizes of different devices
+			\subsubsection{CSS}
+				\textbf{CSS}:	specifying formatting
+				\begin{itemize}
+					\item consistency
+					\item reduce size (cache CSS)
+					\item code reuse
+					\item separation of concerns
+				\end{itemize}
+				\textbf{CSS reset}:	normalize appearance across browsers
+			\subsubsection{Cascade}
+				Layout resolves CSS rules and renders following these rules:
+				\begin{enumerate}
+					\item find all declarations that match the element
+					\item sort declarations by \lstinline|!important|
+					\item sort by origin (author > web browser)
+					\item sort by specificity of selector
+					\item sort by order (later rule wins)
+				\end{enumerate}
+						
+			
+
+\end{document}
