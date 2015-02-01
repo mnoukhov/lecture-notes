@@ -140,8 +140,9 @@
 					\Theta(1) & $ for all constants $c < 1 \\
 				\end{cases}
 			$ \\ \\
-			$\sum\limits_{i=1}^n \frac{1}{i} = 1 \cdot \ln(n) + \Theta(1)$ \\ \\
-			$\sum\limits_{i=1}^n \log(i) = n \log(n) = \Theta(n)$
+			$\sum\limits_{i=1}^n \frac{1}{i} = \Theta(\log(n))$ \\ \\
+			$\sum\limits_{i=1}^n \log(i) = n \log(n) = \Theta(n)$ \\
+	\subsection{Divide and Conquer}
 		\subsection{Recurrences}
 			\subsubsection{Recursion Tree Method}
 				Break down our recursion into a tree with each child node being a recursion. Find the cost of each child and sum across the level
@@ -188,5 +189,11 @@
 					$d = 1$ \\
 					$n^2 \in \Omega(n^{1 + \epsilon}) \therefore T(n) \in \Theta(n^2)$ 
 				\end{ex}
+		\subsection{Design Strategy}
+			\begin{enumerate}
+				\item \textbf{divide}: subdivide the problem into sub-problems
+				\item \textbf{conquer}: recursively solve the sub-problem
+				\item \textbf{combine}: combine the solutions of the sub-problem to solve the problem
+			\end{enumerate}
 							
 \end{document}

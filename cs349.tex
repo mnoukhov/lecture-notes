@@ -14,11 +14,12 @@
 \usepackage{qtree}
 \usepackage{xytree}
 \usepackage{float}
+\usepackage{enumitem}
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
 \usepackage[pdftex,
   pdfauthor={Michael Noukhovitch},
-  pdftitle={CS 349: Algorithms},
+  pdftitle={CS 349: User Interfaces},
   pdfsubject={Lecture notes from CS 349 at the University of Waterloo},
   pdfproducer={LaTeX},
   pdfcreator={pdflatex}]{hyperref}
@@ -194,7 +195,68 @@ while(true) {
 					\item sort by specificity of selector
 					\item sort by order (later rule wins)
 				\end{enumerate}
-						
-			
+	\section{Visual Design}
+		Impose as little thinking as possible on the user
+		\subsection{Rules}
+			\textbf{Simplicity}:
+			\begin{itemize}
+				\item facilitate recognition instead of recall
+				\item use only the essentials
+			\end{itemize}
+			\textbf{Consistency}:
+			\begin{itemize}
+				\item exploit perceptual patterns
+				\item avoid ambiguous presentation
+				\item present information consistent with user goals
+			\end{itemize}
+			\textbf{Organization and Structure}:
+			\begin{itemize}
+				\item grouping
+				\item hierarchy
+				\item relationship
+			\end{itemize}
+		\subsection{Gestalt Principles}
+			Theories of visual perception that describe how people organize groups
+			\begin{itemize}
+				\item \textbf{proximity}: elements associated with nearby elements
+				\item \textbf{similarity}: visual similarity
+				\item \textbf{common fate}: moving together 
+				\item \textbf{continuity}: continuous forms are easy to percieve
+				\item \textbf{closure}: see a complete figure even when info is missing
+				\item \textbf{symmetry}
+				\item \textbf{area}: visual field split into background and foreground
+				\item \textbf{uniform connection}: connecting lines/regions 
+				\item \textbf{alignment}
+			\end{itemize}
+	
+	\section{Transformation}
+		\subsection{Basics}
+			\begin{description}[leftmargin=5em,style=nextline]		
+				\item[translate] add scalar
+					\begin{flalign*}
+						\begin{bmatrix}
+							1 & 0 & t_x \\
+							0 & 1 & t_y \\
+							0 & 0 & 1
+						\end{bmatrix}
+					\end{flalign*}
+				\item[scale] multiply by scalar
+					\begin{flalign*}
+						\begin{bmatrix}
+							s_x &0 & 0 \\
+							0 & s_y & 0\\
+							0 & 0 & 1
+						\end{bmatrix}
+					\end{flalign*}
+				\item[rotate] $x' = x\cos \Theta - y\sin \Theta$ \\
+				$y' = x\sin \Theta + y\cos \Theta$ 
+					\begin{flalign*}
+						\begin{bmatrix}
+							\cos \Theta & -\sin \Theta & 0 \\
+							\sin \Theta & \cos \Theta & 0\\
+							0 & 0 & 1
+						\end{bmatrix}
+					\end{flalign*}
+			\end{description}		
 
 \end{document}

@@ -8,6 +8,7 @@
 \usepackage{amsthm}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{enumitem}
 \usepackage{mathtools}
 \usepackage{pgfplots}
 \usepackage[lined]{algorithm2e}
@@ -149,10 +150,13 @@
 				\item \textbf{white-box testing}: base tests on system's design
 			\end{itemize}
 		\subsection{Coverage}
-			We find a reduced space and cover that space with our tests\\
-			\textbf{test requirement}: a specific element (of software) that a test case must satisfy or cover
-			\textbf{infeasable test requirement}: impossible coverage e.g. unreachable code \\
-			\textbf{subsumption}: when one testing criterion is strictly more powerful than another criterion
+			We find a reduced space and cover that space with our tests
+			\begin{description}
+				\item[test requirement]: a specific element (of software) that a test case must satisfy or cover
+				\item[infeasable test req]: impossible coverage e.g. unreachable code
+				\item[subsumption]: when one testing criterion is strictly more powerful than another criterion
+			\end{description}
+			
 	\section{Graph Coverage}
 		\textbf{test path}: considering our test as some path through our program from some initial node in $N_0$, along different nodes that ends up at a final node in $N_f$ \\
 		\textbf{subpath}: a path which is a subsequence of a path
@@ -167,16 +171,72 @@
 				\item \textbf{semantically}:	there exist input that gets to a certain node
 			\end{itemize}
 		\subsection{Coverage Criterion}
-			\textbf{Node Coverage}: for every statement (node), there must be a test case that executes it
-			\textbf{Edge Coverage}: for every branch (edge), there must be a test case that goes through it
-			\textbf{Edge-Pair Coverage}: for every path of length up to 2, there must be a test case that goes through it
-	\section{Paths}
+			\begin{description}		
+				\item[Node Coverage]: for every statement (node), there must be a test case that executes it
+				\item[Edge Coverage]: for every branch (edge), there must be a test case that goes through it
+				\item[Edge-Pair Coverage]: for every path (length <= 2), there must be a test case
+			\end{description}
+		\subsection{Control Flow Graph}
+			The fundamental graph for source code is the \textbf{Control Flow Graph} (CFG)
+			\begin{itemize}
+				\item \textbf{CFG node}: zero or more statements
+				\item \textbf{CFG edge}: indicates that statements follow one another
+			\end{itemize}
+			Group together statements that are always consecutive into a \textbf{Basic Block}, with one entry and one exit
+			
+	\section{Path Coverage}
 		\subsection{Definitions}
-			\textbf{simple path}: no node appears more than once in the path (but first and last can be the same) \\
-			\textbf{prime path}: a simple path that is not a proper subpath of any other simple path
+			\begin{description}
+				\item[simple path]: no node appears more than once in the path (first and last can be the same)
+				\item[prime path]: a simple path that is not a proper subpath of any other simple path
+				\item[bridge]: an edge which, when removed, results in a disconnected graph
+			\end{description}
+			
 		\subsection{Coverage Criterion}
-			\textbf{Complete Path Coverage}: test cases cover paths of all lengths \\
-			\textbf{Prime Path Coverage}: a test case for every prime path \\
-			\textbf{Single Round Trip Coverage}: at least one round trip (starts node = end node) path for each reachable node \\
-			\textbf{Complete Round Trip Coverage}: all round trip paths for each reachable node\\
+			\begin{description}
+				\item[Complete Path Coverage]: cover paths of all lengths
+				\item[Prime Path Coverage]: cover every prime path
+				\item[Single Round Trip Coverage]: at least one round trip (starts = end) path for each reachable node
+				\item[Complete Round Trip Coverage]: all round trip paths for each reachable node
+				\item[Specified Path Coverage]: specified set of paths
+				\item[Bridge Coverage]: cover all bridges
+			\end{description}
+	\section{Testing Concurrency}
+		\subsection{Races}
+			\begin{description}
+				\item[Race] two concurrent accesses to the same memory and one of them is a write
+			\end{description}
+			
+			Race freedom doesn't guarantee bug freedom, need to test code extra:
+			\begin{itemize}
+				\item run multiple times
+				\item add noise
+				\item Helgrind \ldots
+				\item force scheduling
+				\item static approaches
+			\end{itemize}
+		\subsection{Recursive Locks}
+			If in one thread, there are two requests for one lock, the thread wait forever \\
+			\lstinline|ReentrantLocks| know how many times they have been locked and need to be unlocked the same amount to liberate
+			\begin{itemize}
+				\item explicit \lstinline|lock()| and \lstinline|unlock()|
+				\item \lstinline|trylock()|
+			\end{itemize}
+		\subsection{Bad Lock Usage}
+			Lock and unlock must be paired, and comments must sufficiently describe conditions \\
+			\textbf{Deadlocks} can occur if an interrupt uses the same lock as your program. 
+			\begin{itemize}
+				\item \lstinline|spin_lock_irqsave| disables interrupts locally and provides \lstinline|spin_lock| on symmetrical mulitiprocessors (\textbf{SMPs})
+				\item \lstinline|spin_lock_irqrestore| restores interrupts to state when lock is acquired
+			\end{itemize}
+	\section{Assertions}
+		\textbf{Assertion}: statement about the program that is true
+		\begin{itemize}
+			\item \textbf{precondition}: reasoning about the callee
+			\item \textbf{postcondition}: reasoning about the caller
+		\end{itemize}
+		\subsection{Tools}
+			\begin{description}
+				\item
+			\end{description}
 \end{document}

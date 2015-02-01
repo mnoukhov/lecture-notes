@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{mathtools}
+\usepackage{multicol}
 \usepackage{pgfplots}
 \usepackage[lined]{algorithm2e}
 \usepackage{qtree}
@@ -255,4 +256,93 @@
 				\item \textbf{Asymmetric multiprocessing}:	one big processor controls many small ones			
 				\item \textbf{Object oriented design}:	customize OS without disrupting system
 			\end{itemize}
+	\section{Processes}
+		\subsection{Process Elements}
+			\textbf{Process Control Block (PCB)}: data structure that contains process elements
+			\begin{itemize}
+				\item \textbf{identifier}
+				\item \textbf{state}
+				\item \textbf{priority}
+				\item \textbf{memory pointers}
+				\item \textbf{context data}: registers, PSW, PC
+				\item \textbf{I/O status information}
+				\item \textbf{accounting information}: processor time, time limits, threads
+			\end{itemize}
+		\subsection{Process Model}
+			\subsubsection{Five State Model}
+				\begin{itemize}
+					\item \textbf{running}: currently executing
+					\item \textbf{ready}:	can be executed
+					\item \textbf{waiting}:	can't execute, blocked by something
+					\item \textbf{new}
+					\item \textbf{exit}:	halted or aborted
+				\end{itemize}
+				Since the processor is faster than I/O, we may sometimes want to admit more processes even after we are out of memory. To do this we \textbf{swap} out processes to disk that are waiting and we get two new states:
+				\begin{itemize}
+					\item \textbf{blocked/suspend}
+					\item \textbf{ready/suspend}
+				\end{itemize}
+			\subsubsection{Process Creation}
+				\begin{itemize}
+					\item new batch job
+					\item interactive logon
+					\item created by OS for a service
+					\item created by existing process
+				\end{itemize}
+			\subsubsection{Process Termination}
+				\begin{multicols}{2}
+					\begin{itemize}
+						\item normal completion
+						\item time limit exceeded
+						\item time overrun				
+						\item memory unavailable
+						\item bounds error (segfault)
+						\item protection error
+						\item arithmetic error				
+						\item I/O error
+						\item invalid instruction
+						\item privileged instruction
+						\item data misuse
+						\item OS intervention
+						\item parent termination
+						\item parent request
+					\end{itemize}
+				\end{multicols}
+			\subsubsection{Process Suspension}
+				\begin{itemize}
+					\item swapping
+					\item other OS reason
+					\item user request
+					\item timing
+					\item parent request
+				\end{itemize}
+
+		\subsection{OS Control Structures}
+			\subsubsection{Memory Tables}
+				\begin{itemize}
+					\item keeps track of main and secondary memory
+					\item protection for access to shared memory
+					\item information to manage virtual memory
+				\end{itemize}
+			\subsubsection{I/O Tables}
+				\begin{itemize}
+					\item manages I/O devices (status and availability)
+					\item location in main memory for transferring I/O
+				\end{itemize}
+			\subsubsection{File Tables}
+				\begin{itemize}
+					\item manages existance and location of files
+					\item attributes and status of files (e.g. rwxr...)
+				\end{itemize}
+			\subsubsection{Process Table}
+				\begin{itemize}
+					\item where process is located in memory
+					\item process image:
+					\begin{itemize}
+						\item program
+						\item data
+						\item system stack
+						\item PCB
+					\end{itemize}
+				\end{itemize}
 \end{document}
