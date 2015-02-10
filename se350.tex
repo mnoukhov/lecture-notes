@@ -316,7 +316,15 @@
 					\item timing
 					\item parent request
 				\end{itemize}
-
+			\subsubsection{Process Switching}
+				\begin{description}
+					\item[clock interrupt]: maximum allowed time surpasses
+					\item[I/O interrupt]: I/O completed					
+					\item[memory fault]: memory address is in virtual memory, bring into main memory
+					\item[trap]: error or exception, used for debugging
+					\item[supervisor call]: switch to kernel process
+				\end{description}
+					
 		\subsection{OS Control Structures}
 			\subsubsection{Memory Tables}
 				\begin{itemize}
@@ -336,8 +344,7 @@
 				\end{itemize}
 			\subsubsection{Process Table}
 				\begin{itemize}
-					\item where process is located in memory
-					\item process image:
+					\item where process is located in memory as a \textbf{process image}:
 					\begin{itemize}
 						\item program
 						\item data
@@ -345,4 +352,92 @@
 						\item PCB
 					\end{itemize}
 				\end{itemize}
+	\section{Threads, SMP, Microkernels}
+		\section{Threads}
+			\textbf{Thread}: execution entity under a process
+			\textbf{Multithreading}: multiple threads of execution within a single process
+			\subsubsection{Benefits}
+				\begin{itemize}
+					\item less time to create/terminate (no kernel resource allocation)
+					\item less time to switch between threads v. processes
+					\item sharing memory between threads
+				\end{itemize}
+			\subsubsection{States}
+				\begin{itemize}
+					\item spawn
+					\item block
+					\item unblock
+					\item finish
+				\end{itemize}
+			\subsubsection{Approaches}
+				\textbf{User-level threads}:
+				\begin{itemize}
+					\item thread management by application
+					\item less switching overhead
+					\item scheduling is app-specific
+					\item can run on any OS
+				\end{itemize}
+				\textbf{Kernel-level threads}:
+				\begin{itemize}
+					\item thread management by kernel
+					\item can schedule threads on multiple processors
+					\item OS calls blocking only the thread
+				\end{itemize}
+				\textbf{Combined approach}:
+				\begin{itemize}
+					\item threads can be grouped to kernel threads
+					\item kernel knows/schedules threads and processes
+				\end{itemize}
+		\subsection{Microkernel}
+			\textbf{Microkernel}: small operating system that only contains essential core functions
+			\subsubsection{Benefits}
+				\begin{itemize}
+					\item uniform interface on request by process
+					\item extensibility
+					\item flexibility
+					\item portability
+					\item reliability
+					\item distributed systems support
+					\item object-oriented OS
+				\end{itemize}
+			\subsubsection{Design}
+				\begin{itemize}
+					\item low-level memory management: map each virtual page to a physical page
+					\item interprocess communication: copying messages 
+					\item I/O and interrupt management: interrupts as messages, no knowledge of IRQ handlers
+				\end{itemize}
+				
+	\section{Concurrency}
+		\subsection{Terms}
+			\begin{description}
+				\item[critical section]: section of code that may have concurrency issues (shared memory \ldots)
+				\item[deadlock]: processes are locked because each is waiting for the other
+				\item[livelock]: two processes cycle uselessly because of the others' cycling
+				\item[mutual exclusion]: shared resources may not be modified concurrently
+				\item[race condition]: multiple threads/processes read and write shared memory concurrently
+				\item[starvation]: a runnable process is overlooked indefinitely by the scheduler
+			\end{description}
+		\subsection{Mutual Exclusion}
+			\subsubsection{Requirements}
+				\begin{itemize}
+					\item 1 process at a time (per resource) in the critical section
+					\item process halting in non-critical section must not interfere with other processes
+					\item no deadlock or starvation
+					\item no delay to critical section if it is unblocked
+					\item no assumptions about relative process speeds or quantities
+					\item process remains inside critical section for finite number of time
+				\end{itemize}
+			\subsubsection{Hardware Support}
+				\textbf{Interrupt Disabling}:
+				\begin{itemize}
+					\item guarantees mutual exclusion on uniprocessor
+					\item no guarantee for mutliprocessor
+					\item a process runs until interrupt or it invokes OS service
+				\end{itemize}
+				\textbf{Special Machine Instructions}:
+				\begin{itemize}
+					\item performed in single instruction cycle
+					\item access to memory is blocked for other instructions
+				\end{itemize}
+		
 \end{document}

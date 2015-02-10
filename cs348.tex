@@ -25,6 +25,7 @@
 
 \usepackage{cleveref}
 \usepackage{enumitem}
+\usepackage{multicol}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -199,10 +200,10 @@
 			\end{itemize}															
 	\section{SQL}
 		\subsection{SQL Standard}
-			\begin{itemize}
-				\item \textbf{Data Manipulation Language}: query and modify tables
-				\item \textbf{Data Definition Language}: create tables and enforce access/security
-			\end{itemize}	
+			\begin{description}
+				\item[Data Manipulation Language]: query and modify tables
+				\item[Data Definition Language]: create tables and enforce access/security
+			\end{description}				
 			\begin{ex}
 				Basic query block
 				\begin{lstlisting}[language=SQL]
@@ -212,17 +213,16 @@ from relation-list
 				\end{lstlisting}
 			\end{ex}			
 		\subsection{DML}
-			\subsubsection{NULL}
+			\subsubsection{Null}
 				A necessary evil that indicates unknown or missing data
 				\begin{itemize}
 					\item test using \lstinline|is (not) NULL|
 					\item expressions with \lstinline|NULL| e.g. \lstinline|x + NULL = NULL|
 					\item \lstinline|where| treats \lstinline|NULL| like \lstinline|False|
-					\item  
 				\end{itemize}
 			\subsubsection{Subquery}
 				\lstinline|where| supports predicates as part of its clause
-				\begin{ex} Subquery example
+				\begin{ex} select all employees with the highest salary
 					\begin{lstlisting}[language=SQL]
 select empno, lastname
 from employee
@@ -233,6 +233,77 @@ where salary >= all
 				\end{ex}
 			\subsubsection{Ordering}
 				No ordering can be assumed unless you use \lstinline|order by|
-				
+			\subsubsection{Grouping}
+				\lstinline|group by| allows you to aggregate results
+				\begin{ex} for each dept, list number of employees and combined salary
+				\begin{lstlisting}[language=SQL]
+select deptno, deptname, sum(salary) as totalsalary,
+	count(*)as employees
+from department d, employee e
+where e.workdept = d.deptno 
+group by deptno, deptname				
+				\end{lstlisting}
+				\end{ex}
+				\lstinline|having| is like \lstinline|where| for groups
+				\begin{ex}
+					list average salary for each dept >= 4 people
+					\begin{lstlisting}[language=SQL]
+select deptno, deptname, avg(salary) as MeanSalary
+	count(*)as employees
+from department d, employee e
+where e.workdept = d.deptno 
+group by deptno, deptname
+having count(*) >= 4
+					\end{lstlisting}
+				\end{ex}
+		\subsection{DDL}
+			\subsubsection{Table}
+				\begin{description}
+					\item[create]: creates a table
+					\item[alter]: change the table
+					\item[drop]: delete the table
+				\end{description}
+				\begin{ex}
+					create table
+					\begin{lstlisting}[language=SQL]
+create table Employee (
+	EmpNo char(6),
+	FirstName varchar(12),
+	HireDate date
+)				
+					\end{lstlisting}
+				\end{ex}
+			\subsubsection{Data Types}
+				\begin{multicols}{2}
+					\begin{itemize}
+						\item integer
+						\item decimal(p,q)
+						\item float(p)
+						\item char(n)
+						\item varchar(n): variable length
+						\item date
+						\item time
+						\item timestamp: date + time
+						\item year/month interval
+						\item day/time interval
+					\end{itemize}
+				\end{multicols}
+			\subsubsection{Constraints}
+				\begin{itemize}
+					\item not NULL
+					\item primary key
+					\item unique
+					\item foriegn key
+					\item column or tuple check
+				\end{itemize}
+				\begin{ex}
+					add a start date that must come before hire date
+					\begin{lstlisting}[language=SQL]
+alter table Employee
+	add column StartDate date
+	add constraint hire_before_start
+		check (HireDate <= StartDate);
+					\end{lstlisting}
+				\end{ex}
 \end{document}
 	
