@@ -10,9 +10,6 @@
 \usepackage{color}
 \usepackage{mathtools}
 \usepackage{pgfplots}
-\usepackage[lined]{algorithm2e}
-\usepackage{qtree}
-\usepackage{xytree}
 \usepackage{float}
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
@@ -54,7 +51,6 @@
 \newtheorem*{theorem}{Theorem}
 
 \setlength{\marginparwidth}{1.5in}
-\setlength{\algomargin}{0.75em}
 
 \DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
 
@@ -78,7 +74,7 @@
 	\let\ref\Cref
 
 	\title{\bf{CS 348: Intro to Database Management}}
-	\date{Winter 2015, University of Waterloo \\ \center Notes written from *'s lectures.}
+	\date{Winter 2015, University of Waterloo \\ \center Notes written from Grant Weddel's lectures.}
 	\author{Michael Noukhovitch}
 
 	\maketitle
@@ -256,54 +252,150 @@ group by deptno, deptname
 having count(*) >= 4
 					\end{lstlisting}
 				\end{ex}
-		\subsection{DDL}
-			\subsubsection{Table}
-				\begin{description}
-					\item[create]: creates a table
-					\item[alter]: change the table
-					\item[drop]: delete the table
-				\end{description}
-				\begin{ex}
-					create table
-					\begin{lstlisting}[language=SQL]
+	\subsection{DDL}
+		\subsubsection{Table}
+			\begin{description}
+				\item[create]: creates a table
+				\item[alter]: change the table
+				\item[drop]: delete the table
+			\end{description}
+			\begin{ex}
+				create table
+				\begin{lstlisting}[language=SQL]
 create table Employee (
-	EmpNo char(6),
-	FirstName varchar(12),
-	HireDate date
+EmpNo char(6),
+FirstName varchar(12),
+HireDate date
 )				
-					\end{lstlisting}
-				\end{ex}
-			\subsubsection{Data Types}
-				\begin{multicols}{2}
-					\begin{itemize}
-						\item integer
-						\item decimal(p,q)
-						\item float(p)
-						\item char(n)
-						\item varchar(n): variable length
-						\item date
-						\item time
-						\item timestamp: date + time
-						\item year/month interval
-						\item day/time interval
-					\end{itemize}
-				\end{multicols}
-			\subsubsection{Constraints}
+				\end{lstlisting}
+			\end{ex}
+		\subsubsection{Data Types}
+			\begin{multicols}{2}
 				\begin{itemize}
-					\item not NULL
-					\item primary key
-					\item unique
-					\item foriegn key
-					\item column or tuple check
+					\item integer
+					\item decimal(p,q)
+					\item float(p)
+					\item char(n)
+					\item varchar(n): variable length
+					\item date
+					\item time
+					\item timestamp: date + time
+					\item year/month interval
+					\item day/time interval
 				\end{itemize}
-				\begin{ex}
-					add a start date that must come before hire date
-					\begin{lstlisting}[language=SQL]
+			\end{multicols}
+		\subsubsection{Constraints}
+			\begin{itemize}
+				\item not NULL
+				\item primary key
+				\item unique
+				\item foriegn key
+				\item column or tuple check
+			\end{itemize}
+			\begin{ex}
+				add a start date that must come before hire date
+				\begin{lstlisting}[language=SQL]
 alter table Employee
-	add column StartDate date
-	add constraint hire_before_start
-		check (HireDate <= StartDate);
+add column StartDate date
+add constraint hire_before_start
+	check (HireDate <= StartDate);
+				\end{lstlisting}
+			\end{ex}
+		\subsubsection{Triggers}
+			\textbf{trigger}: procedure execute by the db in response to table change
+			\begin{itemize}
+				\item event
+				\item condition
+				\item action
+			\end{itemize}
+			\begin{lstlisting}[language=SQL]
+create trigger log_addr
+after update of addr, phone on person
+referencing OLD as o NEW as n
+for each row 
+mode DB2SQL
+when (o.status = 'VIP' or n.status = 'VIP)
+	insert into VIPaddrhist(pid, oldaddr, oldphone,
+		newaddr, newphone, user, modtime)
+	values (o.pid, o.addr, o.phone,
+		n.addr, n.phone, user, current timestamp)
+			\end{lstlisting}
+	\section{Views} 
+		\subsection{Definition}
+			\textbf{View}: a relation whose instance is determined by other relations
+			\begin{itemize}
+				\item \textbf{Virtual}: views not stored, used only for querying
+				\item \textbf{Materialized}: query for view is executed and view is stored
+			\end{itemize}
+			\begin{lstlisting}[language=SQL]
+create [materialized] view <name>
+	as query
+			\end{lstlisting}
+			\begin{ex}
+				Manufacturing projects view
+				\begin{lstlisting}
+create view ManufacturingProjects as
+	( select projno, projname, firstname, lastname
+	  from project, employee
+	  where respemp = empno and deptno = 'D21' )
+				\end{lstlisting}
+			\end{ex}
+		\subsection{Updating}
+			Changes to a view schema propogate back to instances of relations in conceptual schema, so to avoid ambiguity a view is updateable if:
+			\begin{itemize}
+				\item the query references exactly one table
+				\item the query only outputs simple attributes
+				\item there is \textbf{no} grouping/aggregation/distinct
+				\item there are no nested queries
+				\item there are no set operations
+			\end{itemize}
+			Materialized views also have to be update with periodically to account for base table changes
+		
+	\section{Application Development}
+		\subsection{Embedded SQL}
+			\subsubsection{Static Embedded SQL}		
+				Embed SQL into C with \lstinline|EXEC SQL| and suffixing with \lstinline|;|, using host variables to send and recieve values from DB
+				\begin{ex}
+					Host variables in C
+					\begin{lstlisting}[language=C]
+EXEC SQL BEGIN DECLARE SECTION;
+char deptno[4];
+char deptname[30];
+char mgrno[7];
+char admrdept[4];
+char location[17];
+EXEC SQL END DECLARE SECTION;
+
+/ * program assigns values to variables * /
+
+EXEC SQL INSERT INTO
+	Department(deptno,deptname,mgrno,admrdept,location)
+VALUES
+	(:deptno,:deptname,:mgrno,:admrdept,:location);
 					\end{lstlisting}
 				\end{ex}
+				\textbf{indicator variables} are flags used to handle host variables that might recieve \lstinline|NULL|
+				\begin{ex}
+					Indicator variables
+					\begin{lstlisting}[language=C]
+int PrintEmployeePhone( char employeenum[] ) {
+	EXEC SQL BEGIN DECLARE SECTION;
+		char empno[7];
+		char phonenum[5];
+		short int phoneind;
+	EXEC SQL END DECLARE SECTION;
+		strcpy(empno,employeenum);
+	EXEC SQL
+		SELECT phoneno INTO :phonenum :phoneind
+		FROM employee WHERE empno = :empno;
+	if( SQLCODE < 0) { return( -1 ); } / * error * /
+	else if(SQLCODE&=& 100){printf("no such employee\n");}
+	else if (phoneind<0){printf("phone unknown\n");}
+	else { printf("%s\n",phonenum); } 
+	return( 0 );
+}]
+					\end{lstlisting}
+				\end{ex}
+
 \end{document}
 	
