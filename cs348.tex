@@ -87,6 +87,7 @@
 			\subsubsection{Definitions}
 				\textbf{Database}: a large and persistent collection of data \\
 				\textbf{DBMS}: a program that manages details for storage and access to a db \\
+				\textbf{Schema}: a description of the data interface to the database \\
 				to abstract common functions and create a uniform interface we need:
 				\begin{itemize}
 					\item \textbf{data model}: all data stored uniformally
@@ -96,7 +97,6 @@
 					\item \textbf{database maintenance}
 				\end{itemize}
 			\subsubsection{Three-Level Schema}
-				\textbf{schema}: a description of the data interface to the database \\
 				\textbf{external schema}: what the app and user see \\
 				\textbf{conceptual schema}: description of the logical structure of the data \\
 				\textbf{physical schema}: description of physical aspects (storage
@@ -117,11 +117,23 @@
 					\item navigational (procedural)
 					\item non-navigational (declarative)
 				\end{itemize}								
+				\subsubsection{DBAs}
+				Database administrators are responsible for:
+				\begin{itemize}
+					\item managing conceptual schema
+					\item assisting with app view integration
+					\item monitoring and tuning DBMS performance
+					\item defining internal schema
+					\item loading and reformating DB
+					\item security and reliability
+				\end{itemize}
 		\subsection{Big Ideas}
 			There are three big ideas which have influenced the creation and development of databases
+			\subsubsection{Quantification}
+				Database queries can be described by relational algebra as quantifiers	
+				
 			\subsubsection{Data Independence}
-				\textbf{data independence} allows each schema to be independant of the
-	others
+				\textbf{Data Independence}: allow each schema to be independant of the others
 				\begin{itemize}
 					\item \textbf{physical independance}: application immune to changes
 	in storage structure
@@ -168,7 +180,7 @@
 						\item relations are \textbf{sets} of tuples
 						\item tables are \textbf{multisets} (bags) of tuples 
 					\end{itemize}
-				\item unknown values: SQL includes 'null'
+				\item unknown values: SQL includes \lstinline|Null|
 			\end{enumerate}
 	\section{Relation Algebra}
 		\subsection{Primary Operators}
@@ -176,11 +188,8 @@
 				\item \textbf{Relation Name}: $R$
 				\item \textbf{Selection}: $\sigma_{condition}(E)$ satisfies some condition
 				\item \textbf{Projection}: $\pi_{attributes}(E)$ only includes these attributes
-				\item \textbf{Rename}: $\rho(R(\bar{F}),E)$
-				\begin{itemize}
-					\item $\bar{F}$ is a list of $oldname \mapsto newname$
-				\end{itemize}
-				\item \textbf{Product}: $E_1 x E_2$
+				\item \textbf{Rename}: $\rho(R(\bar{F}),E)$ (where $\bar{F}$ is a list of $oldname \mapsto newname$)
+				\item \textbf{Product}: $E_1 \times E_2$
 			\end{itemize}	
 		\subsection{Joins}
 			\begin{itemize}
@@ -193,6 +202,7 @@
 				\item \textbf{Union}: $R \cup S$
 				\item \textbf{Difference}: $R - S$
 				\item \textbf{Intersection}: $R \cap S$
+				\item \textbf{Division}: $R \mathbin{/} S$ (\textit{opposite of $\times$})
 			\end{itemize}															
 	\section{SQL}
 		\subsection{SQL Standard}
@@ -396,6 +406,5 @@ int PrintEmployeePhone( char employeenum[] ) {
 }]
 					\end{lstlisting}
 				\end{ex}
-
 \end{document}
 	

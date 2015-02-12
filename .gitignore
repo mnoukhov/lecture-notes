@@ -154,3 +154,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Vim
+# ========================
+
+# swap files
+*.swp

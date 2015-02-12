@@ -11,9 +11,9 @@
 \usepackage{mathtools}
 \usepackage{multicol}
 \usepackage{pgfplots}
-\usepackage[lined]{algorithm2e}
 \usepackage{qtree}
 \usepackage{xytree}
+\usepackage[lined]{algorithm2e}
 \usepackage{float}
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
@@ -31,8 +31,8 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
-\lstset{frame=tb,
-  language=Java,
+\lstset{
+  language=C,
   aboveskip=3mm,
   belowskip=3mm,
   showstringspaces=false,
@@ -353,7 +353,7 @@
 					\end{itemize}
 				\end{itemize}
 	\section{Threads, SMP, Microkernels}
-		\section{Threads}
+		\subsection{Threads}
 			\textbf{Thread}: execution entity under a process
 			\textbf{Multithreading}: multiple threads of execution within a single process
 			\subsubsection{Benefits}
@@ -417,27 +417,173 @@
 				\item[race condition]: multiple threads/processes read and write shared memory concurrently
 				\item[starvation]: a runnable process is overlooked indefinitely by the scheduler
 			\end{description}
-		\subsection{Mutual Exclusion}
-			\subsubsection{Requirements}
-				\begin{itemize}
-					\item 1 process at a time (per resource) in the critical section
-					\item process halting in non-critical section must not interfere with other processes
-					\item no deadlock or starvation
-					\item no delay to critical section if it is unblocked
-					\item no assumptions about relative process speeds or quantities
-					\item process remains inside critical section for finite number of time
-				\end{itemize}
-			\subsubsection{Hardware Support}
-				\textbf{Interrupt Disabling}:
+			For mutual exclusion requires:
+			\begin{itemize}
+				\item 1 process at a time (per resource) in the critical section
+				\item process halting in non-critical section must not interfere with other processes
+				\item no deadlock or starvation
+				\item no delay to critical section if it is unblocked
+				\item no assumptions about relative process speeds or quantities
+				\item process remains inside critical section for finite number of time
+			\end{itemize}
+			and can be achieved by any of the following options:
+		\subsection{Hardware Support}
+			\subsubsection{Interrupt Disabling}
 				\begin{itemize}
 					\item guarantees mutual exclusion on uniprocessor
 					\item no guarantee for mutliprocessor
 					\item a process runs until interrupt or it invokes OS service
 				\end{itemize}
-				\textbf{Special Machine Instructions}:
+			\subsubsection{Machine Instructions}
 				\begin{itemize}
 					\item performed in single instruction cycle
 					\item access to memory is blocked for other instructions
 				\end{itemize}
-		
+				\textbf{Advantages}:
+				\begin{itemize}
+					\item applicable to any number of processes (single processor or multiprocessor)
+					\item simple and easy to verify
+					\item can support multiple critical sections
+				\end{itemize}
+				\textbf{Disadvantages}:
+				\begin{itemize}
+					\item busy-waiting consumes time
+					\item starvation possible (one proc leaves critical section and multiple waiting)
+					\item deadlock possible (low proiority holds critical section but OS switched to high proirity)
+					\item pipleline stalls
+				\end{itemize}
+		\subsection{Semaphore}
+			\textbf{Semaphore}: variable with integer value used for signaling
+			\subsubsection{Operations}
+				\begin{itemize}
+					\item initialize with non-negative value
+					\item \textbf{wait} decrements value
+					\item \textbf{signal} increments value
+					\item only the process with the lock can release the lock
+				\end{itemize} 
+				\begin{ex}
+					Semaphore primitive
+					\begin{lstlisting}[language=C]
+struct semaphore {
+	int count;
+	queueType queue;
+}
+
+void semWait(semaphore s) {
+	s.count--;
+	if (s.count < 0) {
+		s.queue.push(thisProcess);
+		block(thisProcess);
+	}
+}
+void semSignal(semaphore s) {
+	s.count++;
+	if (s.count <= 0) {
+		nextProcess = s.queue.pop();
+		addToReady(nextProcess);
+	}
+}
+					\end{lstlisting}
+				\end{ex}
+			\subsubsection{Producer-Consumer}
+				Concurrency problem where a producer adds elements to a buffer and a consumer takes them out, we can use extra semaphores to keep track of other critical values
+				\begin{ex}
+					Infinite-buffer producer/consumer
+					\begin{lstlisting}[language=C]
+semaphore n = 0;
+semaphore s = 1;
+void producer() {
+	while (true) {
+		produce();
+		semWait(s);
+		append();
+		semSignal(s);
+		semSignal(n);
+	}
+}
+void consumer() {
+	while (true) {
+		semWait(n);
+		semWait(s);
+		take();
+		semSignal(s);
+		consume();
+	}
+}
+					\end{lstlisting}
+				\end{ex}
+			\subsubsection{Reader-Writer}
+				Concurrency problem where many readers can read from a file, but only one writer may write to it and all readers must wait for the writer
+				\begin{ex}
+					Readers/Writers problem with Reader priority
+					\begin{lstlisting}[language=C]
+int readCount;
+semaphore x = 0, wsem = 1;
+void reader() {
+	while (true) {
+		semWait(x);
+		readCount++;
+		if (readCount == 1)
+			semWait(wsem);
+		semSignal(x);
+		READUNIT();
+		semWait(x);
+		readCount--;
+		if (readCount == 0)
+			semSignal(wsem);
+		semSignal(x);
+	}
+}
+void writer() {
+	while (true) {
+		semWait(wsem);
+		WRITEUNIT();
+		semSignal(wsem);
+	}
+}
+					\end{lstlisting}
+				\end{ex}
+			\subsection{Monitor}
+				\textbf{Monitor}: a software module that controls entry to data using a mutex
+				\begin{itemize}
+					\item uses condition variables for signaling
+					\item unused signals are lost \textit{(diff from semaphore)}
+				\end{itemize}
+			\subsection{Message Passing}
+				Enforce mutual exclusion by information exchange
+				\subsubsection{Synchronization}
+					\begin{description}
+						\item[Blocking]: sender and receiver are blocked until messaged delivered (rendevous)
+						\item[Non-blocking Send]: only receiver blocked until message arrives
+						\item[Non-blocking]: no waiting
+					\end{description}
+				\subsubsection{Addressing}
+				\textbf{Direct Addressing}:
+				\begin{itemize}
+					\item send has a specfic identifier of destination process
+					\item receive knows which process to expect
+					\item receieve uses source parameter to return value after message received
+				\end{itemize}
+				\textbf{Indirect Addressing}:
+				\begin{itemize}
+					\item messaged sent to shared data structure made of queues (\textbf{mailboxes})
+					\item processes send messages to a mailbox for others to pick up
+				\end{itemize}
+				\begin{ex}
+					Indirect messaging
+					\begin{lstlisting}
+const int n = /* number of processes */
+create_mailbox(mutex);
+void P (int i) {
+	message msg;
+	while (true) {
+		receieve(mutex, msg);
+		/* critical section */
+		send(mutex, msg);
+		/* remainder */
+	}
+}
+					\end{lstlisting}
+				\end{ex}
+
 \end{document}
