@@ -312,7 +312,7 @@ add constraint hire_before_start
 				\end{lstlisting}
 			\end{ex}
 		\subsubsection{Triggers}
-			\textbf{trigger}: procedure execute by the db in response to table change
+			\textbf{trigger}: procedure executed by the db in response to table change
 			\begin{itemize}
 				\item event
 				\item condition
@@ -324,7 +324,7 @@ after update of addr, phone on person
 referencing OLD as o NEW as n
 for each row 
 mode DB2SQL
-when (o.status = 'VIP' or n.status = 'VIP)
+when (o.status = 'VIP' or n.status = 'VIP')
 	insert into VIPaddrhist(pid, oldaddr, oldphone,
 		newaddr, newphone, user, modtime)
 	values (o.pid, o.addr, o.phone,
@@ -398,7 +398,7 @@ int PrintEmployeePhone( char employeenum[] ) {
 	EXEC SQL
 		SELECT phoneno INTO :phonenum :phoneind
 		FROM employee WHERE empno = :empno;
-	if( SQLCODE < 0) { return( -1 ); } / * error * /
+	if( SQLCODE < 0) { return( -1 ); } /* error */
 	else if(SQLCODE&=& 100){printf("no such employee\n");}
 	else if (phoneind<0){printf("phone unknown\n");}
 	else { printf("%s\n",phonenum); } 

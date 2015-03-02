@@ -47,6 +47,16 @@
   tabsize=4
 }
 
+\lstdefinelanguage{JavaScript}{
+	keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with},
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]',
+	morestring=[b]``,
+	sensitive=true
+}
+
+
 \theoremstyle{definition}
 \newtheorem*{defn}{Definition}
 \newtheorem{ex}{Example}[section]
@@ -158,8 +168,10 @@
 			\end{description}
 			
 	\section{Graph Coverage}
-		\textbf{test path}: considering our test as some path through our program from some initial node in $N_0$, along different nodes that ends up at a final node in $N_f$ \\
-		\textbf{subpath}: a path which is a subsequence of a path
+		\begin{description}
+			\item[test path]: considering our test as some path through our program from some initial node in $N_0$, along different nodes that ends up at a final node in $N_f$
+			\item[subpath]: a path which is a subsequence of a path
+		\end{description}
 		\subsection{Behaviours}
 			\begin{itemize}	
 				\item \textbf{deterministic}: 	1 test path per test case
@@ -237,6 +249,165 @@
 		\end{itemize}
 		\subsection{Tools}
 			\begin{description}
-				\item
+				\item Coverity
+				\item iComment
+				\item $\dots$
 			\end{description}
+		\subsection{Beliefs}
+			Sometimes we do not know the truth (expected behaviour) but we can infer beliefs about how the code works. \\ 
+			\newline
+			\textbf{Must belief}: things that must be true in the code, any condtradiction is error
+			\begin{lstlisting}[language=C]
+x = *p / x	// p is not NULL
+			// z != 0
+			\end{lstlisting}
+			\textbf{May belief}: things that correlate with each other in code
+			\begin{lstlisting}[language=C]
+A(); ... B();
+A(); ... B();	// A and B may be paired
+			\end{lstlisting}
+			Check these beliefs as ``must beliefs'' and cross-check against must beliefs
+			\begin{enumerate}
+				\item record every sucessful MAY-belief as ``check''
+				\item record every unsucessful as ``error''
+				\item rank errors based on ``check'' : ``error'' ratio
+			\end{enumerate}
+		\subsection{Linters}
+			Just because code compiles, doesn't mean it all variables are defined
+			\begin{lstlisting}[language=Javascript]
+function main(x) {
+	if (x) {
+		console.log('Yay');
+	}
+	else {
+		console.log(num);
+	}
+}
+main(true);
+			\end{lstlisting}
+			We can use \textbf{JSHint} to check that all top-level symbols resolve. On top of that we can use \textbf{pre-commit hooks} to make sure that all we checked into our repo passes the hooks. Improve further by forcing only master branch to go through all our pre-commit tests
+	\section{Data Flow Criteria}
+		Testing should take into account the data within nodes
+		\textbf{$du$-pairs}: defintion-use pairs of nodes for variables
+		\begin{lstlisting}[language=C]
+int x = 5;	// definition
+...
+printf(x);	// use
+		\end{lstlisting}
+		If we consider the def line to be $n_0$ and the use $n_1$, then def($n_0$) = use($n_1$) = ${x}$
+		\subsection{Defintions}
+			\begin{description}
+				\item[def-clear]: if our variable $v$ is not defined anywhere on our path 
+				\item[use reached]: if our variable has a def-clear path from its defintion to use
+				\item[$du$-path]: a simple path that is def-clear wrt $v$ from $n_i \leftarrow n_j$ where $v$ in def($n_i$) and use($n_j$)
+					\begin{description}
+						\item[def-path set]: fix a def and a variable, du($n_0$, $x$)
+						\item[def-pair set]: fix a def, a use, and a variable, du($n_0$, $n_1$, $x$)
+					\end{description}
+			\end{description}
+		\subsection{Graph Coverage}
+			\subsubsection{Coverage Types}
+				\begin{description}
+					\item[All-Defs Coverage]: a test case for each def to one use
+					\item[All-Uses Coverage]: a test case for each def to every use
+				\end{description}
+			\subsubsection{Source Code}
+				\begin{description}
+					\item[Def]: x is assigned, defined as paramter in method, input to program
+					\item[Use]: x occurs in an expression that the program evaluates
+					\item[Reachability]: if \textit{it is possible} that the address at the def refers to the same one as the use
+				\end{description}
+			\subsubsection{Design Elements}
+				Testing beyond single methods to ``design elements'' aka \textbf{integration testing}. We use \textbf{call graphs} where design elements are nodes, calls are edges
+				\begin{description}
+					\item[Caller]: unit that invokes callee
+					\item[Actual Parameter]: value passed to callee
+					\item[Formal Parameter]: placeholder for incoming value
+				\end{description}
+				\hfill \\
+				We also want to define new $du$-pairs between callers and callees
+				\begin{description}
+					\item[Last-def]: the definiton that goes through to a call
+					\item[First-use]: the first use in a method, it picks up the last-def definition 
+					\item[Use-clear]: a path that is clear of uses, except for at the start and end
+				\end{description}
+		\section{Syntax-Based Testing}
+			\subsection{Input Testing}
+				Use grammars to validate inputs in our program and generate test inputs.
+				\subsubsection{Defintions}
+					\begin{description}
+						\item[Start Symbol]: the first symbol we use
+						\item[Non-terminal]: symbols that are defined by production rules
+						\item[Terminal]: symbols not defined by production rules
+						\item[Production rule]: how a symbol is defined by other symbols
+					\end{description}
+					\begin{ex}
+						Grammar symbols:
+						\begin{lstlisting}[language=C]
+actions = action*	// actions: start symbol
+action = dep|deb	// action: non-terminal
+dep = 'deposit' account amount		
+deb = 'debit' account amount		
+account = digit{3}	// = digit{3}: production rule
+amount = '\$'digit+'.'digit{2}
+digit = [0-9]		// 0-9: non-terminals
+						\end{lstlisting}
+					\end{ex}
+				\subsubsection{Coverage}
+					\begin{description}
+						\item[Terminal Symbol Coverage]: TR contains each terminal of grammar G
+						\item[Production Coverage]: TR contains each production of grammar G
+						\item[Derivation Coverage]: TR contains every possible string derivable from grammar G
+					\end{description}
+				\subsubsection{Grammar Mutation}:
+					\begin{itemize}
+						\item Non-terminal Replacement
+						\item Terminal Replacement
+						\item Terminal and Non-terminal Deletion
+						\item Terminal and Non-terminal Duplication
+					\end{itemize}
+			\subsection{Mutation Testing}
+				Generate mutant by modifying programs and try to kill it with test cases 
+				\subsubsection{Defintions}
+					\begin{description}
+						\item[Ground String]: a valid string in the language of the grammar
+						\item[Mutation Operator]: a rule specifying synatactic variations of strings from the grammar
+						\item[Mutant]: result of one application of a mutation operator to a ground string
+					\end{description}
+					Uninteresting Mutants:
+					\begin{itemize}
+						\item \textbf{Stillborn}: does not compile or immediately crashes
+						\item \textbf{Trivial}: killed by almost any test case
+						\item \textbf{Equivalent}: indistinguishable from original program
+					\end{itemize}
+				\subsubsection{Coverage}
+					A test case $t$ \textbf{kills} a mutant $m$ if $t$ produces a different output on $m$ than $m_0$
+					\begin{description}
+						\item[Mutation Coverage]: for each mutant $m$, TR required to kill $m$
+						\item[Mutation Operator Coverage]: for each mutation operator $op$, TR required to kill all mutant derived using $op$
+						\item[Mutation Production Coverage]: for each mutation operator $op$ and production $p$ that it can be applied to, TR required to kill mutant from $p$
+					\end{description}
+				\subsubsection{Weak and Strong}
+					\begin{description}
+						\item[Strong Mutation]: fault must be reachable, infect state, and propogate to output
+						\item[Weak Mutation]: fault which kills the mutant needs to only be reachable and infect state
+						\item[Strong Mutation Coverage]: for each mutant, TR has a test that strongly kills it
+						\item[Weak Mutation Coverage]: for each mutant, TR has a test that weakly kills it
+					\end{description}
+				\subsubsection{Mutation Operators}
+					\begin{itemize}
+						\item Absolute value insertion: $x > a \Rightarrow x > abs(a)$
+						\item Operator replacement: $x > a \Rightarrow x < a$
+						\item Scalar variable replacement: $x > a \Rightarrow x > b$
+						\item Crash statement replacement: \dots
+					\end{itemize}
+				\subsubsection{Integration Mutation}
+					\begin{itemize}
+						\item Change calling method's parameters
+						\item Change method being called
+						\item Change inputs and outputs of called method
+					\end{itemize}
+
+						
+
 \end{document}
