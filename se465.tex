@@ -17,6 +17,7 @@
 \usepackage{float}
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
+\usepackage{multicol}
 \usepackage[pdftex,
   pdfauthor={Michael Noukhovitch},
   pdftitle={SE 465: Testing},
@@ -406,4 +407,155 @@ digit = [0-9]		// 0-9: non-terminals
 
 						
 
+	\section{Logic Coverage}
+	\subsection{Introduction}
+	Cover the \textbf{predicates} by covering the \textbf{clauses} they're made of. 
+	Clauses are connected by \textbf{logical operators}:
+	\begin{multicols}{3}
+		\begin{itemize}
+			\item $\neg$ negation
+			\item $\and$ and
+			\item $\lor$ or
+			\item $\implies$ implication
+			\item $\oplus$ exclusive or
+			\item $\iff$ equivalence
+		\end{itemize}
+	\end{multicols}
+	\subsection{Basic Coverages}
+	\begin{description}
+		\item[Predicate Coverage]: for each predicate $p$, cover $p = true$ and $p = false$ (analagous to CFG edge coverage)
+		\item[Clause Coverage]: for each clause $c$, cover $c = true$ and $c = false$ 
+		\item[Combination Coverage]: for each predicate $p$, cover all possible truth values for clauses in $C_p$ 
+	\end{description}
+	\subsection{Active Clause Coverage}
+	We want to make a \textbf{major} clause determine the predicate, by setting the other (\textbf{minor}) clauses.
+	If $p_{c=true}$ represents $p$ with $c = true$ and similarly $p_{c=false}$ then $p_c$ describes the conditions necessary
+	for $c$ to determine $p$
+	\begin{equation*}
+		p_c = p_{c=true} \oplus p_{c=false}
+	\end{equation*}
+
+	\begin{ex}
+		Determining a predicate
+		\begin{align*}
+			p &= a \lor b & \\
+			p_a &= (true \lor b) \oplus (false \lor b) & \\
+			&= true \oplus b & \\
+			&= \neg b &
+		\end{align*}
+		Therefore $a$ determines $p$ when $b = false$
+	\end{ex}
+
+	\begin{description}
+		\item[Active Clause Coverage]: for every major clause $c_i = true$ and $c_i = false$, cover all assignments of minor clauses so that $c_i$ determines $p$ 
+		\item[General ACC]: ACC without restrictions on minor clauses, they may be different for $c_i = true$ and $c_i = false$
+		\item[Correlated ACC]: ACC but minor clauses must cause $p = true$ for one value of $c_i$ and $p = false$ for the other
+		\item[Restricted ACC]: ACC but minor clauses must be the same for $c_i = true$ and $c_i = false$
+	\end{description}
+	\subsection{Feasibility}
+	Sometimes TRs can be infeasible, this can happen for many reasons:
+	\begin{itemize}
+		\item predicate is unreachable
+		\item predicate never has appropriate values to cause desired clause values \textit{e.g. len(array)<0} 
+		\item clause never determines predicate and you're attempting ACC
+	\end{itemize}
+	Therefore to get logic coverage:
+	\begin{enumerate}
+		\item identify the predicates 
+		\item figure out how to reach each predicate
+		\item make $c$ determine predicate $p$
+		\item find values for program vars to meet criteria
+	\end{enumerate}
+
+	\section{Reporting Bugs}
+	Bug reporting help fix bugs faster and improve software dev cycle. Good bugs that should be reported are:
+	\begin{itemize}
+		\item sufficiently general
+		\item have severe consequences
+		\item affect most recent version
+	\end{itemize}
+	Good reports allow developers to quickly understand and solve the bug:
+	\begin{itemize}
+		\item reported in the database
+		\item simple: one bug per report
+		\item understandable, minimal, generalizable
+		\item reproducible
+		\item non-judgemental
+		\item not duplicates
+	\end{itemize}
+
+	\section{Input Space Partitioning}
+	\subsection{Introduction}
+	We don't have time to test all inputs, so we want to test one input from each representative partition. 
+	\begin{description}
+		\item[Characteristics]: how values are distinguished
+		\item[Partition]: a way of splitting values into blocks
+		\item[Block]: a set of values similar by characteristics
+	\end{description}
+	
+	Partition should be:
+	\begin{itemize}
+		\item \textbf{Complete}: covers the entire domain
+		\item \textbf{Disjoint}: no overlap
+	\end{itemize}
+	
+	\subsection{Input Domain Modelling}
+	\begin{enumerate}
+		\item find units/functions to test
+		\item identify parameters of each unit
+		\item come up with input space model
+	\end{enumerate}
+	There are two general approaches to Input Domain Modelling:
+
+	\textbf{Interface-based}: just using input space (without considering how it is used)
+	\begin{itemize}
+		\item[+] easy to identify characters
+		\item[+] easy to translate test cases
+		\item[-] less effective because it doesn't use domain knowledge \textit{e.g. domain knowledge}
+	\end{itemize}
+
+	\textbf{Functionality-based}: using a functional view of the program (how the program works)
+	\begin{itemize}
+		\item[+] may have better test cases because of domain knowledge
+		\item[+] can create models just from specifications (without seeing actual code)
+		\item[-] may be hard to identify characterstics, values
+		\item[-] harder to generate test from this IDM
+	\end{itemize}
+	
+	\subsection{Identifying Characteristics}
+	Some possible characteristics:
+	\begin{itemize}
+		\item preconditions and postconditions
+		\item relationships between variables 
+		\item extract characteristics from specifications
+	\end{itemize}
+
+	\subsection{Choosing Blocks and Values}
+	\begin{itemize}
+		\item both valid and invalid values
+		\item boundary and non-boundary values
+		\item special values
+	\end{itemize}
+	An \textbf{alternate approach}, instead of multiple blocks, is to choose True/False characteristics.
+	This dichotomy guarantees disjointness and completeness. \\
+	We could also use \textbf{multiple IDMs}, one for valid values and one for invalid values.
+
+	\subsection{Combining Characteristics}
+	We want to test multiple inputs/characteristics, each with their own partitions 
+	
+	\begin{description}
+		\item[All Combinations Coverage]: all combinations of blocks from all characteristics (exhuastive, but too big!)
+		\item[Each Clause Coverage]: at least one value from each block for each characteristic
+		\item[Pair-Wise Coverage]: combine a value for each block for each characteristic with some value from every other block
+		\item[T-Wise Coverage]: same as pair-wise for T values from other blocks for other characteristics
+	\end{description}
+
+	\subsection{Base Choice}
+	We have been treating all blocks as equal, 
+
+
+
+	
+
 \end{document}
+

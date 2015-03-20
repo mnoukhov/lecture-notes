@@ -362,12 +362,11 @@ create view ManufacturingProjects as
 			Materialized views also have to be update with periodically to account for base table changes
 		
 	\section{Application Development}
-		\subsection{Embedded SQL}
-			\subsubsection{Static Embedded SQL}		
-				Embed SQL into C with \lstinline|EXEC SQL| and suffixing with \lstinline|;|, using host variables to send and recieve values from DB
-				\begin{ex}
-					Host variables in C
-					\begin{lstlisting}[language=C]
+		\subsection{Static Embedded SQL}		
+			Embed SQL into C with \lstinline|EXEC SQL| and suffixing with \lstinline|;|, using host variables to send and recieve values from DB
+			\begin{ex}
+				Host variables in C
+				\begin{lstlisting}[language=C]
 EXEC SQL BEGIN DECLARE SECTION;
 char deptno[4];
 char deptname[30];
@@ -379,32 +378,92 @@ EXEC SQL END DECLARE SECTION;
 / * program assigns values to variables * /
 
 EXEC SQL INSERT INTO
-	Department(deptno,deptname,mgrno,admrdept,location)
+Department(deptno,deptname,mgrno,admrdept,location)
 VALUES
-	(:deptno,:deptname,:mgrno,:admrdept,:location);
-					\end{lstlisting}
-				\end{ex}
-				\textbf{indicator variables} are flags used to handle host variables that might recieve \lstinline|NULL|
-				\begin{ex}
-					Indicator variables
-					\begin{lstlisting}[language=C]
+(:deptno,:deptname,:mgrno,:admrdept,:location);
+				\end{lstlisting}
+			\end{ex}
+			\textbf{indicator variables} are flags used to handle host variables that might recieve \lstinline|NULL|
+			\begin{ex}
+				Indicator variables
+				\begin{lstlisting}[language=C]
 int PrintEmployeePhone( char employeenum[] ) {
-	EXEC SQL BEGIN DECLARE SECTION;
-		char empno[7];
-		char phonenum[5];
-		short int phoneind;
-	EXEC SQL END DECLARE SECTION;
-		strcpy(empno,employeenum);
-	EXEC SQL
-		SELECT phoneno INTO :phonenum :phoneind
-		FROM employee WHERE empno = :empno;
-	if( SQLCODE < 0) { return( -1 ); } /* error */
-	else if(SQLCODE&=& 100){printf("no such employee\n");}
-	else if (phoneind<0){printf("phone unknown\n");}
-	else { printf("%s\n",phonenum); } 
-	return( 0 );
+EXEC SQL BEGIN DECLARE SECTION;
+	char empno[7];
+	char phonenum[5];
+	short int phoneind;
+EXEC SQL END DECLARE SECTION;
+	strcpy(empno,employeenum);
+EXEC SQL
+	SELECT phoneno INTO :phonenum :phoneind
+	FROM employee WHERE empno = :empno;
+if( SQLCODE < 0) { return( -1 ); } /* error */
+else if(SQLCODE&=& 100){printf("no such employee\n");}
+else if (phoneind<0){printf("phone unknown\n");}
+else { printf("%s\n",phonenum); } 
+return( 0 );
 }]
-					\end{lstlisting}
-				\end{ex}
+				\end{lstlisting}
+			\end{ex}
+			\textbf{cursors}: pointer-like objects used to iterate when > 1 row is returned. Can be before the first tuple, on a tuple, after the last tuple.
+			\begin{enumerate}
+				\item declare the cursor
+				\item open the cursor
+				\item fetch tuples using the cursor
+				\item close the cursor
+			\end{enumerate}
+		\subsection{Dynamic Embedded SQL}
+			When tables, columns, predicates are not known at the time application is written
+			\begin{enumerate}
+				\item \lstinline|PREPARE|: prepare statement for execution
+				\item \lstinline|EXECUTE|: execute the statement
+				\item \textbf{placeholder}: appears instead of literals, host variables replace during execution
+				\item \textbf{descriptor}: used to determine input and output numbers and types with \tt{DESCRIBE}
+			\end{enumerate}
+			\textbf{SQLJ}: allows embedding SQL into Java, with runtime established via JDBC connection
+			\begin{ex}
+				Host variables and placeholders
+				\begin{lstlisting}[language=SQL]
+EXEC SQL BEGIN DECLARE SECTION;
+char s[100] = ``INSERT INTO employee VALUES (?, ?, ... )'';
+char empno[7];
+char firstname[13];
+...
+EXEC SQL END DECLARE SECTION;
+EXEC SQL PREPARE S1 FROM :s;
+strcpy(empno,``000111'');
+strcpy(firstname,``Ken'');
+...
+EXEC SQL EXECUTE S1 USING :empno, :firstname, ... ;
+				\end{lstlisting}
+			\end{ex}
+		\subsection{Call Level Interface}
+			A vendor-neutral ISO-standard programming interface for SQL systems. As opposed to embedded SQL, does not need to be recompiled to access different DBMS and can access multiple at the same time
+			\begin{itemize}
+				\item queries represented as strings in the application
+				\item queries prepared then executed
+				\item app won't know numbers and types, descriptor areas hold metadata and actual data
+				\item describing a query makes DBMS place type info into descriptor area which app can read
+			\end{itemize}
+		\subsection{Stored Procedure}
+			Allows to execute application logic directly inside DBMS process
+			\begin{itemize}
+				\item minimize data transfer costs
+				\item centralize application code
+				\item logical independence
+			\end{itemize}
+			\begin{ex}
+				\begin{lstlisting}[language=SQL]
+CREATE FUNCTION sumSalaries(dept CHAR(3))
+	RETURNS DECIMAL(9,2)
+LANGUAGE SQL
+RETURN
+	SELECT sum(salary)
+	FROM employee
+	WHERE workdept = dept
+				\end{lstlisting}
+			\end{ex}
+
 \end{document}
+
 	
