@@ -561,7 +561,7 @@ void writer() {
 				\textbf{Direct Addressing}:
 				\begin{itemize}
 					\item send has a specfic identifier of destination process
-					\item receive knows which process to expect
+					\item receive knows which process to expect OR
 					\item receieve uses source parameter to return value after message received
 				\end{itemize}
 				\textbf{Indirect Addressing}:
@@ -585,5 +585,333 @@ void P (int i) {
 }
 					\end{lstlisting}
 				\end{ex}
+
+	\section{Deadlocks}
+
+	\subsection{Introduction}
+	\begin{description}
+		\item[Deadlock]: permanent blocking of a set of process over shared resources
+	\end{description}
+	There are two types of resources for the purporse of deadlocks:
+	\begin{itemize}
+		\item \textbf{reusable}: deadlock occurs if processes hold the resource the other requests
+		\item \textbf{consumable}: deadlock occurs if a receive() message is blocking
+	\end{itemize}
+	Conditions for a deadlock:
+	\begin{itemize}
+		\item mutual exclusion: necessary
+		\item no preemption: necessary
+		\item hold and wait: necessary
+		\item circular wait: sufficient
+	\end{itemize}
+
+	\subsection{Prevention}
+	\textbf{Deadlock Prevention}: design the system to prevent at least one of the conditions:
+	\begin{itemize}
+		\item mutual exlcusion
+			\begin{itemize}
+				\item must be OS supported
+				\item often times, impossible to remove
+			\end{itemize}
+		\item no preemption
+			\begin{itemize}
+				\item if request denied, release all resources and re-request
+				\item use preemption to release all resources by lower priority
+			\end{itemize}
+		\item hold and wait
+			\begin{itemize}
+				\item request all necessary resources at once
+			\end{itemize}
+		\item circular wait
+			\begin{itemize}
+				\item use a linear ordering of resources, locking in order
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Avoidance}
+	\textbf{Deadlock Avoidance}: dynamically decide whether a resource allocation could lead to a deadlock
+	\begin{itemize}
+		\item maximum resource requirements known
+		\item processes are indepenedent
+		\item no process may exit holding resources
+	\end{itemize}
+
+	Two strategies
+	\begin{enumerate}
+		\item don't start a process if the sum of all its requests could lead to deadlock
+		\item don't grant incremental resource request if it could lead to deadlock
+	\end{enumerate}
+
+	\textbf{Banker's Algorithm}: maintain a safe state where, with the current allocation scheme, 
+	there is at least one sequence that does not lead to deadlock
+
+	\subsection{Detection}
+	\textbf{Deadlock Detection}: periodically check for a deadlock and choose a strategy to undo the deadlock
+
+	Strategies:
+	\begin{itemize}
+		\item abort all deadlocked processes
+		\item backup processes to some checkpoint 
+		\item iteratively abort deadlocked processes until deadlock is gone
+		\item iteratively preempt resources until deadlock is gone
+	\end{itemize}
+
+	\section{Memory Managementt}
+	
+	\subsection{Requirements}
+	\begin{itemize}
+		\item relocation: swapping, logical -> physical addressing
+		\item protection: no access to memory of other processes (run-time checks)
+		\item sharing: allow process to share memory
+		\item logical organization: write and compile code modules separately
+		\item physical organization: amount of RAM should not stop program from running
+	\end{itemize}
+
+	\subsection{Fixed Partitioning}
+	\textbf{Fixed partitioning}: all sizes are fixed from beginning
+	\begin{itemize}
+		\item equal size: simple but problematic
+		\item unequal size: assignment is better but slower
+	\end{itemize}
+
+	\subsection{Dynamic Partitioning}
+	\textbf{Dynamic partitioning}: partitions vary in length and number, can cause \textbf{external fragmentation}
+	(holes between blocks of memory) \\
+
+	Algorithms to fit a block into memory:
+	\begin{itemize}
+		\item best-fit algorithm: choose block closest in size (slow)
+		\item first-fit: fastest
+		\item next-fit: first fit from previous allocation
+		\item buddy system: split a larger block into 2, use a BST to keep track 
+	\end{itemize}
+
+	\subsection{Paging}
+	\textbf{Paging}: partition memory into small fixed-size chunks
+	\begin{itemize}
+		\item \textbf{pages}: chunks of a process
+		\item \textbf{frames}: chunks of memory
+	\end{itemize}
+	logical address: (page, offset) \\
+	physical address: (frame, offset)
+
+	\subsection{Segmentation}
+	\textbf{Segmentation}: variable size pages, enables no internal fragmentation \\
+	logical address: (segment number, offset) \\
+
+	\subsection{Paging + Segmentation}
+	One segment table per process and one page table per segment
+	
+	\section{Virtual Memory}
+
+	\subsection{Introduction}
+	\begin{description}
+		\item[Virtual Memory]: load the program's code and data on demand, reading and storing to disk
+		\item[Resident Set]: portion of the process that is in main memory
+		\item[Page Fault]: interrupt triggered when OS accesses non-resident data
+		\item[Thrashing]: constant paging degrading performance
+		\item[Internal Fragmentaion]: fragmentation inside a block
+		\item[External Fragmentation]: fragmentation between blocks
+	\end{description}
+
+	\subsection{Page Tables}
+	Each process has a \textbf{page table} that stores:
+	\begin{itemize}
+		\item page number
+		\item present bit 
+		\item modified bit
+		\item other control bits
+		\item frame number
+	\end{itemize}
+	These tables can end up being too big so we use:
+	\begin{itemize}
+		\item \textbf{Two-Level Hierarchical Page Table}: use a table to page the paging table
+		\item \textbf{Inverted Page Table}: hash on page numbers to get pointer to page table entries,
+			total memory proportional to real address space
+	\end{itemize}
+	\textbf{Translation Lookaside Buffer}: a cache for page table that uses the principle of (temporal) locality
+	to store the recent pages accessed
+
+	\subsection{Segment Tables}
+	Each entry contains:
+	\begin{itemize}
+		\item length of the segment
+		\item present bit
+		\item modified bit
+		\item other control bits
+		\item segment base address
+	\end{itemize}
+
+	\subsection{Required Algorithms}
+	OS design must support:
+	\begin{itemize}
+		\item \textbf{fetch policy}: when a page should be brought into memory
+			\begin{itemize}
+				\item demand paging: bring pages in on demand
+				\item prepaging: bring in more pages than needed
+			\end{itemize}
+		\item \textbf{placement policy}: where a process piece should reside (minimize fragmentation)
+		\item \textbf{replacement policy}: which page should be replaced, local vs global scope
+			\begin{itemize}
+				\item optimal: replace page where time to next reference is longest
+				\item least recently used (LRU)
+				\item first-in first-out (FIFO): replace page that has been in memory longest
+				\item clock policy: replace first page with ``use'' bit 0 (approximates LRU)
+				\item page buffering: cache and revive pages to two lists: modified and unmodified
+				\item working set: remove pages that haven't been referenced in past $t$ time
+			\end{itemize}
+		\item \textbf{resident set management}: good size for resident set
+			\begin{description}
+				\item[fixed allocation]: decide how much memory to give ahead of time
+				\item[variable allocation]: number of pages allocated varies over time
+				\item[local replacement scope]: replace only pages from same process
+				\item[global replacement scope]: can replace any page
+			\end{description}
+			\begin{itemize}
+				\item fixed, local: difficult to predict correct size
+				\item variable, global: easy to implement, risk of reducing process' resident set
+				\item variable, local: re-evaluate allocation periodically
+			\end{itemize}
+		\item \textbf{cleaning policy}: when to write pages back to memory
+			\begin{itemize}
+				\item demand cleaning: write out a page only when replaced
+				\item pre-cleaning: write out in batches 
+			\end{itemize}
+		\item \textbf{load control}: control number of processes resident in main memory (avoid thrashing) \\
+			figure out which process to remove: \textbf{process suspension}:
+			\begin{itemize}
+				\item lowest priority process
+				\item faulting process
+				\item last process activated
+				\item process with smallest resident set (easiest to reload)
+				\item largest process (most memory freed)
+			\end{itemize}
+	\end{itemize}
+
+	\section{Uniprocessor Scheduling}
+
+	\subsection{Scheduling Types}
+	\begin{description}
+		\item[Long-term]: whether to add to pool of processes
+		\item[Medium-term]: whether to add process to main memory
+		\item[Short-term]: which process to execute (aka dispatcher)
+			\begin{itemize}
+				\item invoked during an interrupt
+			\end{itemize}
+		\item[I/O Scheduling]: which process' I/O request to handle
+	\end{description}
+
+	\subsection{Criteria}
+	User-oriented, Performance
+	\begin{description}
+		\item[Turnaround Time]: time between submission and completion of process
+		\item[Response Time]: time between submission and first response
+		\item[Deadline]: most important criteria
+	\end{description}
+	User-oriented, Other
+	\begin{description}
+		\item[Predictability]: a program should run about the same regardless of load
+	\end{description}
+	System-oriented, Performance
+	\begin{description}
+		\item[Throughput]: number of processes completed per unit time
+		\item[Process Utilization]: percentage of time processor is busy
+	\end{description}
+	System-oriented, Other
+	\begin{description}
+		\item[Fairness]: without guidance, all processes should be treated the same
+		\item[Enforcing Priorities]: favour higher priorities
+		\item[Balancing Resources]: keep resources busy, favour processes that don't utilize stressed resources
+	\end{description}
+
+	\subsection{Scheduling Algorithms}
+	Decision mode can be:
+	\begin{itemize}
+		\item preemptive
+		\item non-preemptive
+		\item cooperative: developer programs the context switch
+	\end{itemize}
+
+	\subsubsection{First-Come First-Served}
+	Each process joins the ready queue and runs in FIFO
+	\begin{itemize}
+		\item good for computationally-intensive
+		\item favours CPU-bound processes
+	\end{itemize}
+
+	\subsubsection{Round Robin}
+	User preemption based on periodic interrupts every quantum $q$
+	\begin{itemize}
+		\item favours CPU-bound processes
+	\end{itemize}
+	Improve it with \textbf{Virtual Round Robin} which maintains specific I/O queues
+	to even out the playing field
+
+	\subsubsection{Shortest Process Next}
+	Non-preemptive strategy with shortest expected time
+	\begin{itemize}
+		\item possible starvation of long processes
+		\item must know service time
+	\end{itemize}
+
+	\subsubsection{Shortest Remaining Time}
+	Preemptive version of SPN 
+	\begin{itemize}
+		\item no additional interrupt (as in RR)
+		\item better turnaround time than SPN
+		\item elapsed service time must be recorded
+	\end{itemize}
+
+	\subsubsection{Highest Response Ratio Next}
+	Choose process with greatest Ratio = $\frac{\text{time waiting} + \text{service time}}{\text{service time}}$
+	\begin{itemize}
+		\item need to know service time
+		\item no starvation
+	\end{itemize}
+
+	\subsubsection{Feedback}
+	Use queues of different priorities, penalizing processes that take long
+	by moving a process down a priority after it finishes running for $q$ time
+	\begin{itemize}
+		\item don't need to know service time
+		\item may favour I/O-bound processes
+		\item starvation of long running processes possible
+	\end{itemize}
+
+	\subsubsection{Fair Share}
+	Make decisions on the basis of process sets (\textit{e.g.} threads that make up applications).
+	Assign weights to each set and allocate resources according to weights
+
+	\section{Multiprocessor Scheduling}
+	
+	\subsection{Introduction}
+	\subsubsection{Classifications}
+	\begin{itemize}
+		\item loosely coupled/distributed: work together but each has its own memory and I/O
+		\item functionally-specialized: controlled by a master processor
+		\item tightly coupled: share main memory, controlled by OS
+	\end{itemize}
+
+	\subsubsection{Granularity}
+	\begin{itemize}
+		\item independent: multiple unrelated processes
+		\item coarse/very coarse: distributed processing across network nodes
+		\item medium: parallel processing within an application (\textit{e.g} threads)
+		\item fine: parallelism inherent in single instruction stream
+	\end{itemize}
+
+	
+	\subsection{Scheduling Design}
+	Assignment of processes to processors:
+	\begin{enumerate}
+		\item multiprocessor is uniform
+			\begin{enumerate}
+				\item static assignment: assign processes initially and no change
+				\item process migration: migrate processes dynamically
+				\item dynamic load balancing: start with static assignment but migrate as needed
+			\end{enumerate}
+		\item multiprocessor is heterogenous: need special software
+	\end{enumerate}<++>
+
 
 \end{document}
