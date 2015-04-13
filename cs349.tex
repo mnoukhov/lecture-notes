@@ -396,6 +396,445 @@ def ajax():
 							\item adjust UI design
 						\end{itemize}
 
+	\section{Experimentation}
+	\subsection{Definitions}
+	\begin{description}
+		\item[Hypothesis]: specific, falsifiable idea of how and which variables influence outcome
+		\item[Independent Variables]: variables manipulated by experimenter
+		\item[Dependent Variables]: variables that are measured
+		\item[Null Hypothesis]: there exists no relationship between independent and dependent variables
+		\item[Control Condition]: no experiment performed
+		\item[Experimental Condition]: experimental variable is manipulated
+	\end{description}
 
-				
+	\subsection{Experimental Process}
+	\begin{enumerate}
+		\item formulate hypothesis
+		\item identify independent/dependent variables
+		\item design experiment
+		\item check for:
+			\begin{description}
+				\item[validity]: are we measuring what we say we are
+				\item[reliability]: do we get same results reliably
+				\item[confounds]: are there influential variables we don't control for
+				\item[subject pool]: do the subjects represent intended users
+			\end{description}
+		\item select representative subjects
+		\item randomly assign to conditions
+		\item analyze results
+	\end{enumerate}
+
+	\subsection{Study Designs}
+	\textbf{Between Subjects}: each subject experiences one condition
+	\begin{itemize}
+		\item[+] no learning effects
+		\item[-] need more people 
+		\item[-] problems with variation in subjects
+	\end{itemize}
+	\textbf{Within Subjects}: each subject experiences every condition
+	\begin{itemize}
+		\item[+] order of conditions can counterbalance learning
+		\item[+] need fewer subjects
+		\item[-] learning effects can persist
+	\end{itemize}
+		
+
+
+	\subsection{Experimentation Ethics}
+	\textbf{Deception}: manipulating the truth by hiding or showing false information
+	\begin{enumerate}
+		\item \textbf{System Image Deceptions}: deceiving what the system is doing/can do \\ (\textit{e.g.} fluid progress bars)
+		\item \textbf{Behaviour Deceptions}: taking advantage of physical/sensory limits \\ (\textit{e.g.} ``smooth'' transition)
+		\item \textbf{Mental Mode Deceptions}: manipulating user's mental mode \\ (\textit{e.g.} fake static noise in Skype)
+	\end{enumerate}
+
+	\textbf{Benevolent Deception}: deception that can help the user:
+	\begin{itemize}
+		\item close gap between expectation and reality (\textit{e.g} 15 minutes remaining)
+		\item balance needs of individual vs group (\textit{e.g.} noise in search results)
+		\item protect user from themselves (\textit{e.g} ask whether user meant to delete something)
+		\item satisfy design goals (\textit{e.g} placebo buttons)
+	\end{itemize}
+
+	\textbf{Malovolent Deception}: deceptions that benefit owner at user's expense
+	\begin{itemize}
+		\item using confusing language (\textit{e.g.} using double negatives)
+		\item hiding certain functionality (\textit{e.g.} hide unsubscribe button)
+		\item exploiting user mistakes (\textit{e.g.} ads with arrow button)
+	\end{itemize}
+	\section{History}
+	\subsection{Batch Interface}
+	\begin{itemize}
+		\item punch cards prepared a priori
+		\item response time of hours and days $\Rightarrow$ no real interaction
+		\item only highly trained users
+	\end{itemize}
+	\subsection{Conversational Interface}
+	\begin{itemize}
+		\item commands typed through keyboard
+		\item wait for response (user cannot make changes during execution)
+		\item heavily scripted interaction
+		\item trained users
+	\end{itemize}
+	\subsection{Graphical Interface}
+	\begin{itemize}
+		\item input through keyboard, pointing device
+		\item high resolution, refresh, graphics display
+		\item user in control
+		\item recognition memory over recall
+		\item skeumorphism metaphors
+	\end{itemize}
+	Notable moments:
+	\begin{itemize}
+		\item \textit{As We May Think}, Vannevar Bush
+		\item Light Pen, Ivan Sutherland
+		\item NLS Demo, Douglas Englebart
+		\item Dynabook and Xerox Star, Alan Kay
+	\end{itemize}
+
+	\section{Input}
+	\subsection{Text Input}
+	\subsubsection{QWERTY vs Dvorak}
+	\textbf{Qwerty}
+	\begin{itemize}
+		\item designed to reduce typewriter jams and speed up typists
+		\item not perfectly centered on home row
+	\end{itemize}
+	\textbf{Dvorak}
+	\begin{itemize}
+		\item letters typed with alternating hands, 70\% on home row
+		\item least common letters on bottom row
+		\item right hand should do most of the typing
+		\item \textbf{not faster} than QWERTY, no measurable difference
+	\end{itemize}
+	\subsubsection{Keyboard Design}
+	\textbf{Mechanical Keyboards}
+	\begin{itemize}
+		\item fastest and most comfortable
+		\item downsizing can pose difficult
+		\item 80+ WPM
+	\end{itemize}
+	\textbf{Soft/Virtual Keyboards}
+	\begin{itemize}
+		\item ergonomic problems
+		\item good when text input is limited
+		\item 45 WPM
+	\end{itemize}
+	\textbf{Thumb/One-handed Keyboards}
+	\begin{itemize}
+		\item interesting but not mainstream
+		\item ``chording keyboards'' are a thing
+		\item 60 WPM
+	\end{itemize}
+	\textbf{Text Recognition and Gestures}
+	\begin{itemize}
+		\item Graffiti: map single strokes to enter letter (9 WPM)
+		\item Natural handwriting recogntion (33 WPM)
+	\end{itemize}
+	\textbf{Predictive Text}
+	\begin{itemize}
+		\item using characteristics of language to speed up typing
+		\item T9: was the shit back in middle school\
+		\item 45 WPM for experts
+	\end{itemize}
+	\textbf{Gestural Text Input}
+	\begin{itemize}
+		\item ``Swiping'' across a keyboard to form words
+		\item 30 WPM
+	\end{itemize}
+
+	\subsection{Position Input}
+	\begin{itemize}
+		\item force vs displacement: joystick vs mouse
+		\item position vs rate control
+		\item absolute vs relative position: touchscreen vs mouse
+		\item direct vs indirect contact: touchscreen vs mouse
+			\begin{itemize}
+				\item Control-Display Gain: $\frac{V_pointer}{V_device}$
+			\end{itemize}
+		\item dimensions sensed: dial vs mouse vs wiimote
+	\end{itemize}
+
+	\subsection{Gestural Input}
+	Gestures map movements to commands \textit{e.g.} Myo gestures
+
+	\section{Input Performance}
+	We want to measure which user interfaces are better using good metrics
+	\subsection{Keystroke Level Model}
+	Describe a task combining the length of time it takes for operators:
+	\begin{itemize}
+		\item keystroke: 0.08 - 1.2s
+		\item pointing: 1.1s
+		\item button press on mouse: 0.1s
+		\item move hand mouse to/from keyboard: 0.4s
+		\item mental preparation: 1.2s
+	\end{itemize}
+
+	Pros:
+	\begin{itemize}
+		\item easy to model	
+		\item can be done from just ideas and mockups
+	\end{itemize}
+	Cons:
+	\begin{itemize}
+		\item time estimates are inaccurate
+		\item doesn't model learning, expertise
+		\item doesn't model pointing well
+	\end{itemize}
+	
+	\subsection{Fitt's Law}
+	A predictive model for pointing time based on device, distance, target size
+	\begin{equation*}
+		MT = a + b \log_2 (\frac{D}{W} + 1)
+	\end{equation*}
+	\begin{itemize}
+		\item[MT] movement time
+		\item[D] distance from starting to middle of target
+		\item[W] constraining size of target, usually min(width, weight)
+		\item[a,b] characteristics of the pointing device
+		\item[IP] index of performace: 1/b
+		\item[ID] index of difficulty: $\log_2 (\frac{D}{W} + 1)$
+	\end{itemize}
+	making a cursor move slower over an object enlarges in in \textbf{motor space}, even
+	though it looks the same size in screen space
+
+	\subsection{Steering Law}
+	An adaptation of Fitt's Law for steering between two goals:
+	\begin{equation*}
+		ID = \log_2 (\frac{A}{W} + 1)
+	\end{equation*}
+	\begin{itemize}
+		\item[A] distance between goals
+		\item[W] width of goals
+	\end{itemize}
+	expanding this to make a tunnel:
+	\begin{equation*}
+		ID = b \frac{A}{W}	
+	\end{equation*}
+
+	\section{Visual Perception}
+	\subsection{Temporal Resolution}
+	People can only detect flickers up to ~45 Hz after which it changes to continuous light. 
+	In the same way, pictures at 24 FPS become a movie
+
+	\subsection{Spatial Resolution}
+	High resolution only applies to 1\% of photoreceptors in the eye.
+	The distance from the screen necessary to distinguish a pixel $d$, can be stated as :
+	\begin{equation*}
+		d = \frac{size of a pixel}{\tan (1/30)}
+	\end{equation*}
+	So if you are a distance of .4 - .7m away from the screen, pixels need to be 0.23 - 0.41cm apart to be distinguishable
+
+	\subsection{Color Perception}
+	\textbf{Color Models}: bases of colors used for displays
+	Additive:
+	\begin{itemize}
+		\item RGB: used on displays
+		\item HSB: hue, saturation, brightness
+		\item YUV: optimized for human perception
+	\end{itemize}
+	Subtractive:
+	\begin{itemize}
+		\item CMY(K): used in printing
+	\end{itemize}
+
+	\textbf{Display Monitors}
+	\begin{itemize}
+		\item each pixel is composed of 3 sub-pixels: red, green, blue
+		\item vary intensity of each subpixel and use visual acuity restrictions to make a single color
+	\end{itemize}
+
+	\subsection{Peripheral Vision}
+	Low resolution vision in our periphery that helps
+	\begin{itemize}
+		\item guide focus
+		\item detect motion
+		\item see better in the dark
+	\end{itemize}
+	We can use this knowledge to directs user's attention, \textit{e.g.}
+	\begin{itemize}
+		\item ``wiggle'' window
+		\item reserve red for errors
+	\end{itemize}
+
+	\section{Typography}
+	Make reading as fast and clear as possible
+
+	\subsection{Defintions}
+	General:
+	\begin{description}
+		\item[Typeface]: set of letters and numbers that make up a type design
+		\item[Font]: one width, weight, and style of typeface
+		\item[Glyph]: lowest divisible unit of type (a letter)
+		\item[Point]: 0.351mm
+		\item[Pixel]: size of one ``dot'' a screen
+	\end{description}
+	Printing Terminology:
+	\begin{description}
+		\item[Baseline]: line of which most letters rest
+		\item[Point size]: total height of a typeface block
+		\item[Leading]: spacing between lines of text
+		\item[Line spacing]: leading + point size
+		\item[Ligature]: pair of letters replaced by a single printed unit (\textit{e.g.} fi)
+	\end{description}
+	Font Terminology:
+	\begin{description}
+		\item[x-height]: height of x
+		\item[em-space]: width of m
+		\item[Drop cap]: capital letter at start the descends multiple lines (like in manuscripts)
+		\item[Serif]: decorative stroke at end of main letter stroke
+	\end{description}
+
+	\subsection{Computer Typography}
+	Fonts must mapped into bits for pixels, so we have two types of fonts:
+	\textbf{Bitmap font}: handcrafted font for bitmap display
+	\begin{itemize}
+		\item can't be properly scaled
+		\item limited resolution
+	\end{itemize}
+
+	\textbf{Outline font}: vector outline of font, converted to bitmap prior to display
+	\begin{itemize}
+		\item compact storage
+		\item bitmap representation can be inaccurate on small display
+	\end{itemize}
+
+	\subsection{Design Rules}
+	Consider different distances:
+	\begin{itemize}
+		\item far away
+			\begin{itemize}
+				\item should look like a uniform display
+				\item headings should stand out
+				\item whitespace should guide
+			\end{itemize}
+		\item nearby
+			\begin{itemize}
+				\item distinct lines of text should be visible
+				\item short lines of text
+			\end{itemize}
+		\item reading distance
+			\begin{itemize}
+				\item words should be chunked
+				\item similar fonts, distinct fonts for different meanings
+			\end{itemize}
+	\end{itemize}
+
+	\section{Accessibility}
+
+	\subsection{Temporary Disability}
+	We all have ``temporary disbailities'': distraction, injury, other focus. Just walking
+	severely inhibits our ability to read, understand, and think about cognitive tasks.
+
+	\subsection{Inclusive Design}
+	Creating accessible designs increases your audience:
+	\begin{itemize}
+		\item 10 - 20\% of population has a disability
+	\end{itemize}
+	and it usually benefits everyone:
+	\begin{itemize}
+		\item curb-cuts: made for wheelchairs to roll from curb to street but used by cyclists, strollers \dots etc
+		\item cassette tapes: alternative for reel-to-reel tape so blind people could use it better
+		\item closed captioning: now great for helping data mine videos and help learn foreign languages
+	\end{itemize}
+
+	All businesses must comply with accessibility laws and inclusiveness is a basic precept for the internet
+	\begin{itemize}
+		\item use alt-text
+		\item use device-independent js events (\verb onSelect )
+	\end{itemize}
+
+	\section{Touch Interfaces}
+	\subsection{Display}
+	\begin{itemize}
+		\item Resistive: two transparent layers that complete a circuit when pressed
+		\item Capacitive: measures change in capacitance to find location of touch
+			\begin{itemize}
+				\item single-touch: capacitors at four corners
+				\item multi-touch: grid of capacitors with a layer of driving lines to carry current, and sensing lines to detect it
+			\end{itemize}
+		\item Inductive: use a magnetized stylus to induce EM field in back of display
+		\item Optical: use motion-tracking cameras
+	\end{itemize}
+
+	\subsection{Input}
+	Challenges:
+	\begin{enumerate}
+		\item fat finger problem: finger occludes the object, can make object bigger or account for finger occlusion with touch offset
+		\item ambiguous feedback: touch interfaces can miss haptic feedback and confuse user if action unsuccessful
+		\item no hover state: no way to preview your actions before you do them
+		\item multi-touch capture: mutliple fingers can lead to ambiguous input
+	\end{enumerate}
+
+	\subsection{Interaction}
+	Since we have a touch screen, our interface is of \textbf{direct manipulation}:
+	\begin{itemize}
+		\item dragging a document to the trash
+		\item dialing a phone number on virtual keys
+	\end{itemize}
+	Principles:
+	\begin{itemize}
+		\item visible and continuous representation of objects and actions
+		\item all actions are valid, reversable, obvious
+		\item interaction with object as opposed to interface
+	\end{itemize}
+	Challenges:
+	\begin{itemize}
+		\item potentially not accessible
+		\item analogies may not be clear
+	\end{itemize}
+
+	\subsection{Design}
+	Help users:
+	\begin{itemize}
+		\item enter information quickly
+		\item know what action to take
+		\item utilize real estate and avoid clutter 
+	\end{itemize}
+
+	\subsection{Implementation}
+	Touch Event API:
+	\begin{itemize}
+		\item touchstart
+		\item touchmove
+		\item touchend
+	\end{itemize}
+
+
+	\section{Information Visualization}
+	
+	\subsection{Why}
+	Good presentation of information allows people to make better decisions and be more informed.
+
+	\subsection{What}
+	\textbf{Visual encoding} is the process of encoding the data into a visual format, consists of:
+	\begin{itemize}
+		\item graphical elements called \textbf{marks}
+		\item \textbf{visual channels} which control the appearance of marks
+	\end{itemize}
+
+	\textbf{Magnitude channels}: for organizing ordered attributes
+	\begin{itemize}
+		\item position on a scale
+		\item area/volume
+		\item color saturation
+	\end{itemize}
+	\textbf{Identity channels}: for organizing categorical attributes
+	\begin{itemize}
+		\item spatial region
+		\item color hue
+		\item shape
+	\end{itemize}
+
+	\subsection{How}
+	Use software structure diagrams to describe the models
+	\begin{itemize}
+		\item \textbf{Reference Model Pattern}: and separate them from the views to enable multiple views of a visualization
+		\item \textbf{Data Column Pattern}: organiza data into columns to provide flexible representations and schemes
+		\item \textbf{Operator}: decompose visual data processing into composable operators
+		\item \textbf{Renderer}: separate visual components from their rendering methods for dynamic rendering
+		\item \textbf{Production Rule}: use if-then-else to dynamically determine visual properties
+	\end{itemize}
+
+
 \end{document}
