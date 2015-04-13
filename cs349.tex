@@ -425,13 +425,13 @@ def ajax():
 	\end{enumerate}
 
 	\subsection{Study Designs}
-	\textbf{Between Subjects}: each subject experiences one condition
+	\textbf{Between subjects}: each subject experiences one condition
 	\begin{itemize}
 		\item[+] no learning effects
 		\item[-] need more people 
 		\item[-] problems with variation in subjects
 	\end{itemize}
-	\textbf{Within Subjects}: each subject experiences every condition
+	\textbf{Within subjects}: each subject experiences every condition
 	\begin{itemize}
 		\item[+] order of conditions can counterbalance learning
 		\item[+] need fewer subjects
@@ -550,7 +550,7 @@ def ajax():
 		\item absolute vs relative position: touchscreen vs mouse
 		\item direct vs indirect contact: touchscreen vs mouse
 			\begin{itemize}
-				\item Control-Display Gain: $\frac{V_pointer}{V_device}$
+				\item Control-Display Gain: $\frac{V_{pointer}}{V_{device}}$
 			\end{itemize}
 		\item dimensions sensed: dial vs mouse vs wiimote
 	\end{itemize}
@@ -614,28 +614,24 @@ def ajax():
 
 	\section{Visual Perception}
 	\subsection{Temporal Resolution}
-	People can only detect flickers up to ~45 Hz after which it changes to continuous light. 
+	People can only detect flickers up to 45 Hz after which it changes to continuous light. 
 	In the same way, pictures at 24 FPS become a movie
 
 	\subsection{Spatial Resolution}
 	High resolution only applies to 1\% of photoreceptors in the eye.
 	The distance from the screen necessary to distinguish a pixel $d$, can be stated as :
 	\begin{equation*}
-		d = \frac{size of a pixel}{\tan (1/30)}
+		d = \frac{\text{size of a pixel}}{\tan (1/30)}
 	\end{equation*}
 	So if you are a distance of .4 - .7m away from the screen, pixels need to be 0.23 - 0.41cm apart to be distinguishable
 
 	\subsection{Color Perception}
 	\textbf{Color Models}: bases of colors used for displays
-	Additive:
 	\begin{itemize}
 		\item RGB: used on displays
 		\item HSB: hue, saturation, brightness
 		\item YUV: optimized for human perception
-	\end{itemize}
-	Subtractive:
-	\begin{itemize}
-		\item CMY(K): used in printing
+		\item CMY(K): used in printing (subtracive)
 	\end{itemize}
 
 	\textbf{Display Monitors}
@@ -686,7 +682,6 @@ def ajax():
 	\end{description}
 
 	\subsection{Computer Typography}
-	Fonts must mapped into bits for pixels, so we have two types of fonts:
 	\textbf{Bitmap font}: handcrafted font for bitmap display
 	\begin{itemize}
 		\item can't be properly scaled
@@ -727,18 +722,17 @@ def ajax():
 	severely inhibits our ability to read, understand, and think about cognitive tasks.
 
 	\subsection{Inclusive Design}
-	Creating accessible designs increases your audience:
+	Increases your audience:
 	\begin{itemize}
 		\item 10 - 20\% of population has a disability
 	\end{itemize}
-	and it usually benefits everyone:
+	Usually benefits everyone:
 	\begin{itemize}
-		\item curb-cuts: made for wheelchairs to roll from curb to street but used by cyclists, strollers \dots etc
+		\item curb-cuts: made for wheelchairs to roll from curb to street but used by cyclists, strollers
 		\item cassette tapes: alternative for reel-to-reel tape so blind people could use it better
-		\item closed captioning: now great for helping data mine videos and help learn foreign languages
+		\item closed captioning: useful for data mine videos and helps learn foreign languages
 	\end{itemize}
-
-	All businesses must comply with accessibility laws and inclusiveness is a basic precept for the internet
+	Required by law and is a basic precept for the internet:
 	\begin{itemize}
 		\item use alt-text
 		\item use device-independent js events (\verb onSelect )
@@ -801,10 +795,39 @@ def ajax():
 	\end{itemize}
 
 
+	\section{Touchless Interfaces}
+	\subsection{Introduction}
+	Intefaces either through voice, air gestures, \dots are extremely useful but suffer
+	from errors due to being one-state input devices. The key idea is that the system should
+	fail gracefully.
+
+	\subsection{In-Air Gestures}
+	\textbf{Live Mic Problem}: because touchless intefaces can be ``always on'', we need to find a way to distinguish commands from unintentional gestures (\textit{e.g.} scratching your head). 
+	\begin{itemize}
+		\item reserved actions: making a particular set of actions always used for navigation or commands
+		\item reserving a clutch: making a rare action be the indicator to start/stop a command
+		\item multi-modal input: use a different mode (\textit{e.g.} hardware button) to control universal params
+	\end{itemize}
+
+	\subsection{Speech Interfaces}
+	Voice recognition challenges:
+	\begin{itemize}
+		\item \textbf{Rejection error}: system has no hypothesis about what user has said
+		\item \textbf{Substitution error}: system mistakes utterance
+		\item \textbf{Insertion error}: recognize noise as legal utterance
+	\end{itemize}
+	Although voice recognition seems like a good metric, user satisfaction is better measured with:
+	\begin{itemize}
+		\item discourse segment pop: completing a sub-dialog and revealing context
+		\item human conversability: understanding casual speech
+		\item dialog boxes: asking for confirmation at right time
+	\end{itemize}
+
+	
 	\section{Information Visualization}
 	
 	\subsection{Why}
-	Good presentation of information allows people to make better decisions and be more informed.
+	Good data visualization allows people to make better decisions and be more informed.
 
 	\subsection{What}
 	\textbf{Visual encoding} is the process of encoding the data into a visual format, consists of:
@@ -813,6 +836,7 @@ def ajax():
 		\item \textbf{visual channels} which control the appearance of marks
 	\end{itemize}
 
+	\subsubsection{Channel Types}
 	\textbf{Magnitude channels}: for organizing ordered attributes
 	\begin{itemize}
 		\item position on a scale
@@ -826,6 +850,14 @@ def ajax():
 		\item shape
 	\end{itemize}
 
+	\subsubsection{Channel Effectiveness}
+	We can measure how effective a channel is with:
+	\begin{itemize}
+		\item accuracy
+		\item discriminability
+		\item separability
+		\item popout
+	\end{itemize}
 	\subsection{How}
 	Use software structure diagrams to describe the models
 	\begin{itemize}
