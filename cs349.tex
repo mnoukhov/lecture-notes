@@ -493,6 +493,17 @@ def ajax():
 	\end{itemize}
 
 	\section{Input}
+	\subsection{Classification}
+	Sensing Method:
+	\begin{itemize}
+		\item mechanical (\textit{e.g.} switch)
+		\item motion (\textit{e.g.} gyroscope)
+		\item contact (\textit{e.g.} capacitive touch)
+		\item signal processing (\textit{e.g.} computer vision)
+	\end{itemize}
+	Continuous v. Discrete \\
+	Degrees of freedom
+
 	\subsection{Text Input}
 	\subsubsection{QWERTY vs Dvorak}
 	\textbf{Qwerty}
@@ -657,7 +668,7 @@ def ajax():
 	Make reading as fast and clear as possible
 
 	\subsection{Defintions}
-	General:
+	\subsubsection{General}
 	\begin{description}
 		\item[Typeface]: set of letters and numbers that make up a type design
 		\item[Font]: one width, weight, and style of typeface
@@ -665,15 +676,17 @@ def ajax():
 		\item[Point]: 0.351mm
 		\item[Pixel]: size of one ``dot'' a screen
 	\end{description}
-	Printing Terminology:
+
+	\subsubsection{Printing Terminology}
 	\begin{description}
-		\item[Baseline]: line of which most letters rest
+		\item[Baseline]: line on which most letters rest
 		\item[Point size]: total height of a typeface block
 		\item[Leading]: spacing between lines of text
 		\item[Line spacing]: leading + point size
 		\item[Ligature]: pair of letters replaced by a single printed unit (\textit{e.g.} fi)
 	\end{description}
-	Font Terminology:
+
+	\subsubsection{Font Terminology}
 	\begin{description}
 		\item[x-height]: height of x
 		\item[em-space]: width of m
@@ -722,21 +735,23 @@ def ajax():
 	severely inhibits our ability to read, understand, and think about cognitive tasks.
 
 	\subsection{Inclusive Design}
-	Increases your audience:
-	\begin{itemize}
-		\item 10 - 20\% of population has a disability
-	\end{itemize}
-	Usually benefits everyone:
-	\begin{itemize}
-		\item curb-cuts: made for wheelchairs to roll from curb to street but used by cyclists, strollers
-		\item cassette tapes: alternative for reel-to-reel tape so blind people could use it better
-		\item closed captioning: useful for data mine videos and helps learn foreign languages
-	\end{itemize}
-	Required by law and is a basic precept for the internet:
-	\begin{itemize}
-		\item use alt-text
-		\item use device-independent js events (\verb onSelect )
-	\end{itemize}
+	\begin{enumerate}
+		\item Increases your audience:
+			\begin{itemize}
+				\item 10 - 20\% of population has a disability
+			\end{itemize}
+		\item Usually benefits everyone:
+			\begin{itemize}
+				\item curb-cuts: made for wheelchairs to roll from curb to street but used by cyclists, strollers
+				\item cassette tapes: alternative for reel-to-reel tape so blind people could use it better
+				\item closed captioning: useful for data mining videos and can help learn foreign languages
+			\end{itemize}
+		\item Required by law and is a basic precept for the internet:
+			\begin{itemize}
+				\item use alt-text
+				\item use device-independent js events (\verb onSelect )
+			\end{itemize}
+	\end{enumerate}
 
 	\section{Touch Interfaces}
 	\subsection{Display}
@@ -751,8 +766,7 @@ def ajax():
 		\item Optical: use motion-tracking cameras
 	\end{itemize}
 
-	\subsection{Input}
-	Challenges:
+	\subsection{Input Challenges}
 	\begin{enumerate}
 		\item fat finger problem: finger occludes the object, can make object bigger or account for finger occlusion with touch offset
 		\item ambiguous feedback: touch interfaces can miss haptic feedback and confuse user if action unsuccessful
@@ -766,13 +780,13 @@ def ajax():
 		\item dragging a document to the trash
 		\item dialing a phone number on virtual keys
 	\end{itemize}
-	Principles:
+	\subsubsection{Principles}
 	\begin{itemize}
 		\item visible and continuous representation of objects and actions
 		\item all actions are valid, reversable, obvious
 		\item interaction with object as opposed to interface
 	\end{itemize}
-	Challenges:
+	\subsubsection{Challenges}
 	\begin{itemize}
 		\item potentially not accessible
 		\item analogies may not be clear

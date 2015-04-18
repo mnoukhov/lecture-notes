@@ -355,208 +355,292 @@ digit = [0-9]		// 0-9: non-terminals
 					\item[Production Coverage]: TR contains each production of grammar G
 					\item[Derivation Coverage]: TR contains every possible string derivable from grammar G
 				\end{description}
-			\subsubsection{Grammar Mutation}:
-				Use different operators to generate invalid input:
-				\begin{itemize}
-					\item Non-terminal Replacement
-					\item Terminal Replacement
-					\item Terminal and Non-terminal Deletion
-					\item Terminal and Non-terminal Duplication
-				\end{itemize}
-		\subsection{Mutation Testing}
-			Generate mutant by modifying programs and try to kill it with test cases 
-			\subsubsection{Defintions}
-				\begin{description}
-					\item[Ground String]: a valid string in the language of the grammar
-					\item[Mutation Operator]: a rule specifying synatactic variations of strings from the grammar
-					\item[Mutant]: result of one application of a mutation operator to a ground string
-				\end{description}
-				Uninteresting Mutants:
-				\begin{itemize}
-					\item \textbf{Stillborn}: does not compile or immediately crashes
-					\item \textbf{Trivial}: killed by almost any test case
-					\item \textbf{Equivalent}: indistinguishable from original program
-				\end{itemize}
-			\subsubsection{Coverage}
-				A test case $t$ \textbf{kills} a mutant $m$ if $t$ produces a different output on $m$ than $m_0$
-				\begin{description}
-					\item[Mutation Coverage]: for each mutant $m$, TR required to kill $m$
-					\item[Mutation Operator Coverage]: for each mutation operator $op$, TR required to kill all mutant derived using $op$
-					\item[Mutation Production Coverage]: for each mutation operator $op$ and production $p$ that it can be applied to, TR required to kill mutant from $p$
-				\end{description}
-			\subsubsection{Weak and Strong}
-				\begin{description}
-					\item[Strong Mutation]: fault must be reachable, infect state, and propogate to output
-					\item[Weak Mutation]: fault which kills the mutant needs to only be reachable and infect state
-					\item[Strong Mutation Coverage]: for each mutant, TR has a test that strongly kills it
-					\item[Weak Mutation Coverage]: for each mutant, TR has a test that weakly kills it
-				\end{description}
-			\subsubsection{Mutation Operators}
-				\begin{itemize}
-					\item Absolute value insertion: $x > a \Rightarrow x > abs(a)$
-					\item Operator replacement: $x > a \Rightarrow x < a$
-					\item Scalar variable replacement: $x > a \Rightarrow x > b$
-					\item Crash statement replacement: \dots
-				\end{itemize}
-			\subsubsection{Integration Mutation}
-				\begin{itemize}
-					\item Change calling method's parameters
-					\item Change method being called
-					\item Change inputs and outputs of called method
-				\end{itemize}
+				\subsubsection{Grammar Mutation}
+					Use different operators to generate invalid input:
+					\begin{itemize}
+						\item Non-terminal Replacement
+						\item Terminal Replacement
+						\item Terminal and Non-terminal Deletion
+						\item Terminal and Non-terminal Duplication
+					\end{itemize}
+				\subsubsection{Fuzzing}
+					\textbf{Fuzzing}: feed random valid characters in an effort to find bugs 
 
-						
+					\begin{itemize}
+						\item Generation-based: generate random inputs that match your grammar
+							Use different levels of inputs, from random ASCII $\rightarrow$ correct C code $\rightarrow$ model-correct C
+						\item Mutation-based: randomly modify existing inputs, making sure to keep checksums updated
+					\end{itemize}
+			\subsection{Mutation Testing}
+				Generate mutant by modifying programs and try to kill it with test cases 
+				\subsubsection{Defintions}
+					\begin{description}
+						\item[Ground String]: a valid string in the language of the grammar
+						\item[Mutation Operator]: a rule specifying synatactic variations of strings from the grammar
+						\item[Mutant]: result of one application of a mutation operator to a ground string
+					\end{description}
+					Uninteresting Mutants:
+					\begin{itemize}
+						\item \textbf{Stillborn}: does not compile or immediately crashes
+						\item \textbf{Trivial}: killed by almost any test case
+						\item \textbf{Equivalent}: indistinguishable from original program
+					\end{itemize}
+				\subsubsection{Coverage}
+					A test case $t$ \textbf{kills} a mutant $m$ if $t$ produces a different output on $m$ than $m_0$
+					\begin{description}
+						\item[Mutation Coverage]: for each mutant $m$, TR required to kill $m$
+						\item[Mutation Operator Coverage]: for each mutation operator $op$, TR required to kill all mutant derived using $op$
+						\item[Mutation Production Coverage]: for each mutation operator $op$ and production $p$ that it can be applied to, TR required to kill mutant from $p$
+					\end{description}
+				\subsubsection{Weak and Strong}
+					\begin{description}
+						\item[Strong Mutation]: fault must be reachable, infect state, and propogate to output
+						\item[Weak Mutation]: fault which kills the mutant needs to only be reachable and infect state
+						\item[Strong Mutation Coverage]: for each mutant, TR has a test that strongly kills it
+						\item[Weak Mutation Coverage]: for each mutant, TR has a test that weakly kills it
+					\end{description}
+				\subsubsection{Mutation Operators}
+					\begin{itemize}
+						\item Absolute value insertion: $x > a \Rightarrow x > abs(a)$
+						\item Operator replacement: $x > a \Rightarrow x < a$
+						\item Scalar variable replacement: $x > a \Rightarrow x > b$
+						\item Crash statement replacement: \dots
+					\end{itemize}
+				\subsubsection{Integration Mutation}
+					\begin{itemize}
+						\item Change calling method's parameters
+						\item Change method being called
+						\item Change inputs and outputs of called method
+					\end{itemize}
 
-	\section{Logic Coverage}
-	\subsection{Introduction}
-	Cover the \textbf{predicates} by covering the \textbf{clauses} they're made of. 
-	Clauses are connected by \textbf{logical operators}:
-	\begin{multicols}{3}
+							
+
+		\section{Logic Coverage}
+		\subsection{Introduction}
+		Cover the \textbf{predicates} by covering the \textbf{clauses} they're made of. 
+		Clauses are connected by \textbf{logical operators}:
+		\begin{multicols}{3}
+			\begin{itemize}
+				\item $\neg$ negation
+				\item $\and$ and
+				\item $\lor$ or
+				\item $\implies$ implication
+				\item $\oplus$ exclusive or
+				\item $\iff$ equivalence
+			\end{itemize}
+		\end{multicols}
+		\subsection{Basic Coverages}
+		\begin{description}
+			\item[Predicate Coverage]: for each predicate $p$, cover $p = true$ and $p = false$ (analagous to CFG edge coverage)
+			\item[Clause Coverage]: for each clause $c$, cover $c = true$ and $c = false$ 
+			\item[Combination Coverage]: for each predicate $p$, cover all possible truth values for clauses in $C_p$ 
+		\end{description}
+		\subsection{Active Clause Coverage}
+		We want to make a \textbf{major} clause determine the predicate, by setting the other (\textbf{minor}) clauses.
+		If $p_{c=true}$ represents $p$ with $c = true$ and similarly $p_{c=false}$ then $p_c$ describes the conditions necessary
+		for $c$ to determine $p$
+		\begin{equation*}
+			p_c = p_{c=true} \oplus p_{c=false}
+		\end{equation*}
+
+		\begin{ex}
+			Determining a predicate
+			\begin{align*}
+				p &= a \lor b & \\
+				p_a &= (true \lor b) \oplus (false \lor b) & \\
+				&= true \oplus b & \\
+				&= \neg b &
+			\end{align*}
+			Therefore $a$ determines $p$ when $b = false$
+		\end{ex}
+
+		\begin{description}
+			\item[Active Clause Coverage]: for every major clause $c_i = true$ and $c_i = false$, cover all assignments of minor clauses so that $c_i$ determines $p$ 
+			\item[General ACC]: ACC without restrictions on minor clauses, they may be different for $c_i = true$ and $c_i = false$
+			\item[Correlated ACC]: ACC but minor clauses must cause $p = true$ for one value of $c_i$ and $p = false$ for the other
+			\item[Restricted ACC]: ACC but minor clauses must be the same for $c_i = true$ and $c_i = false$
+		\end{description}
+		\subsection{Feasibility}
+		Sometimes TRs can be infeasible, this can happen for many reasons:
 		\begin{itemize}
-			\item $\neg$ negation
-			\item $\and$ and
-			\item $\lor$ or
-			\item $\implies$ implication
-			\item $\oplus$ exclusive or
-			\item $\iff$ equivalence
+			\item predicate is unreachable
+			\item predicate never has appropriate values to cause desired clause values \textit{e.g. len(array)<0} 
+			\item clause never determines predicate and you're attempting ACC
 		\end{itemize}
-	\end{multicols}
-	\subsection{Basic Coverages}
+		Therefore to get logic coverage:
+		\begin{enumerate}
+			\item identify the predicates 
+			\item figure out how to reach each predicate
+			\item make $c$ determine predicate $p$
+			\item find values for program vars to meet criteria
+		\end{enumerate}
+
+		\section{Reporting Bugs}
+		Bug reporting help fix bugs faster and improve software dev cycle. Good bugs that should be reported are:
+		\begin{itemize}
+			\item sufficiently general
+			\item have severe consequences
+			\item affect most recent version
+		\end{itemize}
+		Good reports allow developers to quickly understand and solve the bug:
+		\begin{itemize}
+			\item reported in the database
+			\item simple: one bug per report
+			\item understandable, minimal, generalizable
+			\item reproducible
+			\item non-judgemental
+			\item not duplicates
+		\end{itemize}
+
+		\section{Input Space Partitioning}
+		\subsection{Introduction}
+		We don't have time to test all inputs, so we want to test one input from each representative partition. 
+		\begin{description}
+			\item[Characteristics]: how values are distinguished
+			\item[Partition]: a way of splitting values into blocks
+			\item[Block]: a set of values similar by characteristics
+		\end{description}
+		
+		Partition should be:
+		\begin{itemize}
+			\item \textbf{Complete}: covers the entire domain
+			\item \textbf{Disjoint}: no overlap
+		\end{itemize}
+		
+		\subsection{Input Domain Modelling}
+		\begin{enumerate}
+			\item find units/functions to test
+			\item identify parameters of each unit
+			\item come up with input space model
+		\end{enumerate}
+		There are two general approaches to Input Domain Modelling:
+
+		\textbf{Interface-based}: just using input space (without considering how it is used)
+		\begin{itemize}
+			\item[+] easy to identify characters
+			\item[+] easy to translate test cases
+			\item[-] less effective because it doesn't use domain knowledge \textit{e.g. domain knowledge}
+		\end{itemize}
+
+		\textbf{Functionality-based}: using a functional view of the program (how the program works)
+		\begin{itemize}
+			\item[+] may have better test cases because of domain knowledge
+			\item[+] can create models just from specifications (without seeing actual code)
+			\item[-] may be hard to identify characterstics, values
+			\item[-] harder to generate test from this IDM
+		\end{itemize}
+		
+		\subsection{Identifying Characteristics}
+		Some possible characteristics:
+		\begin{itemize}
+			\item preconditions and postconditions
+			\item relationships between variables 
+			\item extract characteristics from specifications
+		\end{itemize}
+
+		\subsection{Choosing Blocks and Values}
+		\begin{itemize}
+			\item both valid and invalid values
+			\item boundary and non-boundary values
+			\item special values
+		\end{itemize}
+		An \textbf{alternate approach}, instead of multiple blocks, is to choose True/False characteristics.
+		This dichotomy guarantees disjointness and completeness. \\
+		We could also use \textbf{multiple IDMs}, one for valid values and one for invalid values.
+
+		\subsection{Combining Characteristics}
+		We want to test multiple inputs/characteristics, each with their own partitions 
+		
+		\begin{description}
+			\item[All Combinations Coverage]: all combinations of blocks from all characteristics (exhuastive, but too big!)
+			\item[Each Clause Coverage]: at least one value from each block for each characteristic
+			\item[Pair-Wise Coverage]: combine a value for each block for each characteristic with some value from every other block
+			\item[T-Wise Coverage]: same as pair-wise for T values from other blocks for other characteristics
+		\end{description}
+
+		Drop infeasible TRs
+
+		\subsection{Base Choice}
+		We have been treating all blocks as equal, but we can designate one block as the most important called the \textbf{base choice}
+		and by choosing the base choice for each characteristic we have a \textbf{base test}
+
 	\begin{description}
-		\item[Predicate Coverage]: for each predicate $p$, cover $p = true$ and $p = false$ (analagous to CFG edge coverage)
-		\item[Clause Coverage]: for each clause $c$, cover $c = true$ and $c = false$ 
-		\item[Combination Coverage]: for each predicate $p$, cover all possible truth values for clauses in $C_p$ 
-	\end{description}
-	\subsection{Active Clause Coverage}
-	We want to make a \textbf{major} clause determine the predicate, by setting the other (\textbf{minor}) clauses.
-	If $p_{c=true}$ represents $p$ with $c = true$ and similarly $p_{c=false}$ then $p_c$ describes the conditions necessary
-	for $c$ to determine $p$
-	\begin{equation*}
-		p_c = p_{c=true} \oplus p_{c=false}
-	\end{equation*}
-
-	\begin{ex}
-		Determining a predicate
-		\begin{align*}
-			p &= a \lor b & \\
-			p_a &= (true \lor b) \oplus (false \lor b) & \\
-			&= true \oplus b & \\
-			&= \neg b &
-		\end{align*}
-		Therefore $a$ determines $p$ when $b = false$
-	\end{ex}
-
-	\begin{description}
-		\item[Active Clause Coverage]: for every major clause $c_i = true$ and $c_i = false$, cover all assignments of minor clauses so that $c_i$ determines $p$ 
-		\item[General ACC]: ACC without restrictions on minor clauses, they may be different for $c_i = true$ and $c_i = false$
-		\item[Correlated ACC]: ACC but minor clauses must cause $p = true$ for one value of $c_i$ and $p = false$ for the other
-		\item[Restricted ACC]: ACC but minor clauses must be the same for $c_i = true$ and $c_i = false$
-	\end{description}
-	\subsection{Feasibility}
-	Sometimes TRs can be infeasible, this can happen for many reasons:
-	\begin{itemize}
-		\item predicate is unreachable
-		\item predicate never has appropriate values to cause desired clause values \textit{e.g. len(array)<0} 
-		\item clause never determines predicate and you're attempting ACC
-	\end{itemize}
-	Therefore to get logic coverage:
-	\begin{enumerate}
-		\item identify the predicates 
-		\item figure out how to reach each predicate
-		\item make $c$ determine predicate $p$
-		\item find values for program vars to meet criteria
-	\end{enumerate}
-
-	\section{Reporting Bugs}
-	Bug reporting help fix bugs faster and improve software dev cycle. Good bugs that should be reported are:
-	\begin{itemize}
-		\item sufficiently general
-		\item have severe consequences
-		\item affect most recent version
-	\end{itemize}
-	Good reports allow developers to quickly understand and solve the bug:
-	\begin{itemize}
-		\item reported in the database
-		\item simple: one bug per report
-		\item understandable, minimal, generalizable
-		\item reproducible
-		\item non-judgemental
-		\item not duplicates
-	\end{itemize}
-
-	\section{Input Space Partitioning}
-	\subsection{Introduction}
-	We don't have time to test all inputs, so we want to test one input from each representative partition. 
-	\begin{description}
-		\item[Characteristics]: how values are distinguished
-		\item[Partition]: a way of splitting values into blocks
-		\item[Block]: a set of values similar by characteristics
-	\end{description}
-	
-	Partition should be:
-	\begin{itemize}
-		\item \textbf{Complete}: covers the entire domain
-		\item \textbf{Disjoint}: no overlap
-	\end{itemize}
-	
-	\subsection{Input Domain Modelling}
-	\begin{enumerate}
-		\item find units/functions to test
-		\item identify parameters of each unit
-		\item come up with input space model
-	\end{enumerate}
-	There are two general approaches to Input Domain Modelling:
-
-	\textbf{Interface-based}: just using input space (without considering how it is used)
-	\begin{itemize}
-		\item[+] easy to identify characters
-		\item[+] easy to translate test cases
-		\item[-] less effective because it doesn't use domain knowledge \textit{e.g. domain knowledge}
-	\end{itemize}
-
-	\textbf{Functionality-based}: using a functional view of the program (how the program works)
-	\begin{itemize}
-		\item[+] may have better test cases because of domain knowledge
-		\item[+] can create models just from specifications (without seeing actual code)
-		\item[-] may be hard to identify characterstics, values
-		\item[-] harder to generate test from this IDM
-	\end{itemize}
-	
-	\subsection{Identifying Characteristics}
-	Some possible characteristics:
-	\begin{itemize}
-		\item preconditions and postconditions
-		\item relationships between variables 
-		\item extract characteristics from specifications
-	\end{itemize}
-
-	\subsection{Choosing Blocks and Values}
-	\begin{itemize}
-		\item both valid and invalid values
-		\item boundary and non-boundary values
-		\item special values
-	\end{itemize}
-	An \textbf{alternate approach}, instead of multiple blocks, is to choose True/False characteristics.
-	This dichotomy guarantees disjointness and completeness. \\
-	We could also use \textbf{multiple IDMs}, one for valid values and one for invalid values.
-
-	\subsection{Combining Characteristics}
-	We want to test multiple inputs/characteristics, each with their own partitions 
-	
-	\begin{description}
-		\item[All Combinations Coverage]: all combinations of blocks from all characteristics (exhuastive, but too big!)
-		\item[Each Clause Coverage]: at least one value from each block for each characteristic
-		\item[Pair-Wise Coverage]: combine a value for each block for each characteristic with some value from every other block
-		\item[T-Wise Coverage]: same as pair-wise for T values from other blocks for other characteristics
+		\item[Base Choice Coverage]: vary the base test one characteristic at a time with all other blocks
+		\item[Multiple Base Choice Coverage]: use more than one base choice block for each characteristic and then vary
 	\end{description}
 
-	\subsection{Base Choice}
-	We have been treating all blocks as equal, but we can designate one combination of blocks to be the \textbf{base choice}
-	and make combinations around it
+	If TRs are infeasible, change base case
 
+		
 
 
 	
+
+	\section{Regression Testing}
+	\subsection{Overview}
+	\textbf{Regression Testing}: re-testing modified programs to uncover regression, usually with integration test
+	\begin{itemize}
+		\item automated: with git hooks, push process \dots
+		\item appropriately sized: too small and it is useless, too large and it takes too long
+		\item up-to-date: tests are valid for the version of the program being tested
+	\end{itemize}
+
+	Regression tests have a low yield for bug-finding, so automation is very important.
+	\begin{itemize}
+		\item input: file input is easiest, but we may need to create special mocks
+		\item output: verifying output should account for resolution, whitespace \dots
+		\item UI: capture and replay events, use Selenium for web dev
+	\end{itemize}
+
+	Good TODOs:
+	\begin{itemize}
+		\item remove redunant/old test cases over time
+		\item evaluate test cases manually or with coverage criteria
+		\item test case prioritization is good but implementation is unclear
+	\end{itemize}
+
+	\subsection{Best Practises}
+	\begin{description}
+		\item[Unit Tests]: each class has associated unit tests
+		\item[Code Reviews]: code must be approved by ``owners'' of that branch/block
+		\item[Continuous Builds]: continuously checkout and build latest code to enforce good practises
+		\item[One-button Deploy]: if all test have passed, deploying should be easy
+		\item[Back Button]: systems should have easy rollback in case of errors
+	\end{description}
+
+	\section{Badly Designed Tests}
+	\textbf{Smell}: a symptom of a problem implying something is wrong
+
+	\subsection{Project Smells}
+	Highest level smells, usually detected by project managers
+	\begin{itemize}
+		\item production bugs: too many production bugs implies bad testing, development process, resources \dots
+		\item continuous integration failures: could be buggy, expensive, or insufficient tests
+	\end{itemize}
+
+	\subsection{Behaviour Smells}
+	Typically manifest as compile errors or test failures
+	\begin{itemize}
+		\item fragile tests: tests too sensitive to interface, data, context, or behaviour
+		\item assertion roulette: integration failures with bad error messages
+		\item erratic/flakey tests: could be caused by external dependencies
+		\item frequent debugging: insufficient or not fine enough tests
+		\item slow tests
+		\item tests requiring manual intervention
+	\end{itemize}
+
+	\subsection{Code Smells}
+	Affect maintenance costs and are also early warning signs of behaviour smells
+
+	\begin{itemize}
+		\item obscure tests: caused by poorly-named or implemented tests
+		\item conditional test logic
+		\item hard-coded test data
+		\item hard-to-test code
+		\item test code duplication
+		\item test logic in production
+	\end{itemize}
+
 
 \end{document}
 
