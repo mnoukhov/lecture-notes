@@ -201,7 +201,7 @@
 		\subsection{Definitions}
 			\begin{description}
 				\item[simple path]: no node appears more than once in the path (first and last can be the same)
-				\item[prime path]: a simple path that is not a proper subpath of any other simple path
+				\item[prime path]: a simple path that is not a proper subpath of any other simple path, each node only appears once \textit{except} first and last node
 				\item[bridge]: an edge which, when removed, results in a disconnected graph
 			\end{description}
 			
@@ -242,6 +242,14 @@
 				\item \lstinline|spin_lock_irqsave| disables interrupts locally and provides \lstinline|spin_lock| on symmetrical mulitiprocessors (\textbf{SMPs})
 				\item \lstinline|spin_lock_irqrestore| restores interrupts to state when lock is acquired
 			\end{itemize}
+		\subsection{Testing}
+			\begin{itemize}
+				\item run mulitple times
+				\item add noise (\textit{e.g. sleep, wait})
+				\item Helgrind
+				\item force different scheduling
+			\end{itemize}
+
 	\section{Assertions}
 		\textbf{Assertion}: statement about the program that is true
 		\begin{itemize}
@@ -308,8 +316,9 @@ printf(x);	// use
 			\end{description}
 		\subsection{Coverage}
 			\begin{description}
-				\item[All-Defs Coverage]: a test case for each def to one use
-				\item[All-Uses Coverage]: a test case for each def to every use
+				\item[All-Defs Coverage]: a TR for each def to one use
+				\item[All-Uses Coverage]: a TR for each def to all uses
+				\item[All-DU-Paths Coverage]: all paths from each def to all uses
 			\end{description}
 		\subsection{Source Code}
 			\begin{description}
@@ -346,7 +355,7 @@ dep = 'deposit' account amount
 deb = 'debit' account amount		
 account = digit{3}	// = digit{3}: production rule
 amount = '\$'digit+'.'digit{2}
-digit = [0-9]		// 0-9: non-terminals
+digit = [0-9]		// 0-9: terminals
 					\end{lstlisting}
 				\end{ex}
 			\subsubsection{Coverage}
@@ -367,8 +376,7 @@ digit = [0-9]		// 0-9: non-terminals
 					\textbf{Fuzzing}: feed random valid characters in an effort to find bugs 
 
 					\begin{itemize}
-						\item Generation-based: generate random inputs that match your grammar
-							Use different levels of inputs, from random ASCII $\rightarrow$ correct C code $\rightarrow$ model-correct C
+						\item Generation-based: generate random inputs that match your grammar, use different levels of inputs, from random ASCII $\rightarrow$ correct C code $\rightarrow$ model-correct C
 						\item Mutation-based: randomly modify existing inputs, making sure to keep checksums updated
 					\end{itemize}
 			\subsection{Mutation Testing}
@@ -417,12 +425,12 @@ digit = [0-9]		// 0-9: non-terminals
 
 		\section{Logic Coverage}
 		\subsection{Introduction}
-		Cover the \textbf{predicates} by covering the \textbf{clauses} they're made of. 
+		Cover the \textbf{predicates} (expression that evaluates to a boolean value) by covering the \textbf{clauses} (predicate without logical operators) they're made of. 
 		Clauses are connected by \textbf{logical operators}:
 		\begin{multicols}{3}
 			\begin{itemize}
 				\item $\neg$ negation
-				\item $\and$ and
+				\item $\wedge$ and
 				\item $\lor$ or
 				\item $\implies$ implication
 				\item $\oplus$ exclusive or
@@ -513,13 +521,13 @@ digit = [0-9]		// 0-9: non-terminals
 			\item identify parameters of each unit
 			\item come up with input space model
 		\end{enumerate}
-		There are two general approaches to Input Domain Modelling:
+		Two approaches: \\
 
 		\textbf{Interface-based}: just using input space (without considering how it is used)
 		\begin{itemize}
 			\item[+] easy to identify characters
 			\item[+] easy to translate test cases
-			\item[-] less effective because it doesn't use domain knowledge \textit{e.g. domain knowledge}
+			\item[-] less effective because it doesn't use domain knowledge \textit{e.g. variable relationships}
 		\end{itemize}
 
 		\textbf{Functionality-based}: using a functional view of the program (how the program works)
@@ -585,6 +593,14 @@ digit = [0-9]		// 0-9: non-terminals
 		\item up-to-date: tests are valid for the version of the program being tested
 	\end{itemize}
 
+	Good TODOs:
+	\begin{itemize}
+		\item remove redunant/old test cases over time
+		\item evaluate test cases manually or with coverage criteria
+		\item test case prioritization is good but implementation is unclear
+	\end{itemize}
+
+	\subsection{Output Validation}
 	Regression tests have a low yield for bug-finding, so automation is very important.
 	\begin{itemize}
 		\item input: file input is easiest, but we may need to create special mocks
@@ -592,11 +608,11 @@ digit = [0-9]		// 0-9: non-terminals
 		\item UI: capture and replay events, use Selenium for web dev
 	\end{itemize}
 
-	Good TODOs:
+	To verify our output is correct:
 	\begin{itemize}
-		\item remove redunant/old test cases over time
-		\item evaluate test cases manually or with coverage criteria
-		\item test case prioritization is good but implementation is unclear
+		\item manual effort 
+		\item compute multiple ways \textit{e.g. sort differently}
+		\item checksums/redundant data
 	\end{itemize}
 
 	\subsection{Best Practises}

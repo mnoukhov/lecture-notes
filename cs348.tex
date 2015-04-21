@@ -464,6 +464,81 @@ RETURN
 				\end{lstlisting}
 			\end{ex}
 
+	\section{Data Modelling}
+	\subsection{Basic ER Modelling}
+	Used for database design, described in terms of:
+	\begin{description}
+		\item[Entity]: a distinguishable object (\textit{e.g.} student)
+		\item[Attributes]: describes properties of entities (\textit{e.g.} studentName)
+		\item[Relationship]: representation of two related entities (\textit{e.g.} student in course)
+		\item[Role]: the function of an entity set in a relationship
+	\end{description}
+
+	\subsection{Constraints in ER Models}
+	\begin{itemize}
+		\item primary key
+		\item relationship types (\textit{e.g.} N:1 or N:N)
+		\item existence dependencies: a \textit{subordinate} entity depends on a \textit{dominant} entity
+			\begin{description}
+				\item[weak entity set]: entity set containing subordinate entities
+				\item[strong entity set]: entity set without subordinate entities
+			\end{description}
+		\item cardinality constraints 
+	\end{itemize}
+
+	\subsection{Extensions}
+	\begin{itemize}
+		\item structured attributes:
+			\begin{itemize}
+				\item composite attributes: composed of a fixed number of attributes
+				\item multi-valued attributes: set-valued attributesJ
+			\end{itemize}
+		\item aggregation: relationships can be viewed as higher-level attributes
+		\item specialization: a more specialized``child'' entity (\textit{e.g.} graduate student)
+		\item generalization: a more general ``parent'' entity (\textit{e.g.} vehicle $\rightarrow$ car, truck)
+		\item disjointness: specialized entity sets are disjoint but can have entities in common
+	\end{itemize}
+
+	\subsection{Design Considerations}
+	\begin{itemize}
+		\item attribute or entity set: separate object $\rightarrow$ entity set
+		\item entity set or relationship set
+		\item degrees of relationship
+		\item extended features?
+	\end{itemize}
+
+	\section{Mapping ER to Relational Tables}
+	\subsection{Main Ideas}
+	\begin{itemize}
+		\item entity set maps to new table
+		\item attribute maps to new column
+		\item relationship set maps to new columns or new table
+		\item specialization maps to new tables for specialized entity
+		\item generalization maps to tables for specialized entities only
+	\end{itemize}
+
+	\subsection{Entity Sets}
+	\begin{itemize}
+		\item strong entity sets: map primary key of set to primary key of table
+		\item weak entity sets: table should include attributes of identifying relationship
+	\end{itemize}
+
+	\subsection{Relationship Sets}
+	\begin{itemize}
+		\item if relationship is identifying for weak entity set, do nothing
+		\item if we can deduce cardinality constraints, then to one entity table add columns:
+			\begin{itemize}
+				\item attributes of relationship set
+				\item primary key of related entity sets
+			\end{itemize}
+		\item otherwise create a table for this relationship
+	\end{itemize}
+
+
+
+
+
+		
 \end{document}
 
 	
