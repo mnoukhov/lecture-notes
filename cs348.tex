@@ -491,7 +491,7 @@ RETURN
 		\item structured attributes:
 			\begin{itemize}
 				\item composite attributes: composed of a fixed number of attributes
-				\item multi-valued attributes: set-valued attributesJ
+				\item multi-valued attributes: set-valued attributes
 			\end{itemize}
 		\item aggregation: relationships can be viewed as higher-level attributes
 		\item specialization: a more specialized``child'' entity (\textit{e.g.} graduate student)
@@ -534,11 +534,298 @@ RETURN
 		\item otherwise create a table for this relationship
 	\end{itemize}
 
+	\section{ER Schema Refinement}
+	\subsection{Design Principles}
+	\begin{itemize}
+		\item relations should have semantic unity
+		\item repetition should be avoided
+		\item avoid null values
+		\item avoid spurious joins
+	\end{itemize}
+
+	\subsection{Functional Dependencies}
+	We want to express that some attributes uniquely determine other attributes, so if $X \rightarrow Y$
+	then for any tuples $t$, $u$ where $t[X] = u[X]$, it is true that $t[Y] = u[Y]$
+
+	\begin{description}
+		\item[superkey]: set of attributes such that no two tuples have the same values for them
+		\item[candidate key]: a minimal superkey
+		\item[primary key]: a candidate key chosen by the DBA
+	\end{description}
+
+	\subsubsection{Closures}
+	If we have a set of functional dependencies $F$, then the \textbf{functional closure} of them, $F+$, is 
+	all the dependencies that can be derived from $F$. \\
+
+	Closures can be derived using:
+	\begin{itemize}
+		\item reflexivity: if $X \subseteq Y$ then $Y \rightarrow X$
+		\item augmentation: if $X \rightarrow Y$ then $XZ \rightarrow YZ$
+		\item transitivity: if $X \rightarrow Y$ and $Y \rightarrow Z$ then $X \rightarrow Z$
+	\end{itemize}
+
+	\textbf{Attribute closure}, $X+$, is the set of all attributes functionally determined by some attribute $X$.
+
+	\subsection{Schema Decomposition}
+	We can decompose a schema $R$ into many schemas $R_1,\dots,R_n$ kind of like breaking down one big SQL table into smaller ones \\
+
+	\begin{description}
+		\item[Lossless Decomposition]: decomposing a schema so that a natural join of subschemas has no extra rows
+		\item[Dependecy Preservation]: is making sure all functionally dependencies are still satisfied within our subschemas.
+			Subschemas that requires fewer checks to ensure dependency preservation are better
+	\end{description}
+
+	\subsection{Normal Forms}
+	\subsubsection{BCNF}
+	Enforces the idea that independent relationships are stored in separate tables. A schema $R$ is in BCNF if for all $X \rightarrow Y$ either
+	\begin{itemize}
+		\item $X$ is a superkey of $R$ (only appears in one row) or 
+		\item $Y \subseteq X$ 
+	\end{itemize}
+
+	To get BCNF, decompose original relation by removing a violating $X \rightarrow Y$ and making it into it's own relation.
+
+	\subsubsection{Minimal Cover}
+	To find the candidate key, we need to find the \textbf{minimal cover}: the minimal set of dependencies $G$ such that 
+	the resulting closure is the same as our original closure $G+ = F+$. For each depenendency $X \rightarrow A$:
+	\begin{itemize}
+		\item every right hand $A$ is a single attribute
+		\item every dependency is necessary
+		\item every left hand side $X$ is minimal
+	\end{itemize}
+
+	To find the minimal cover:
+	\begin{enumerate}
+		\item change every $X \rightarrow YZ$ to $X \rightarrow Y, X \rightarrow Z$
+		\item change $AX \rightarrow Y$ to $X \rightarrow Y$ if $X$ can determine $Y$ on its own
+		\item remove $X \rightarrow Y$ if $X$ can determine $Y$ without this relation
+	\end{enumerate}
+
+	\subsubsection{3NF}
+	Less strict version of BCNF, so that A schema $R$ is in BCNF if for all $X \rightarrow Y$ either
+	\begin{itemize}
+		\item $X$ is a superkey of $R$ (only appears in one row) or 
+		\item $Y \subseteq X$ or 
+		\item every attribute in $Y - X$ is in the candidate key 
+	\end{itemize}
+
+	Create 3NF in two ways:
+	\begin{itemize}
+		\item decomposition: decompose similar to BCNF then ``repair'' by adding all relations in minimal cover that were not satisified
+		\item synthesis: turn every rule of the minimal cover into a relation and (if not already there) add a relation for candidate key
+	\end{itemize}
 
 
+	\section{Transactions and Concurrency}
 
+	\subsection{Why}
+	\textbf{Transaction}: application specific unit of work, ACID guaranteed
+	\begin{itemize}
+		\item \textbf{atomic}: a transaction cannot be split up 
+		\item \textbf{consistency}: each transaction preserves consistency 
+		\item \textbf{isolated}: concurrent transaction don't interfere with each other 
+		\item \textbf{durable}: once completed, changes are permanent
+	\end{itemize}
 
-		
+	They help prevent problems from failures, when the system fails during execution, and concurrency
+
+	\subsection{Serializability}
+	Concurrent transactions must appear to have been executed one at a time, everything in some order.
+	\begin{description}
+		\item[Equivalence]: if two transaction histories are over the same set of transactions and the ordering of each conflict pair is the same
+		\item[Serializable]: a history that has an equivalent serial history (where all of $T_i$ goes before $T_j$). A history is serializable iff its
+			serialization graph is acyclic
+	\end{description}
+
+	\subsection{Transactions in SQL}
+	\subsubsection{Abort and Commit}
+	An \textbf{active} (started but not finished) transaction can terminate in two ways:
+	\begin{itemize}
+		\item \textbf{abort}: transaction fails and any updates are undone (SQL \lstinline|rollback work|)
+		\item \textbf{commit}: transaction succeeds and updates become durable and visible to other transactions (SQL \lstinline|commit work|)
+	\end{itemize}
+
+	\subsubsection{Isolation Levels}
+	SQL allows serializability guarantee to be relaxed in four levels:
+	\begin{enumerate}[start=0]
+		\item Read Uncommitted: transactions can see uncommitted updates
+		\item Read Committed: transactions sees only committed changes but non-repeatable reads are possible
+		\item Repeatable Read: reads are repeatable but ``phantoms'' are possible
+		\item Serializability
+	\end{enumerate}
+
+	\subsection{Implementing Transactions}
+	\subsubsection{Concurrency Control}
+	Guarantees that the execution history has desired properties (\textit{e.g serializability}) \\
+	
+	\textbf{Strict Two-Phase Locking}:
+	\begin{itemize}
+		\item before a transaction may read or write an object, it must have a lock on it
+			\begin{itemize}
+				\item shared lock required for read
+				\item exclusive lock required for write
+			\end{itemize}
+		\item only one lock may be held on an object (unless all are shared locks)
+		\item a transaction may not release locks until it commits
+	\end{itemize}
+
+	\textbf{Lock conflicts}, when two or more transactions request a lock, can be resolved with
+	\begin{itemize}
+		\item blocking: second transaction forced to wait
+		\item pre-emption: first transaction is aborted and gives up the lock
+	\end{itemize}
+
+	\subsubsection{Recovery Management}
+	Guarantees that committed transactions are durable (despite failures) and aborted transactions have no effect by
+	\begin{itemize}
+		\item rollback of individual transactions
+		\item recovery from system failures
+	\end{itemize}
+	\textbf{System Failure}:
+	\begin{itemize}
+		\item database server is halted abruptly
+		\item processing current SQL commands is halted abruptly
+		\item connections to clients are broken
+		\item contents of memory buffers are lost
+		\item database files are not damaged
+	\end{itemize}
+	After a system failure, every transaction is either restarted or rolled back and their committed changes are not lost \\
+
+	\textbf{Logging} is the way this is implemented, using a log in persistent storage that writes the following commands \textit{before} updating:
+	\begin{itemize}
+		\item UNDO information: old versions of objects used to undo changes when that transaction aborts
+		\item REDO information: new versions of objects used to redo changes by a transaction that commits
+		\item BEGIN/COMMIT/ABORT: records whenever a transaction does something
+	\end{itemize}
+	Recovering from a system failure:
+	\begin{enumerate}
+		\item scan the log from newest to oldest
+			\begin{itemize}
+				\item create list of committed transactions
+				\item undo updates of active and aborted transactions
+			\end{itemize}
+		\item scan the log from oldest to newest
+			\begin{itemize}
+				\item redo updates of committed transactions
+			\end{itemize}
+	\end{enumerate}
+	Rolling back a transaction:
+	\begin{itemize}
+		\item scan from the newest to the transaction's BEGIN
+		\item undo the transaction's updates
+	\end{itemize}
+
+	\section{Physical Database Design and Tuning}
+
+	\subsection{Introduction}
+	\begin{description}
+		\item[Physical Design]: selecting data structures to implement conceptual schema
+		\item[Tuning]: periodically adjusting physical and/or conceptual schema to adapt to changing requirements or performance characteristics
+		\item[Workload Description]: 
+			\begin{itemize}
+				\item most important queries and their frequency
+				\item most important updates and their frequency
+				\item performance goal for each query and update
+			\end{itemize}
+	\end{description}
+
+	\subsection{Designing and Tuning the Physical Schema}
+	\subsubsection{Indexing}
+	A storage strategy is chosen for each relation (\textit{e.g heap}) and then we add indexes:
+	\begin{itemize}
+		\item substantially reduce selection time for queries with index
+		\item increase insertion time
+		\item increase or decrease update and deletion time
+		\item increase space used to store the table
+	\end{itemize}
+
+	Create Index:
+	\begin{lstlisting}[language=SQL]
+create index LastnameIndex
+on Employee(Lastname) [CLUSTER]
+	\end{lstlisting}
+	Remove Index:
+	\begin{lstlisting}[language=SQL]
+drop index LastnameIndex
+	\end{lstlisting}
+
+	\begin{description}
+		\item[Clustering Index]: tuples with similar values are stored together in the same block. A relation can have at most one clustering index
+		\item[Co-Clustering Index]: two relations with their tuples interleaved within the same file
+			\begin{itemize}
+				\item useful for storing heirarchical data (1:N)
+				\item speeds up joins but slows down sequential scans of either
+			\end{itemize}
+		\item[Multi-Attribute Index]: index on more than one attribute, sorting first by the first attribute, then by second \dots
+	\end{description}
+
+	\subsubsection{Guidelines for Physical Design}
+	\begin{itemize}
+		\item index only when performance increase outweighs update overhead
+		\item attributes mentiontioned in \lstinline|WHERE| clauses can be used for index search keys
+		\item mulit-attribute search keys should be used when:
+			\begin{itemize}
+				\item a \lstinline|WHERE| clause contains multiple conditions 
+				\item it enables index-only plans
+			\end{itemize}
+		\item choose indexes that benefit as many queries as possible
+		\item choose clustering scheme wisely, you can only have one
+			\begin{itemize}
+				\item range queries benefit the most from clustering
+				\item join queries benefit the most from co-clustering
+				\item multi-attribute index for index-only plan doesn't benefit
+			\end{itemize}
+		\item there's a DB2 Index Advisor!
+	\end{itemize}
+
+	\subsection{Tuning the Conceptual Schema}
+	Sometimes, even after tuning the physical schema, performance goals are not met \\
+
+	\textbf{Denormalization}: merging schemas to intentionally increase redundancy
+	\begin{itemize}
+		\item decrease query overhead
+		\item increase update overhead
+	\end{itemize}
+
+	\textbf{Partitioning}: splitting a large table into multiple tables to reduce I/O costs or lock contention
+	\begin{itemize}
+		\item \textbf{Horizontal Partitioning}: each partition has all the columns and a subset of rows
+			\begin{itemize}
+				\item tuples assigned based on a natural criteria
+				\item often used to separate current from old data
+			\end{itemize}
+		\item \textbf{Vertical Partitioning}: each partition has all the rows and a subset of the columns
+			\begin{itemize}
+				\item used to separate frequently-used columns from each other (to improve concurrency)
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Tuning Queries and Applications}
+	\subsubsection{Tuning Queries}
+	\begin{itemize}
+		\item changes to schema impact everything, but sometimes we want to target specific queries
+		\item sorting is expensive, avoid \lstinline|ORDER BY| \dots
+		\item replace subqueries with joins
+		\item replace correlated subqueries with uncorrelated subqueries
+		\item use vendor-supplied tools to examine generated plan, update if your cost estimation sucks
+	\end{itemize}
+
+	\subsubsection{Tuning Applications}
+	\begin{itemize}
+		\item minimize communication costs
+			\begin{itemize}
+				\item return fewest columns/rows necessary
+				\item update multiple rows with \lstinline|WHERE| instead of cursor
+			\end{itemize}
+		\item minimize lock contention and concurrency hot spots
+			\begin{itemize}
+				\item delay updates as long as possible
+				\item delay operations on hot spots as long as possible
+				\item shorten/split transactions
+				\item perform insert/update/delete in batches
+				\item consider lower isolation levels
+			\end{itemize}
+	\end{itemize}
 \end{document}
 
 	
