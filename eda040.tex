@@ -89,13 +89,60 @@
 	\section{Introduction}
 	\subsection{Concurrency}
 	\begin{description}
-		\item[activity]: entity performing actions
-		\item[process]: entity performing instructions with own resources
-		\item[job]: sequential instructions to be performed by an activity
-		\item[task]: a set of jobs being performed by some process
-		\item[thread]: sequential activity performing instructions
+		\item[activity] entity performing actions
+		\item[process] entity performing instructions with own resources
+		\item[job] sequential instructions to be performed by an activity
+		\item[task] a set of jobs being performed by some process
+		\item[thread] sequential activity performing instructions
 	\end{description}
+
+	\subsection{Threads}
+	\begin{description}
+		\item[execution thread] the thread itself accessed via the \lstinline|Thread| interface
+	\end{description}
+
+	\section{Mutual Exclusion}
+	\subsection{Requirements}
+	\begin{itemize}
+		\item mutual exclusion
+		\item no deadlock
+		\item no starvation
+		\item efficiency
+	\end{itemize}
 	\subsection{Semaphores}
+	\textbf{semaphore} simple counting interface for concurrency
+	\subsubsection{Mutex}
+	used to lock and unlock critical sections
+	\begin{lstlisting}[language=Java]
+MutexSem mutex;
+mutex.take()
+// critical section
+mutex.give()
+	\end{lstlisting}
+	\subsubsection{Signaling}
+	calls used to block or unblock a thread
+	\begin{lstlisting}[language=Java]
+CountingSem mutex = new CountingSem();
+// thread A
+*
+mutex.take() // block this thread
+*
+// thread B
+*
+mutex.give() // unblock thread A
+*
+	\end{lstlisting}
+
+	\subsubsection{Other Types}
+	\begin{itemize}
+		\item blocked-set: 
+		\item blocked-queue
+		\item blocked-priority
+		\item binary semaphore
+		\item multi-step semaphore
+	\end{itemize}<++>
+
+
 
 
 	
