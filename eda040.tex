@@ -94,24 +94,20 @@
 		\item[job] sequential instructions to be performed by an activity
 		\item[task] a set of jobs being performed by some process
 		\item[thread] sequential activity performing instructions
-	\end{description}
-
-	\subsection{Threads}
-	\begin{description}
 		\item[execution thread] the thread itself accessed via the \lstinline|Thread| interface
 	\end{description}
 
-	\section{Mutual Exclusion}
-	\subsection{Requirements}
+	\subsection{Mutual Exclusion}
+	requirements:
 	\begin{itemize}
 		\item mutual exclusion
 		\item no deadlock
 		\item no starvation
 		\item efficiency
 	\end{itemize}
-	\subsection{Semaphores}
+	\section{Semaphores}
 	\textbf{semaphore} simple counting interface for concurrency
-	\subsubsection{Mutex}
+	\subsection{Mutex}
 	used to lock and unlock critical sections
 	\begin{lstlisting}[language=Java]
 MutexSem mutex;
@@ -119,7 +115,7 @@ mutex.take()
 // critical section
 mutex.give()
 	\end{lstlisting}
-	\subsubsection{Signaling}
+	\subsection{Signaling}
 	calls used to block or unblock a thread
 	\begin{lstlisting}[language=Java]
 CountingSem mutex = new CountingSem();
@@ -133,18 +129,79 @@ mutex.give() // unblock thread A
 *
 	\end{lstlisting}
 
-	\subsubsection{Other Types}
+	\subsection{Other Types}
 	\begin{itemize}
-		\item blocked-set: 
-		\item blocked-queue
-		\item blocked-priority
-		\item binary semaphore
-		\item multi-step semaphore
-	\end{itemize}<++>
+		\item blocked-set: arbitrary thread \lstinline|take|s 
+		\item blocked-queue: \lstinline|take| in FIFO order
+		\item blocked-priority: highest priority \lstinline|take|
+		\item binary semaphore: efficient mutex implementation in RTOS
+		\item multi-step semaphore: reserve several resources at once
+	\end{itemize}
 
+	\section{Monitors}
+	\subsection{Introduction}
+	As opposed to using \lstinline|take/give| throughout the program, we instead can limit our mutual exlcusions to specific function. \\
+	\textbf{Monitor}: interface for mutually exclusive access to a function, in java using \lstinline|synchronized|
+	\begin{itemize}
+		\item \lstinline|wait| stateless wait for signal
+		\item \lstinline|notify| notify first (or highest prio) waiting task
+		\item \lstinline|notifyAll| notify all waiting task
+	\end{itemize}
+	\subsection{Rules}
+	\begin{itemize}
+		\item don't mix a thread and monitor
+		\item all public methods should be synchronized
+		\item wrap thread-unsafe classes by monitor
+		\item don't use (spread-out) synchronized blocks
+	\end{itemize}
 
+	\section{Deadlock}
+	\subsection{Introduction}
+	\begin{description}
+		\item[deadlock] a circular chain of tasks trying to allocate resources
+		\item[starvation] when a task is never prioritized to execute
+		\item[livelock] a running circular chain that is unable to allocate resources
+	\end{description}
 
+	Deadlock \textbf{detection} is not feasible as a resolution for real-time applications so we will looks at \textbf{prevention} which deals with eliminating one of the conditions for deadlock:
+	\begin{itemize}
+		\item mutual exclusion
+		\item hold and wait
+		\item no preemption
+		\item circular wait
+	\end{itemize}
 
-	
+	\subsection{Dining Philosophers}
+	Five dining philosophers with five forks between them but each needs two to eat, proves to be a deadlock-able situation if they circularly pick up one fork. We can solve it with: 
+	\begin{itemize}
+		\item One left-handed philosopher that picks up left fork first (not circular)
+		\item Only allowing four philosophers into the room at a time (monitor)
+		\item Philosophers picking up both forks or neither (using a \lstinline|Multistep Sem|, starvation possible)
+	\end{itemize}
 
+	\section{Message-based Synchronization}
+	\subsection{Mailboxes}
+	Message-based communication is useful for:
+	\begin{itemize}
+		\item producer-consumer relations
+		\item signaling (one thread never waits)
+		\item information transfer (in data of message)
+		\item buffering
+		\item distributed concurrency
+		\item encapsulation (concurrent object properties)
+	\end{itemize}
+
+	\subsection{Unbounded mailbox}
+	Use copy-on-send to create limitless mailboxes
+	\begin{itemize}
+		\item[+] flexible code
+		\item[+] no need to assume shared memory
+		\item[+] thread safety, message not accessible by sender
+		\item[-] can run out of memory, increased memory use
+		\item[-] unpractical when immediate response is required
+		\item[-] recycling via message pools is difficult
+	\end{itemize}
+
+	\subsection{Implementation}
+	We will use \lstinline|java.util.EventObject| as our message and \lstinline|RTEvent| for async communication because it includes a timestamp. As such we will use \lstinline|RTEventBuffer| as our circular mailbox
 \end{document}
