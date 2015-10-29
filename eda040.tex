@@ -57,6 +57,7 @@
 \setlength{\algomargin}{0.75em}
 
 \DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 
 \definecolor{darkish-blue}{RGB}{25,103,185}
 
@@ -204,4 +205,236 @@ mutex.give() // unblock thread A
 
 	\subsection{Implementation}
 	We will use \lstinline|java.util.EventObject| as our message and \lstinline|RTEvent| for async communication because it includes a timestamp. As such we will use \lstinline|RTEventBuffer| as our circular mailbox
+	\section{Scheduling}
+	\subsection{Timing}
+	We want to perform something periodically:
+	\begin{description}
+		\item[CyclicThread]	no specific period
+		\item[PeriodicThread] specific periodic
+		\item[SporadicThread] minimum period
+	\end{description}
+
+	We are also interested in maintaining strict deadlines, we define some terms:
+	\begin{description}
+		\item[latency] time between release time and start time
+		\item[execution time] time from start until finish
+		\item[response time] latency + execution time
+	\end{description}
+
+	\subsection{Metrics}
+	Use \textbf{WCET} (worst case execution time) or \textbf{R} (worst case response time)
+	\begin{itemize}
+		\item high priority
+			\begin{itemize}
+				\item max latency: time to context switch
+				\item max execution: maximum blocking time
+			\end{itemize}
+		\item low priority
+			\begin{itemize}
+				\item max latency: WCET for all higher and equal priority threads
+				\item max execution: WCET for all higher priorities (preemption) and max blocking time
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Static Scheduling}
+	Time is divided into short slots and all activities are scheduled in advance, with cyclical execution
+	\begin{itemize}
+		\item[+] guaranteed scheduling
+		\item[+] easy to calculate WCRT
+		\item[-] fragmentation and lost CPU time
+		\item[-] complex schedule must be redone when program changes
+	\end{itemize}
+
+	\subsection{Dynamic Scheduling}
+	\subsubsection{Rate Monotonic Scheduling}
+	Priority-based scheduling with priority according to period. We assume an interrupt-driven fixed-priority scheduler:
+	\begin{itemize}
+		\item periodic threads
+		\item no blocking
+		\item deadline (D) = period (T)
+		\item instantaneous context switch
+	\end{itemize}
+	Generally possible to guarantee schedulability if:
+	\begin{align*}
+		\sum &\frac{C_i}{T_i} < n(2^{1/n} - 1) \\
+		\text{where } n &= \text{ number of threads} \\ 
+		C_i &= \text{ execution time} \\ 
+		T_i &= \text{ period}
+	\end{align*}
+	
+	But it is sometimes possible to have schedulability above the limit, to check this look at what happens during the \textbf{critical instant}, when all threads are released at the same time, if they meet their first deadline, they will meet all subsequent ones. 
+
+	We can calculate the worst case response time, $R$, of each thread:
+	\begin{align*}
+		&R_i^{k+1} = C_i + \sum_{j \in hp(i)} \ceil*{\frac{R_i^k}{T_j}}C_j \\
+		\text{where } hp(i) &= \text{set of threads with higher priority than i} \\
+		\ceil*{\frac{R_i^k}{T_j}} &= \text{number of times i is preempted by j} \\
+		R_i^0 &= 0
+	\end{align*}
+
+	\subsubsection{Generalized RMS}
+	We relax some of the assumptions from RMS to generalize it:
+	\begin{itemize}
+		\item non-periodic threads (more optimistic)
+		\item blocking (on shared resources with priority inheritance)
+		\item shorter deadlines (D < T)
+		\item non-instantaneous context switch (clock interrupts, etc)
+	\end{itemize}
+
+	If we factor in blocking we add to our response time $B_i$, the sum of:
+	\begin{description}
+		\item[normal blocking] waiting for another thread to release a resource
+		\item[push-through blocking] blocking resolved by priority inheritance
+		\item[ceiling blocking] blocking because of priority ceiling
+	\end{description}
+
+	\subsubsection{Earliest Deadline First}
+	Assign CPU to thread with the earliest deadline
+	\begin{itemize}
+		\item[+] 100\% CPU usage possible
+		\item[-] expensive to implement
+		\item[-] misses all deadlines at overload
+	\end{itemize}
+
+	\subsubsection{Run-Time Overhead}
+	Real systems include:
+	\begin{description}
+		\item[release jitter] variations in time to release a thread
+		\item[context switch] time to switch to another thread
+		\item[clock interrupts] periodic interrupts driving preemption and context switches
+	\end{description}
+
+	We can get realistic measurements either through actual measurement, taking the worst case runtimes, or through formal analysis, but new ideas like pipelining and cacheing make this difficult
+	\subsection{Blocking}
+	If a lower priority thread holds a resource needed for a higher priority thread it can end up blocking it (against priority protocol), this is called \textbf{priority inversion}. We can solve this using a \textbf{priotiy inheritance protocol}:
+
+	\subsubsection{Basic Priority Inheritance} 
+	Temporarily raise the priority of low blocking thread to release the resource, locally for each resource
+
+	Blocking time for thread $i$ is at most the minimum of the number of lower priority tasks that can block $i$ and the number of semaphores that can be used to block $i$
+
+	\subsubsection{Priority Ceiling} 
+	Allow only one low priority thread to access resources of high priority thread at any time, this allows us to avoid mulitple blockings for highest proirity thread at the expense of average blocking times and runtime overhead
+
+	restrictions on \lstinline|lock| and \lstinline|unlock|:
+	\begin{itemize}
+		\item a task must release all resources between invocation
+		\item computation time for task $i$ while holding semaphore $s$ is bounded to the length of the critical section for $s$
+		\item a task may only lock semaphores from a fixed set known beforehand
+	\end{itemize}
+
+	If \lstinline|PC(s)| is the highest priority of a task that may lock semaphore $s$, and \lstinline|pri(i)| is the priority of task $i$ then at runtime:
+	\begin{itemize}
+		\item if task $i$ wants to lock $s$, it can only do so if \lstinline|pri(i) > PC(s)|
+		\item else, $i$ is blocked and the task currently holding $s$ inherits the priority of $i$
+	\end{itemize}
+
+
+	This means that our code is deadlock free and blocking time for a task is at most the critical section of \textit{one} lower priority task
+
+	\subsubsection{Immediate Inheritance} 
+	Always raise the priority of a thread to the ceiling of the lock during its critical region
+
+	\begin{itemize}
+		\item same worst case time as priority ceiling
+		\item easy to implement
+		\item no need for block queues on single-processor
+	\end{itemize}
+	
+	\subsection{Sporadic Threads}
+	A thread triggered at unpredictable points in time
+
+	We can pessimisticall model as a periodic thread with period equal to minimum time between events or take a more realistic approach with a \textbf{sporadic server}, a periodic thread that handles all sporadic jobs
+	\begin{itemize}
+		\item apply standard schedulability test
+		\item does not assume a minimum time between events
+		\item cannot guarantee that deadlines are met for sporadic events
+	\end{itemize}
+
+
+	\section{Real-Time Java}
+
+	\subsection{Language Safety}
+	With real-time development we want to manage:
+	\begin{itemize}
+		\item system complexity
+		\item system development
+	\end{itemize}
+
+	For complexity, we use a multi-stage deploy process but unsafe languages can still hinder development process with hard to find errors:
+	\begin{itemize}
+		\item manual memory management
+		\item type casting
+		\item pointer arithmetic
+		\item arrays without bound checking
+	\end{itemize}
+	Safe languages help make code correctness easier to guarantee:
+	\begin{itemize}
+		\item compiler checks
+		\item automatic memory management
+		\item errors leading to error messages
+	\end{itemize}
+
+	\subsection{Garbage Collection}
+	\subsubsection{Background}
+	Manual memory management can lead to problems with
+	\begin{itemize}
+		\item dangling pointers
+		\item memory leaks
+		\item fragmentation
+	\end{itemize}
+
+	\subsection{Reference Counting}
+	Count the number of references to each object and deallocate when counter reaches 0
+	\begin{itemize}
+		\item[+] easy to implement, short pause
+		\item[-] expensive (overhead)
+		\item[-] no compaction
+		\item[-] doesn't detect circular structures
+	\end{itemize}
+
+	\subsection{Traversing Algorithms}
+	Periodically traverse pointer graph from root pointers outside heap, and delete objects not encountered in traversal
+
+	Compacting can also be done simultaneously:
+	\begin{description}
+		\item[Mark-compact] determine where objects will be after compaction, update pointers, and slide objects into new position
+		\item[Copying] alternate between using two subheaps, when current subheap is full, copy over all live objects into other empty subheap, compacting in the process
+	\end{description}
+
+	\subsubsection{Generation-based GC}
+	Partition into several ``generations'' that are garbage collected separately
+	\begin{itemize}
+		\item young generations need to be checked most often, more efficient
+		\item complex to keep track of inter-generation pointers
+	\end{itemize}
+
+	\subsubsection{Conservative GC}
+	When we don't know runtime type information, we have to regard everything as a pointer, but we can't modify pointers which means no compaction
+
+	\subsubsection{Incremental GC}
+	``Stop-the-world'' pauses to do garbage collection, needs to be an incremental variant of a GC algorithm (can be easy as reference counting is incremental by nature)
+
+	\subsubsection{Real-Time GC}
+	Real-time adds another layer of complexity because we have soft and hard deadlines to meet and the GC can't interfere with them
+	\begin{itemize}
+		\item small number of periodic threads with high priority (hard requirements)
+		\item large number of low priority threads (soft requirements)
+	\end{itemize}
+
+	Requirements:
+	\begin{itemize}
+		\item minimal response time and latency for high priority
+		\item predictable (and low) worst case response time
+		\item guaranteed schedulability
+	\end{itemize}
+
+	Idea:
+	\begin{itemize}
+		\item perform GC work in pauses between high priority executions
+		\item low priority threads should do their own incremental GC
+		\item interruptible GC, minimum locking
+	\end{itemize}
+
+
 \end{document}
