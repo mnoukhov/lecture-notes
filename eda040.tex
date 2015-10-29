@@ -227,7 +227,7 @@ mutex.give() // unblock thread A
 		\item high priority
 			\begin{itemize}
 				\item max latency: time to context switch
-				\item max execution: maximum blocking time
+				\item max execution: maximum blocking time + execution time
 			\end{itemize}
 		\item low priority
 			\begin{itemize}
@@ -281,7 +281,13 @@ mutex.give() // unblock thread A
 		\item non-instantaneous context switch (clock interrupts, etc)
 	\end{itemize}
 
-	If we factor in blocking we add to our response time $B_i$, the sum of:
+	\subsubsection{Deadline Monotonic Scheduling}
+	If we factor in blocking:
+	\begin{align*}
+		&R_i^{k+1} = C_i + B_i + \sum_{j \in hp(i)} \ceil*{\frac{R_i^k}{T_j}}C_j \\
+	\end{align*}
+	
+	We've added $B_i$ to our response time, which is the sum of:
 	\begin{description}
 		\item[normal blocking] waiting for another thread to release a resource
 		\item[push-through blocking] blocking resolved by priority inheritance
