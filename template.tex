@@ -19,8 +19,8 @@
 \usepackage{ae,aecompl}
 \usepackage[pdftex,
   pdfauthor={Michael Noukhovitch},
-  pdftitle={FRT010: Automatic Control},
-  pdfsubject={Lecture notes from FRT010 at the Lund University},
+  pdftitle={},
+  pdfsubject={Lecture notes from },
   pdfproducer={LaTeX},
   pdfcreator={pdflatex}]{hyperref}
 
@@ -77,61 +77,13 @@
 \begin{document}
 	\let\ref\Cref
 
-	\title{\bf{FRT010: Automatic Control}}
-	\date{Fall 2015, Lund University\\ \center Notes written from Tore Hagglund lectures.}
+	\title{\bf{}}
+	\date{, \\ \center Notes written from lectures.}
 	\author{Michael Noukhovitch}
 
 	\maketitle
 	\newpage
 	\tableofcontents
 	\newpage
-
-	\section{Introduction}
-	\subsection{Regulators}
-	$e = r - y$ where
-	\begin{itemize}
-		\item $r$: reference signal (initial input)
-		\item $y$: output signal
-		\item $u$: input signal (step signal)
-	\end{itemize}
-
-	\subsubsection{On-Off Regulator}
-	\[ 
-		u = 
-		\begin{cases}
-			u_{max} & e \ge 0 \\
-			u_{min} & e < 0
-		\end{cases}
-	\]
-	you can consider $K = \infty$
-
-
-	\subsubsection{P-regulator}
-	\[ 
-		u = 
-		\begin{cases}
-			u_{max} & e > e_0 \\
-			u_0 + K*e & e_0 \ge e \ge -e_0 \\
-			u_{min} & e < -e_0
-		\end{cases}
-	\]
-
-	\subsubsection{PI-regulator}
-	$P: u = u_0 + K*e $ \\
-	$PI: u = K(e + \frac{1}{T_i} \int_{0}^{t} e(t)dt) $
-
-	where $T_i$ is the regulator's integral
-
-	\subsubsection{PID-regulator}
-	$u = K(e + \frac{1}{T_i} \int edt + T_d \frac{de}{dt})$
-
-
-	
-
-	\subsection{Process Modelling}
-	We can model our process with a differential eq?
-	\begin{equation}
-		\frac{d^ny}{dt^n} + a_1 \frac{d^{n-1}y}{dt^{n-1}} + \dots = b_0 \frac{d^nu}{dt^n} + b_1 \frac{d^nu}{dt^{n-1}} + \dots
-	\end{equation}
 
 \end{document}
