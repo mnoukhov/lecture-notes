@@ -1,0 +1,142 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={ETSF10: Internet Protocols},
+  pdfsubject={Lecture notes from Jens Andersson at Lund University},
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{ETSF10: Internet Protocols}}
+	\date{Fall 2015, Lund University \\ \center Notes written from Jens Andersson's lectures}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+	\section{Internet Routing}
+	\subsection{Routing}
+	\textbf{Routing} select route across network between nodes, requiring:
+	\begin{itemize}
+		\item correctness
+		\item simplicity
+		\item robustness
+		\item \dots
+	\end{itemize}
+
+	\subsubsection{Flooding}
+	\textbf{Flooding}: packets are sent by node to every neighbour and eventually at least one copy arrives at the destination
+	\begin{itemize}
+		\item no network information required
+		\item uniquely number packets, so we can discard duplicates
+		\item limit infinite transmission with time-to-live
+	\end{itemize}
+
+	\subsubsection{Packet-Switching}
+	\textbf{Packet-switching}: choose optimal path according to a cost metric, make it decentralized
+
+	\subsection{Router Architechture}
+	\textbf{Router}: internetwork device that passes data between networks, by checking network layer addresses
+	\begin{itemize}
+		\item routing
+		\item forwarding
+	\end{itemize}
+
+	\textbf{Input port}: getting input from line termination to the switch fabric
+	\begin{itemize}
+		\item physical layer: bit-level reception
+		\item data link layer
+		\item switching: look up output port using routing table in input port memory 	
+		\item queuing: for fabric slower than input
+			\begin{itemize}
+				\item delay and loss from overflow
+				\item Head-of-the-line blocking
+			\end{itemize}
+	\end{itemize}
+
+	\textbf{Output port}: outputting packets to physical layer
+	\begin{itemize}
+		\item priority scheduling: schedule most important packets to leave first 
+	\end{itemize}
+
+	\subsection{Performance Criteria}
+	The ``cost'' used to decide on route
+	\begin{itemize}
+		\item minimum hop
+		\item robutness
+		\item \dots
+	\end{itemize}
+
+	\subsection{}<++>
+
+
+\end{document}
