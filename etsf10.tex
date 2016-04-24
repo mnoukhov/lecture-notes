@@ -128,15 +128,78 @@
 		\item priority scheduling: schedule most important packets to leave first 
 	\end{itemize}
 
-	\subsection{Performance Criteria}
-	The ``cost'' used to decide on route
+	\subsection{Best Path}
+	\textbf{Performance criteria}: used for selection of route
 	\begin{itemize}
 		\item minimum hop
-		\item robutness
-		\item \dots
+		\item least cost (more flexible)
 	\end{itemize}
 
-	\subsection{}<++>
+	Decision time:
+	\begin{itemize}
+		\item packet or virtual circuit basis
+		\item fixed or dynamically changing
+	\end{itemize}
+
+	Decision place:
+	\begin{itemize}
+		\item distributed: made by each node
+		\item centralized: made by a designated node
+		\item source: made by source station
+	\end{itemize}
+
+	Network information:
+	\begin{itemize}
+		\item distributed routing: using only local knowledge, information from adjacent nodes, maybe information from all nodes on a potential route
+		\item central routing: information from all nodes
+	\end{itemize}
+
+	Update timing:
+	\begin{itemize}
+		\item fixed: never updated
+		\item adaptive: regular updates
+	\end{itemize}
+
+	\subsection{Routing Strategies}
+	\subsubsection{Basic Types}
+	\textbf{Fixed routing}: single permanent route for each source-dest pair (uses least-cost)
+	\begin{itemize}
+		\item fixed until a change in network topology
+		\item simple but inflexible
+	\end{itemize}
+	\textbf{Adaptive routing}: routing decisions change as congestion and failure happen, classified based on information source
+	\begin{itemize}
+		\item local: route to outgoing link with shortest queue
+		\item adjacent: use delay and outage info
+		\item all nodes: like adjacent
+	\end{itemize}
+
+	\subsubsection{Network Types}
+	\begin{description}
+		\item[Autonomous System] a set of connected routers managed by single org under same protocol 
+		\item[IRP] Interior Router Protocol, routing inside AS
+		\item[ERP] Exterior Router Protocol, routing between AS
+	\end{description}
+
+	\subsubsection{Distance-Vector}
+	Requires that each node exchange info with neighbouring nodes, maintaing a forwarding table with distance (cost), destination, and next-hop.
+
+	\textbf{RIP} (Routing Information Protocol) uses this with:
+	\begin{itemize}
+		\item max 15 hops
+		\item updates exchanged every 30s
+		\item implemented in UDP
+	\end{itemize}
+
+	Updates are given in the form of the whole forwarding table, to be incremented and upsert current entries. Problems can arise from ``count to infinity'', solved by ``poison reverse''
+
+	\subsubsection{Link-State Routing}
+	Determine link costs of neighbour nodes and advertise this to \textit{ALL} nodes (so everyone knows topology)
+
+
+
+
+
 
 
 \end{document}
