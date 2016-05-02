@@ -1,0 +1,124 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{pgfplots}
+\usepackage{qtree}
+\usepackage{xytree}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={CS 486: Intro to AI},
+  pdfsubject={Lecture notes from CS 486 at the University of Waterloo},
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{CS 486: Intro to AI}}
+	\date{Spring 2016, University of Waterloo \\ \center Notes written from Peter Van Beek's lectures.}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+	\section{Introduction}
+	
+	\subsection{Intelligence}
+	\begin{description}
+		\item[Intelligence]: general mental capability that includes \textit{reasoning}, \textit{planning}, \textit{thinking abstractly}.
+		\item[Church-Turing Thesis]: Any effective computable function can be carried out on a Turing machine
+		\item[Thinking]: reasoning symbolically, which can according
+		\item[Newell-Simon Hypothesis]: A physical symbol system has the necessary and sufficient means for general intelligence
+	\end{description}
+
+	\subsection{Models of AI}
+	\begin{description}
+		\item[Cognitive Modelling]: determine how humans think, computational theories of the mind
+		\item[Turing Test]: acting humanly
+		\item[Laws of thought]: thinking rationally
+		\item[Rational agent]: acting rationally based on perceptions, decision theory
+	\end{description}
+	The unifying theme is \textbf{intelligent agents} which percieves through sensors and outputs through actuators.
+
+	\subsection{Design Space of AI}
+	\begin{itemize}
+		\item modularity
+		\item repsentation scheme
+		\item planning horizon
+		\item uncertainty
+			\begin{itemize}
+				\item sensing: fully/partially observable
+				\item effect: deterministic, stochastic
+			\end{itemize}
+		\item preference
+		\item number of agents
+		\item learning
+		\item computational limits
+	\end{itemize}
+
+\end{document}
