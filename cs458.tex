@@ -90,11 +90,61 @@
 	\subsection{Security}
 	Security can be defined as:
 	\begin{description}
-		\item[Confidentiality]: access to systems is limited to authorized
-		\item[Integrity]: getting the correct data
-		\item[Availability]: system is there when you want it
+		\item[confidentiality] access to systems is limited to authorized
+		\item[integrity] getting the correct data
+		\item[availability] system is there when you want it
 	\end{description}
 	\subsection{Privacy}
 	There are many definitions but we will stick to \textbf{informational self-determination}, where you control the information about you
+
+	\subsection{Terminology}
+	\begin{description}
+		\item[assets] things we want to protect
+		\item[vulnerabilities] weaknesses in a system that can be exploited
+		\item[threats] loss or harm that may befall a system
+			\begin{itemize}
+				\item interception
+				\item interruption
+				\item modification
+				\item fabrication
+			\end{itemize}
+		\item[threat model] set of threats to defend against (who/what)
+		\item[attack] an action which exploits a vulnerability to execute a threat
+		\item[control] removing or reducing a vulnerability
+	\end{description}
+
+	\subsection{Types of Defence}
+	Defend against an attack:
+	\begin{itemize}
+		\item \textbf{prevent} stop the attack from happening
+		\item \textbf{deter} make the attack more difficult
+		\item \textbf{deflect} make it less attractive for attacker
+		\item \textbf{recover} mitigate effects of the attack
+	\end{itemize}
+
+	Make sure that defence is correct with principles:
+	\begin{itemize}
+		\item \textbf{easiest penetration} system is only as strong as weakest link
+		\item \textbf{adequate protection} don't spend more on defence than the value of the system
+	\end{itemize}
+
+	\subsection{Methods of Defence}
+	\begin{itemize}
+		\item Software controls: passwords, virus scanner \dots
+		\item Hardware controls: fingerprint reader, smart token \dots
+		\item Physical controls: locks, guards, backups \dots
+		\item Policies: teaching employees, password changing rules
+	\end{itemize}
+
+
+	\section{Program Security}
+	\subsection{Flaws, faults, and failures}
+	\subsubsection{Defintions}
+	\begin{description}
+		\item[flaw] problem with a program
+		\item[fault] a potential error inside the logic
+		\item[failure] an actual error visible by the user
+	\end{description}
+	\subsubsection{Unexpected Behaviour}
 
 \end{document}
