@@ -1,0 +1,103 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{pgfplots}
+\usepackage{qtree}
+\usepackage{xytree}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={CS 463: Software Requirements Specification and Analysis},
+  pdfsubject={Lecture notes from CS 463 at the University of Waterloo},
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{CS 463: Software Requirements Specification and Analysis}}
+	\date{Spring 2016, University of Waterloo \\ \center Notes written from Joanne Atlee's lectures.}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+	\section{Introduction}
+	\subsection{Why}
+	Software specs and requirements are necessary to prevent future repair costs (req cost post release = 200*cost during requirements phase).
+	\subsection{Common Problems}
+	Requirements are:
+	\begin{itemize}
+		\item vague 
+		\item over-specified
+		\item ambiguous
+		\item changing
+		\item incomplete
+		\item infeasible
+		\item contradictory
+	\end{itemize}
+\end{document}
