@@ -146,5 +146,48 @@
 		\item[failure] an actual error visible by the user
 	\end{description}
 	\subsubsection{Unexpected Behaviour}
+	A spec will list the things a program will do but an implementation may have additional behaviour. 
+	This can cause issues as these behaviours might not be tested and would be hard to test.
 
+	\subsection{Unintentional Security Flaws}
+	\subsubsection{Types of Flaws}
+	\begin{itemize}
+		\item \textbf{intentional}
+			\begin{itemize}
+				\item \textbf{malicious}: inserted to attack system
+				\item \textbf{nonmalicious}: intentional features meant to be in the system but can cause issues
+			\end{itemize}
+		\item most flaws are \textbf{unintentional}
+	\end{itemize}
+	\subsection{Buffer Overflow}
+	\subsubsection{Definition}
+	Most common exploited type of security flaw when program reads or writes past the bounds of the memory that it should use. If the attacker exploits it they can override things like the \textit{saved return address}. Targets programs on a local machine that run with setuid priveleges or network daemons
+	
+	\begin{ex}
+		basic buffer overflow
+	\begin{lstlisting}[language=C]
+#define LINELEN 1024
+
+char buffer[LINELEN];
+strcpy(buffer, argv[1]);
+	\end{lstlisting}
+	\end{ex}
+	
+	\subsubsection{Types}
+	\begin{itemize}
+		\item only a single byte can be written past the end of the buffer
+		\item overflow of buffers on the heap (instead of the stack)
+		\item jump to other parts of the program or libraries (instead of shellcode)
+	\end{itemize}
+
+	\subsubsection{Defences}
+	\begin{itemize}
+		\item language with bounds-checking
+		\item non-executable stack (mem is never both writable and executable)
+		\item stack at random virtual addresses for each process
+		\item ``canaries'' detect if stack has been overwritten before return
+	\end{itemize}
+
+	\subsubsection{Integer Overflows}
+	Program may assume integer is always positive and must be be
 \end{document}

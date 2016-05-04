@@ -86,8 +86,8 @@
 	\tableofcontents
 	\newpage
 
-	\section{Introduction}
-	\subsection{Travelling Salesman}
+	\section{Travelling Salesman Problem}
+	\subsection{Definition}
 	Given a graph $G = (V,E)$ with weights on edges $w: E \rightarrow \mathbb{R}^{+ve \cup \{0\}}$, find a \textbf{TSP Tour}:
 	\begin{itemize}
 		\item a cycle $C$ that visits evert vertex exactly once
@@ -115,5 +115,61 @@
 		\item Metric space: 1.5-approx, proven limit is 1.0045
 		\item Euclidean space: $(1+\epsilon)$-approx in polytime
 	\end{itemize}
+
+	\section{Binomial Heap}
+	\subsection{Data Structures}
+	\textbf{Priority Queue}
+	\begin{itemize}
+		\item store n elements each w/ integer key
+		\item insert, deleteMin, decreaseKey, build (heapify)
+	\end{itemize}
+
+	\textbf{Heap}
+	\begin{itemize}
+		\item binary tree of elements
+		\item structure (min key at root for min-heap)
+		\item shape (almost complete binary tree, store in array)
+		\item insert (+ bubbleUp) $O(\log n)$
+		\item deleteMin $O(\log n)$
+		\item decreaseKey $O(\log n)$
+		\item heapify $O(n)$
+		\item merge $O(n)$
+	\end{itemize}
+
+	\subsection{Binomial Tree}
+	\subsubsection{Definition}
+	\begin{itemize}
+		\item binomial tree of order 0 is a single node
+		\item binomial tree of order $k$ has a root node and its children are the binomial trees of order $k-1\dots0$
+	\end{itemize}
+	\subsubsection{Claims}
+	\begin{itemize}
+		\item $B_k$ has $2^k$ nodes \\
+			$2^{k-1} + 2^{k-1} = 2^k$
+		\item the height of $B_k$ is $k$ \\
+			$k-1 + 1 = k$
+		\item there are $k \choose i$ nodes at depth $i$ in $B_k$ \\
+			${{k - 1} \choose i} + {{k-1} \choose {k-i}} = {k \choose i}$
+	\end{itemize}
+	
+	\subsection{Binomial Heap}
+	\subsubsection{Definition}
+	collection of binomial trees at most one of each rank (each one uses one heap order)
+
+	\begin{ex}
+		Make a binomial tree of size n = 13 \\
+		Expressing n in binary tells us what trees to build. 13 = 1101 so build $k=3$, $k=2$, $k=0$
+	\end{ex}
+
+	This means that we have at most $\log n + 1$ trees in our heap
+
+	\subsubsection{Merging}
+	Merging is like binary addition, so if we have two heaps 110 and 11, then our result should be $110 + 11 = 1001$
+	\begin{itemize}
+		\item merge $O(\log n)$ (joining $B_i$ and $B_i$ is $O(1)$)
+		\item insert $O(\log n)$ (merge with singleton)
+		\item deleteMin $O(\log n)$ (look through all roots and find min, remove and then merge)
+	\end{itemize}<++>
+
 
 \end{document}
