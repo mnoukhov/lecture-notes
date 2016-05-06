@@ -188,6 +188,17 @@ strcpy(buffer, argv[1]);
 		\item ``canaries'' detect if stack has been overwritten before return
 	\end{itemize}
 
-	\subsubsection{Integer Overflows}
-	Program may assume integer is always positive and must be be
+	\subsection{Integer Overflows}
+	Program may assume integer is always positive, and below certain value. Overflow will make a too large singed integer negative, violating assumptions.
+
+	\subsection{Format String Vulnerabilities}
+	Format strings can have unexpected consequences:
+	\begin{itemize}
+		\item \lstinline|printf(buffer)| parse buffer for \lstinline|\%|s and use whatever is on the stack to process found format params
+		\item \lstinline|printf(%s%s%s%s)| may crash your program
+		\item \lstinline|printf(%x%x%x%x)| dumps parts of the stack
+		\item \lstinline|%n| will write to an address on the stack
+	\end{itemize}
+
+	\subsection{Incomplete Mediation}
 \end{document}
