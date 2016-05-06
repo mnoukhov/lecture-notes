@@ -100,4 +100,30 @@
 		\item infeasible
 		\item contradictory
 	\end{itemize}
+
+	\section{RE Reference Model}
+	\subsection{Objectives}
+	Want to identify and articulate:
+	\begin{description}
+		\item[Requirements] conditions and/or capabilities that describe a problem (must be achieved to get solution)
+			\begin{itemize}
+				\item desired changes to the world
+				\item expressed in terms of environment
+			\end{itemize}
+		\item[Specification] complete, precise, verifiable description of the proposed system
+			\begin{itemize}
+				\item requirement re-expressed in terms of interface
+				\item no constraints on design or implementation
+				\item show that specs imply requirements through \textit{assumptions}
+			\end{itemize}
+	\end{description}
+	\subsection{Deriving Specs}
+	For each requirement, $Req$, determine
+	\begin{itemize}
+		\item the specification, $Spec$, of how the system will monitor/control environment
+		\item what domain knowledge assumptions, $Dom$ are needed to link environmental constraints to system constraints (\textit{e.g.} a plane is moving on the runway if its wheels are turning)
+	\end{itemize}
+	Mathematically, show that \textit{at minimum} $Spec \wedge Dom \models Req$
+
+
 \end{document}
