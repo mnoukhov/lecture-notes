@@ -1,0 +1,264 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{pgfplots}
+\usepackage{qtree}
+\usepackage{xytree}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={CS 446: Software Design and Architecture},
+  pdfsubject={Lecture notes from CS 446 at the Unversity of Waterloo},
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{CS 446: Software Design and Architecture}}
+	\date{Spring 2016, University of Waterloo \\ \center Notes written from Victoria Sakhini's lectures.}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+	\section{Mobile Application}
+	\subsection{Overview}
+	A mobile application is structured of mulitple layers: \textbf{presentation}, \textbf{business}, and \textbf{data}. 
+	\subsection{Design Considerations}
+	\subsubsection{Client Type}
+	\begin{description}
+		\item[Rich] local processing required, must work in ocassionally connected scenario
+		\item[Thin] can depend on server processing and will always be fully connected
+		\item[Rich Internet Application] requires a rich UI and only limited access to local resources (+ maybe portably to other platforms)
+	\end{description}
+
+	\subsubsection{Devices to Support}
+	Consider
+	\begin{itemize}
+		\item screen size and resolution
+		\item cpu power
+		\item memory and storage space
+		\item dev tool availability
+		\item user requirements, org constraints
+		\item specific hardware requirements
+	\end{itemize}
+
+	\subsubsection{Connectivity}
+	If internet access is required, plan for intermittent or unavailable network connection
+	\begin{itemize}
+		\item caching
+		\item state management
+		\item batch communications
+	\end{itemize}
+
+	\subsubsection{Device Constraints}
+	Think of platform constraints, mainly:
+	\begin{itemize}
+		\item memory
+		\item battery life
+			\begin{itemize}
+				\item processing requirements
+				\item backlighting
+				\item memory I/O
+				\item wireless connections
+			\end{itemize}
+		\item responsiveness of design
+		\item security
+		\item network bandwidth
+	\end{itemize}
+
+	\subsubsection{Architecture}
+	\begin{itemize}
+		\item layered architecture (multiple layers can be on device)
+		\item reuse and maintainability
+		\item smallest footprint possible
+	\end{itemize}
+
+	\subsection{Design Issues}
+	\subsubsection{Authentication/Authorization}
+	\begin{itemize}
+		\item security and reliability
+		\item think about more than single user
+	\end{itemize}
+
+	\subsubsection{Caching}
+	\begin{itemize}
+		\item improve performance
+		\item support offline work
+		\item decide on what to cache based on limited resources
+	\end{itemize}
+	\textbf{lazy acquisition} defer acquiring resources as long as possible
+
+	\subsubsection{Communicaion}
+	\begin{itemize}
+		\item wifi, wired, bluetooth
+		\item secure communication
+		\item wireless is unreliable
+	\end{itemize}
+	\begin{description}
+		\item[active object] support async processing by encapsulating service request and completion response
+		\item[communicator] encapsulate internal details of communication 
+		\item[entity translator] transforms message data types into business types for requests and reverses for responses
+		\item[reliable sessions] end to end reliable message transfer
+	\end{description}
+
+	\subsubsection{Configuration Management}
+	\begin{itemize}
+		\item how to handle device resets
+		\item how to allow configuration (OTA, from some host?)
+	\end{itemize}
+
+	\subsubsection{Data Access}
+	\begin{itemize}
+		\item low bandwidth
+		\item high latency
+		\item intermittent connectivity
+	\end{itemize}
+	\begin{description}
+		\item[active record] include data access object within domain entry
+		\item[data transfer object] object storing data transported between processes, reducing method calls
+		\item[domain model] business objects that represent entities in a domain and relationships between them
+		\item[transaction script] organize logic for each transaction in a single procedure, making calls directory to DB (or through wrapper)
+	\end{description}
+
+	\subsubsection{Device Specifics}
+	\begin{itemize}
+		\item screen size
+		\item orientation
+		\item memory, storage space
+		\item network bandwidth
+		\item connectiviy
+		\item OS
+		\item hardware constraints
+	\end{itemize}
+
+	\subsubsection{Exception Management}
+	\begin{itemize}
+		\item prevent sensitive exception details from being revealed to the user
+		\item improve application robustness
+		\item keep application in consistent state after an error
+	\end{itemize}
+
+	\subsubsection{Logging}
+	\begin{itemize}
+		\item log only essentials because of size constraints
+		\item may need to synchronize logs with server
+	\end{itemize}
+
+	\subsubsection{Power Management}
+	\begin{itemize}
+		\item power is limiting design factor
+		\item research communication protocols and their effect on battery life
+	\end{itemize}
+
+	\subsubsection{Synchronization}
+	\begin{itemize}
+		\item secure communications OTA
+		\item handle connection interruptions
+	\end{itemize}
+	\begin{description}
+		\item[sync design pattern] component installed on device tracks changes to data and tells server when connected
+	\end{description}
+
+	\subsubsection{Testing}
+	Mobile debugging is costly, so make sure to invest heavily in testing beforehandas emulators may not be adequate to simulate a device in debugging.
+
+	\subsubsection{UI}
+	\begin{itemize}
+		\item build mobile first
+		\item design for simplicity
+		\item design around blocking operations (since user can only see once screen at a time)
+	\end{itemize}
+	\begin{description}
+		\item[application controller] object that contains all the flow logic 
+		\item[MVC] separate the data, presentation, and actions into three separate classes
+			\begin{itemize}
+				\item model manages behaviour and data (logic)
+				\item view manages information display
+				\item controller manages user input
+			\end{itemize}
+		\item[MVP] same as MVC but presenter manages presentation logic and interaction between view and model
+		\item[pagination] separate content into individual pages
+	\end{description}
+
+	\subsubsection{Validation}
+	\begin{itemize}
+		\item protect device and application
+		\item improve usability
+		\item validate client-side and server-side
+	\end{itemize}
+
+	\section{Software Architecture}
+	\subsection{Definition}
+	No perfect definition but AINSI/IEEE defines it as
+	
+	\begin{quote}
+	recommended practice as the fundamental organization of a system, embodied in its components, their relationships to each other and the environment, and the principles governing its design and evolution. 
+	\end{quote}
+
+\end{document}
