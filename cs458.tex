@@ -159,8 +159,7 @@
 			\end{itemize}
 		\item most flaws are \textbf{unintentional}
 	\end{itemize}
-	\subsection{Buffer Overflow}
-	\subsubsection{Definition}
+	\subsubsection{Buffer Overflow}
 	Most common exploited type of security flaw when program reads or writes past the bounds of the memory that it should use. If the attacker exploits it they can override things like the \textit{saved return address}. Targets programs on a local machine that run with setuid priveleges or network daemons
 	
 	\begin{ex}
@@ -173,14 +172,14 @@ strcpy(buffer, argv[1]);
 	\end{lstlisting}
 	\end{ex}
 	
-	\subsubsection{Types}
+	\textbf{Types}:
 	\begin{itemize}
 		\item only a single byte can be written past the end of the buffer
 		\item overflow of buffers on the heap (instead of the stack)
 		\item jump to other parts of the program or libraries (instead of shellcode)
 	\end{itemize}
 
-	\subsubsection{Defences}
+	\textbf{Defences}:
 	\begin{itemize}
 		\item language with bounds-checking
 		\item non-executable stack (mem is never both writable and executable)
@@ -188,17 +187,202 @@ strcpy(buffer, argv[1]);
 		\item ``canaries'' detect if stack has been overwritten before return
 	\end{itemize}
 
-	\subsection{Integer Overflows}
+	\subsubsection{Integer Overflows}
 	Program may assume integer is always positive, and below certain value. Overflow will make a too large singed integer negative, violating assumptions.
 
-	\subsection{Format String Vulnerabilities}
-	Format strings can have unexpected consequences:
+	\subsubsection{Format String Vulnerabilities}
+	Format strings can have unexpected consequences, \lstinline|printf|
 	\begin{itemize}
-		\item \lstinline|printf(buffer)| parse buffer for \lstinline|\%|s and use whatever is on the stack to process found format params
-		\item \lstinline|printf(%s%s%s%s)| may crash your program
-		\item \lstinline|printf(%x%x%x%x)| dumps parts of the stack
-		\item \lstinline|%n| will write to an address on the stack
+		\item \texttt{buffer} parse buffer for \lstinline|\%|s and use whatever is on the stack to process found format params
+		\item \texttt{\%s\%s\%s\%s} may crash your program
+		\item \texttt{\%x\%x\%x\%x} dumps parts of the stack
+		\item \texttt{\%n} will write to an address on the stack
 	\end{itemize}
 
-	\subsection{Incomplete Mediation}
+	\subsubsection{Incomplete Mediation}
+	\begin{description}
+		\item[mediation] ensure what the user has entered is a meaningful request
+		\item[incomplete mediation] application accepts incorrect user data
+	\end{description}
+	Though \textbf{client-side} mediation is helpful to the user, you should always perform \textbf{server-side} mediation
+	\begin{itemize}
+		\item check values entered by user
+		\item check state stored by client
+	\end{itemize}
+	\begin{description}
+		\item[TOCTTOU] ``time of check to time of user'' errors are race conditions that may affect correct access to resources
+	\end{description}
+	Defend by making all access control information \textbf{constant} between TOC and TOU
+	\begin{itemize}
+		\item keep private copy of request
+		\item act on object itself as opposed to symlinks \dots
+		\item use locks on object
+	\end{itemize}
+
+	\subsection{Malware}
+	\begin{itemize}
+		\item written with malicious intent
+		\item needs to executed to cause harm
+	\end{itemize}
+
+	\subsubsection{Virus}
+	\begin{description}
+		\item[virus] malware that infects other files (with copies of itself)
+		\item[infect] modify existing program (\textit{host}) so opening gives control to virus
+		\item[payload] end goal of virus (e.g. corrupt, erase \dots)
+	\end{description}
+
+	Protection can come in two forms:
+	\begin{description}
+		\item[signature-based] keep a list of all known viruses (but how to deal with polymorphic viruses?)
+		\item[behaviour-based] look for suspicious system behaviour
+	\end{description}
+
+	\subsubsection{Worm}
+	\begin{description}
+		\item[worm] self-containing piece of code that replicated with little/no user input
+	\end{description}
+	\begin{itemize}
+		\item often use security flaws in widely deployed software
+		\item searches for other unprotected sources to spread to
+	\end{itemize}
+
+	\subsubsection{Other Types}
+	\begin{description}
+		\item[trojan horse] claim to do something normal, but hide malware
+		\item[scareware] scaring user into agreeing
+		\item[ransomware] ransoming user's resource
+		\item[logic bomb] written by insider, already on your computer waiting to be triggered
+	\end{description}
+
+	\subsection{Other Malicious Code}
+	\subsubsection{General Attacks}
+	\begin{description}
+		\item[web bug] tiny object in web page, fetched from a different server that can track you
+		\item[backdoor] instructions set to bypass normal authentication, come from
+	\end{description}
+	\begin{itemize}
+		\item forgetting to remove
+		\item testing purposes
+		\item law enforcement
+		\item malicious purposes
+	\end{itemize}
+	\begin{description}
+		\item[salami attack] attack from many smaller attacks
+		\item[privelege escalation] raises privelege of attacker, can cause legitimate higher privelege code to execute attack
+		\item[rootkit] tool to gain priveleged access and then hide itself
+	\end{description}
+	\begin{itemize}
+		\item cleans logs
+		\item modify basic commands \lstinline|ls|\dots
+		\item modify kernel so no programs can see it
+	\end{itemize}
+
+	\subsubsection{Man-in-the-middle}
+	intercepts communication but passes it on to intended party eventually
+	\begin{description}
+		\item[keystroke logger] logs keyboard input and spies on user
+	\end{description}
+	\begin{itemize}
+		\item application-specific
+		\item system logger (all keystrokes)
+		\item hardware logger (physical device)
+	\end{itemize}
+	\begin{description}
+		\item[interface illusions] tricks user to execute malicious action with UI
+			\begin{description}
+				\item[phishing] make fake website look real to extract user information
+			\end{description}
+	\end{description}
+
+	\subsection{Nonmalicious flaws}
+	\begin{description}
+		\item[covert channels] transfer data through secret/non-standard channel (e.g. hide data in published report)
+		\item[side channels] attack based on knowledge from physical behaviour of computer 
+	\end{description}
+	\begin{itemize}
+		\item RF emissions
+		\item power consumption
+		\item cpu usage
+		\item reflection of the screen
+	\end{itemize}
+
+	\subsection{Security Controls}
+	\subsubsection{Design}
+	Design programs so they're less likely to have flaws
+	\begin{itemize}
+		\item modularity
+		\item encapsulation
+		\item information hiding
+		\item mutual suspicion
+		\item confinement/sandboxing
+	\end{itemize}
+
+	\subsubsection{Implementation}
+	When actually coding, reduce security flaws
+	\begin{itemize}
+		\item don't use C
+		\item static code analysis
+		\item formal methods
+		\item genetic diversity (run varied code)
+		\item educate yourself
+	\end{itemize}
+
+	\subsubsection{Change Management}
+	Make sure that all changes to the code maintain security
+	\begin{itemize}
+		\item track changes in a system (CVS \dots)
+		\item do post-mortems of security flaws
+		\item code reviews
+			\begin{itemize}
+				\item guided code reviews
+				\item easter-egg code reviews (intentional flaws)
+			\end{itemize}
+	\end{itemize}
+
+	\subsubsection{Testing}
+	Make sure implementation meets specification \textit{and nothing else}
+	\begin{description}
+		\item[black box testing] treat code as an opaque interface
+		\item[fuzz testing] submit completely random data
+		\item[white box testing] testing which understands how it works, good for regression testing
+	\end{description}
+
+	\subsubsection{Documentation}
+	For posterity, write down:
+	\begin{itemize}
+		\item choices made
+		\item things that didn't work
+		\item security checklist
+	\end{itemize}
+
+	\subsubsection{Maintenance}
+	Make sure that code out there gets better not worse
+	\begin{description}
+		\item[standards] rules to incorporate controls at each software stage
+		\item[process] formal specs of how to implement each standard
+		\item[audits] externally verify your processes are correct and followed
+	\end{description}
+
+	\section{Operating System Security}
+	\subsection{Protection in a General-Purpose System}
+	\subsubsection{Overview}
+	Protect a user from attacks, and protect resources:
+	\begin{itemize}
+		\item CPU
+		\item memory
+		\item I/O devices
+		\item programs
+		\item data
+		\item networks
+		\item OS
+	\end{itemize}
+
+	\subsubsection{Separation/Sharing}
+	\subsubsection{Memory Protection}
+	\subsubsection{Segmentation}
+	\subsubsection{Paging}
+
+
+
 \end{document}
