@@ -379,9 +379,206 @@ strcpy(buffer, argv[1]);
 	\end{itemize}
 
 	\subsubsection{Separation/Sharing}
+	Keep one users' objects separate from others'
+	\begin{itemize}
+		\item \textbf{physical} use different physical resource
+		\item \textbf{temporal} execute at different times
+		\item \textbf{logical} give impression that no other users exist
+		\item \textbf{cryptographic} enrypt data to make it unintelligible
+	\end{itemize}
+	OS' can allow for \textbf{flexible sharing}, not ``all or nothing''
 	\subsubsection{Memory Protection}
+	Prevent one program from corrupting other programs, OS, data\dots
+	\begin{description}
+		\item[fence register] exception if memory access below address in fence register
+		\item[base/bounds register pair] exception if memory not between register pair
+		\item[tagged architechture] each memory word has extra bits that identify access to that word
+	\end{description}
+	
 	\subsubsection{Segmentation}
+	\textbf{segmentation} each program has different mem segments for code, data, stack.
+	 Virtual address contains \lstinline|<segment name, offset within segment>| and segment name is mapped to physical address in \textit{Segment Table}
+	\begin{itemize}
+		\item[+] each address reference is checked for protection
+		\item[+] different levels of protection
+		\item[+] share/restrict access to a segment
+		\item[-] external fragmentation
+		\item[-] costly: dynamic length out-of-bounds checks, segment names
+	\end{itemize}
+
 	\subsubsection{Paging}
+	\begin{description}
+		\item[pages] equal divisions of virtual address space
+		\item[frames] equal divisions of physical memory (size same as page)
+		\item[page table] maps page number to corresponding frame \lstinline|<page #, offset within page>|, also contains memory protection bits for each page
+	\end{description}
+	\begin{itemize}
+		\item[+] each address reference is checked for protection
+		\item[+] share/restrict access to a page with different rights
+		\item[+] unpopular pages can be moved to disk
+		\item[-] internal fragmentation
+		\item[-] infeasible to have different levels of protection for different data
+	\end{itemize}
+
+	\subsubsection{x86}
+	Includes both segmentation and paging, with memory protection bits:
+	\begin{itemize}
+		\item no access
+		\item read access
+		\item read/write access
+		\item *no execute
+	\end{itemize}
+
+	\subsection{Access Control}
+	\subsubsection{Overview}
+	We need to protect more than just memory, with three goals
+	\begin{itemize}
+		\item check every access
+		\item enforce least privelege
+		\item verify acceptable use
+	\end{itemize}
+
+	Create an \textbf{access control matrix} for a set of protected objects $0$, subjects $S$, and rights $R$ (r,w,x,o).
+
+	\subsubsection{Access Control Methods}
+	\begin{description}
+		\item[Access Control Lists] each object has a list of subjects and their access rights
+		\item[Capability] unforgeable token that gives own some access rights to an object
+		\item[RBAC] admin assign users to roles and grants access rights to roles, can be h
+	\end{description}
+	\begin{itemize}
+		\item can be hierarchical
+		\item a user can have multiple roles for different tasks
+		\item \textbf{separation of duty} same person can't be responsible for two different roles on a task
+	\end{itemize}
+	
+	\subsection{User Authentication}
+	\subsubsection{Overview}
+	Computers systems have to identify and authenticate users before authorizing them
+	\begin{description}
+		\item[identify] who are you
+		\item[authenticate] prove your identify
+	\end{description}
+	\subsubsection{Authentication Factors}
+	Four classes, something the user:
+	\begin{itemize}
+		\item \textbf{knows} password, PIN
+		\item \textbf{has} ATM card, physical key
+		\item \textbf{is} biometrics
+		\item \textbf{context} location, time
+	\end{itemize}
+	Using multiple factors (``two-factor'' authentication) improves security if they are different types
+
+	\subsubsection{Passwords}
+	Attacks:
+	\begin{itemize}
+		\item shoulder surfing
+		\item keystroke logging
+		\item phishing
+		\item password re-use
+		\item password guessing
+	\end{itemize}
+
+	User defenses:
+	\begin{itemize}
+		\item choosing good passwords (long and not easily guessable)
+		\item hygiene
+			\begin{itemize}
+				\item write down > store insecurely
+				\item change regularly
+				\item site specific passwords
+				\item don't reveal
+				\item don't enter sensitive info on public computers
+			\end{itemize}
+	\end{itemize}
+
+	Admin defenses:
+	\begin{itemize}
+		\item store only cryptographic hashes
+			\begin{description}
+				\item[salt] user-specific addition to hash (based on time of day \dots)
+				\item[pepper] salt not stored alongside password
+			\end{description}
+		\item use expensive hash
+			\begin{itemize}
+				\item SHA-x take microseconds
+				\item bcrypt takes hundreds of milliseconds
+				\item scrypt also uses a lot of memory
+			\end{itemize}
+		\item use a \textbf{MAC} message authentication code
+			\begin{itemize}
+				\item also uses secret key to compute fingerprint
+				\item impossible to crack without secret key
+				\item as secure as hashing if key does leak
+			\end{itemize}
+		\item make password recovery force a reset
+			\begin{itemize}
+				\item don't email them the password, since you shouldn't be storing it
+			\end{itemize}
+		\item one-time passwords
+			\begin{itemize}
+				\item fight interception attacks 
+				\item \textbf{challenge-response} to generate the password
+			\end{itemize}
+	\end{itemize}
+
+	\subsubsection{Biometrics}
+	Authenticate user if \textit{physical characteristic} is sufficiently similar to stored trait, but this has issues
+	\begin{itemize}
+		\item remote authentication can't test if you are trying to bypass it
+		\item since we check for similarity, not equality, false positives are more likely
+		\item facial recognition software still not good enough for security
+		\item privacy issue if your stored biometrics leak
+		\item if leaked, you can change a password, but not biometrics
+		\item some of your biometrics are not secret (easy to get photos of\dots)
+	\end{itemize}
+
+	\subsection{Security Policies and Models}
+	\subsubsection{Trusted OS}
+	We trust an OS if we have confidence that it provides security services which build on four factors:
+	\begin{description}
+		\item[policy] set of rules outlining what is secured and why
+		\item[model] implementes the policy and can be used for reasoning about it
+		\item[design] spec of how OS implements model
+		\item[trust] assurance that OS is implemented according to design
+	\end{description}
+
+	\subsubsection{Trusted Software}
+	Software that does what we expect it to do and nothing more
+	\begin{description}
+		\item[functional correctness] software works correctly
+		\item[enforcement of integrity] wrong inputs don't impact correctness
+		\item[limited privelege] access rights are minimized
+		\item[appropriate confidence level] rated as required 
+	\end{description}
+
+	\subsubsection{Security Policies}
+	Basic military model:
+	\begin{itemize}
+		\item each object has a sensitivity level
+		\item each object is assigned to one or more compartments
+		\item subject can access if it \textit{dominates} the requirements
+	\end{itemize}
+
+	\begin{description}
+		\item[Chinese Wall] security policy that once you access info you can't access info about competitors
+		\item[ss-property] read access by subject to object if each object previously accessed is either from the same company, or a different type of company (no conflict)
+		\item[*-property] write access by subject to object if all readable object by subject are either from the same company or have been \textit{sanitized} 
+		\item[lattice] security model where there is a unique upper and lower bound for any two points, i.e. each level is distinct
+	\end{description}
+
+	\subsubsection{Security Models}
+	\textbf{Bell-La Padula} regulates information flow in lattices, so users get information only with their clearance
+	\begin{itemize}
+		\item no read up (read more secure documents)
+		\item no write down (write less secure documents)
+	\end{itemize}
+	\textbf{Biba} prevent inappropriate modification of data
+	\begin{itemize}
+		\item subjects and objects ordered by integrity
+		\item no read down (don't contaminate reliable person with unreliable info)
+		\item no write up (don't contaminate reliable info with unreliable person)
+	\end{itemize}
 
 
 
