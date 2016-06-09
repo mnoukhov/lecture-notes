@@ -77,7 +77,7 @@
 \begin{document}
 	\let\ref\Cref
 
-	\title{\bf{CS 463: Software Requirements Specification and Analysis}}
+	\title{\bf{SE 463: Software Requirements Specification and Analysis}}
 	\date{Spring 2016, University of Waterloo \\ \center Notes written from Joanne Atlee's lectures.}
 	\author{Michael Noukhovitch}
 
@@ -125,5 +125,66 @@
 	\end{itemize}
 	Mathematically, show that \textit{at minimum} $Spec \wedge Dom \models Req$
 
+
+	\section{Stakeholders}
+	\subsection{Scoping}
+	\begin{description}
+		\item[purpose] rationale for why the project is wanted
+		\item[goal] high level measurable criteria of success
+		\item[scope] business area affected by installation of system
+		\item[stakeholders] people with an interest in the system
+		\item[constraints] restrictions on scope or style of system
+		\item[context diagram] graphical model of context
+	\end{description}
+	\begin{itemize}
+		\item modularizes phenomena into domains
+		\item system in center with arrows (actions) between it and stakeholders
+	\end{itemize}
+
+	\subsection{Stakeholders}
+	\textbf{Stakeholder} someone with stake in the ultimate success of the product (but sometimes \textbf{proxies} will do)
+	\begin{itemize}
+		\item owner/client: person paying for software
+		\item customer: buys software after development
+		\item users: experts on current system or similar
+		\item domain experts: familiar with problem that software might solve
+		\item software engineer: techonology expert
+		\item inspectors
+		\item market researchers
+		\item lawyers
+		\item industry standards
+		\item experts on \textit{adjacent} systems
+		\item negative stakeholder: don't want you to succeed
+	\end{itemize}
+
+	\section{Use Cases}
+	\subsection{Understanding The Work}
+	\begin{itemize}
+		\item understand what the existing work is
+			\begin{itemize}
+				\item don't think about implementation
+				\item abstract inputs/outputs
+			\end{itemize}
+		\item study what you are permitted to change
+			\begin{itemize}
+				\item what you need to know to decide a change
+				\item anything that can be affected by your product
+			\end{itemize}
+	\end{itemize}
+	\subsection{Business Use Cases}
+	\textbf{Use case} vertical slices of work made to reduce complexity
+	\begin{itemize}
+		\item represent end-to-end functionality
+		\item triggered by external event
+		\item captures complete response to event
+		\item ideally orthogonal to one another
+	\end{itemize}
+
+	\subsection{Use Case Models}
+	\begin{description}
+		\item[actor generalization] actor inheritance + polymorphism
+		\item[<<inlcude>>] sub use case used within multiple other use cases
+		\item[<<extend>>] sub use case that extends or replaces end of other use cases
+	\end{description}
 
 \end{document}
