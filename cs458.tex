@@ -444,7 +444,7 @@ strcpy(buffer, argv[1]);
 	\begin{description}
 		\item[Access Control Lists] each object has a list of subjects and their access rights
 		\item[Capability] unforgeable token that gives own some access rights to an object
-		\item[RBAC] admin assign users to roles and grants access rights to roles, can be h
+		\item[RBAC] admin assign users to roles and grants access rights to roles
 	\end{description}
 	\begin{itemize}
 		\item can be hierarchical
@@ -579,7 +579,93 @@ strcpy(buffer, argv[1]);
 		\item no read down (don't contaminate reliable person with unreliable info)
 		\item no write up (don't contaminate reliable info with unreliable person)
 	\end{itemize}
+	\textbf{Low Watermark Property} instead of enforcing integrity rules, just reduce integrity when it is violated
+	\begin{itemize}
+		\item \textbf{subject} if subject $s$ reads object $o$, then $I(s) = $ greatest lower bound of $I(s)$ and $I(o)$
+		\item \textbf{object} if a subject writes to an object, the reduce integrity of object to greatest lower bound
+	\end{itemize}
 
+	\subsection{Trusted OS Design}
+	\subsubsection{Security Design Principles}
+	\begin{description}
+		\item[least privelege] use least priveleges possible
+		\item[economy of mechanism] protection mechanism should be simple
+		\item[open design] avoid security by obscurity (secret keys not algorithms)
+		\item[complete mediation] check everything
+		\item[permission based] default is no permissions
+		\item[separation of priveleges] two or more conditions to get access
+		\item[ease of use] make it easy or no one will use it
+	\end{description}
+
+	\subsubsection{Security Features}
+	\textbf{identification/authentication}
+	\textbf{access control}
+	\begin{itemize}
+		\item mandatory: central authority determines access
+		\item directionary: owners of objects have some control over who can access
+		\item role-based: central authority defines roles
+	\end{itemize}
+	\textbf{object reuse protection}
+	\begin{itemize}
+		\item stored data should be inaccessible to next user
+		\item deleting a file should actually wipe it (not hidden!)
+	\end{itemize}
+	\textbf{complete mediation}
+	\begin{itemize}
+		\item all accesses must be checked
+	\end{itemize}
+	\textbf{trusted path}
+	\begin{itemize}
+		\item defend against illusions
+		\item assure that keystrokes and mouse movements are sent correctly
+	\end{itemize}
+	\textbf{accountability and audit}
+	\begin{itemize}
+		\item log all security-related events
+		\item find good middle-ground for granularity of logs
+	\end{itemize}
+	\textbf{intrusion detection}
+	\begin{itemize}
+		\item correlated actual behaviour with ``normal'' behaviour
+		\item alarm if behaviour looks abnormal
+	\end{itemize}
+
+	\subsubsection{Trusted Computing Base}
+	\begin{description}
+		\item[TCB] part of the trusted OS that is necessary to enforce OS policies
+		\item[security kernel] runs between OS and hardware maintaining security
+		\item[rings] security level where processes can only access rings that level or above
+		\item[reference monitor] monitor with collection of access controls that must be tamperproof, unbypassable, and analyzable
+		\item[virtualization] way to provide logical separation/isolation
+	\end{description}
+	\begin{itemize}
+		\item memory: page mapping to give separate address space
+		\item machines: virtualize I/O, files, printers \dots
+	\end{itemize}
+
+	\subsubsection{Least Privelege}
+	\begin{description}
+		\item[chroot] sandbox/jail a command by changing its root directory
+		\item[compartmentalization] split application into parts and apply least privelege to each part
+		\item[setuid bit] causes executable to run under identity of owner not caller
+	\end{description}
+	\begin{itemize}
+		\item careful of \textbf{confused deputy} attack where you convince program another user is executing a setuid'd program
+	\end{itemize}
+
+	\subsubsection{Assurance}
+	Convince others to trust out OS through
+	\begin{itemize}
+		\item testing
+		\item formal verification
+		\item validation (requirements \dots)
+	\end{itemize}
+
+	Can also have third party evaluate it based on
+	\begin{itemize}
+		\item \textbf{Orange Book} security ratings from DoD
+		\item \textbf{common criteria} international effort, protection profiles against security threats and objectives
+	\end{itemize}
 
 
 \end{document}
