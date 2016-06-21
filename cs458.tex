@@ -670,9 +670,280 @@ strcpy(buffer, argv[1]);
 
 	\section{Network Security}
 	\subsection{Network Concepts}
+	\subsubsection{Overview}
+	Internet has
+	\begin{itemize}
+		\item decentralized control
+		\item uncontrollable traffic flow through different nodes
+		\item different types of nodes/links
+	\end{itemize}
+	TCP/IP suite covers
+	\begin{itemize}
+		\item network access: ethernet, wifi \dots
+		\item internet: network, IP \dots
+		\item transport: TCP, UDP \dots
+		\item application: HTTP, FTP, SSL \dots
+	\end{itemize}
+	Protocols were based on \textit{trust} and \textit{non-malicious} intent
 	\subsection{Threats}
+	\subsubsection{Port Scan}
+	Each application runs on a \textbf{port} and unsecure systems (\textbf{loose lips}) can reveal what is running on each port, allowing the attacker to target weakest application
+	\begin{itemize}
+		\item nmap tool can identify application
+		\item login application can reveal OS, version \dots
+	\end{itemize}
+	\subsubsection{Intelligence}
+	Find information out in the open:
+	\begin{itemize}
+		\item social engineering
+		\item dumpster diving
+		\item eavesdropping 
+		\item google searching
+		\item facebook searching
+	\end{itemize}
+
+	\subsubsection{Wiretapping}
+	Owner of a node can mointor all communication through it
+	\begin{itemize}
+		\item copper cable
+			\begin{itemize}
+				\item inductance allows for eavesdropping without physical contact
+				\item cable cutting splicing otherwise
+			\end{itemize}
+		\item fiber optic
+			\begin{itemize}
+				\item no inductance, and splicing is possible but maybe detectable
+				\item cable ``bending''
+			\end{itemize}
+		\item satellite
+			\begin{itemize}
+				\item signal path is wide so nearby attacker can eavesdrop
+			\end{itemize}
+		\item wifi
+			\begin{itemize}
+				\item easily intercepted nearby or far away using directed antenna
+				\item need authentication for basic security
+			\end{itemize}
+		\item LAN
+			\begin{itemize}
+				\item attacker can un-ignore wrongly delivered packets using a \textbf{packer sniffer}
+			\end{itemize}
+	\end{itemize}
+
+	\subsubsection{Impersonation}
+	Impersonate by stealing a password
+	\begin{itemize}
+		\item guessing
+		\item exploit default password
+		\item sniff for password between nodes
+		\item social engineering
+	\end{itemize}
+	and exploit trust beween machines and accounts where \lstinline|rhosts/rlogin| can allow another use on another machine to act as themselves on their machine without having to enter a password
+
+	\subsubsection{Spoofing}
+	\textbf{spoofing} when one object masquerades as another
+	\begin{itemize}
+		\item \textbf{url spoofing} uwaterlo.ca
+		\item \textbf{evil twin} attacks wifi access points using the same name
+		\item \textbf{session hijacking} stealing cookies or session key to hijack
+		\item \textbf{man-in-the-middle} attacker becomes stealth intermediate node
+	\end{itemize}
+
+	\subsubsection{Traffic Analysis}
+	Discovering the \textit{existance} of communication between two parties (e.g. whistleblower) can be sensitive, and can be discovered by attacker looking at send and recieve addresses in headers
+
+	\subsubsection{Integrity Attacks}
+	Modify packets as they are being transmitted
+	\begin{itemize}
+		\item change payload
+		\item change sender/reciever
+		\item replay previously seen packets (``buy 10 stocks'' over and over)
+		\item delete or create packets
+		\item TCP will can use a checksum but that can be easily defeated
+	\end{itemize}
+	Poison DNS cache
+	\begin{itemize}
+		\item feed wrong mappings to system redirecting them to your address
+		\item DNNSEC created to combat this
+	\end{itemize}
+
+	\subsubsection{Protocol Failures}
+	TCP and other protocols can be attacked directly:
+	\begin{itemize}
+		\item assumes all nodes implement protocol faithfully
+		\item optional requests of systems to help flow control (can be ignored)
+		\item may not check if packet is well formatted
+		\item may include broken security mechanisms (e.g. WEP)
+	\end{itemize}
+
+	\subsubsection{Website Vulnerabilities}
+	\begin{itemize}
+		\item website defacement
+		\item send malicious URL to web server (to exploit)
+		\item submit modified state (cookie, session id) to exploit incomplete mediation
+		\item code injection
+			\begin{description}
+				\item[XSS] steal sensitive information on page and send it to attacker
+				\item[CSRF] perform malicious action on some website (e.g. bank) if user is logged in there
+			\end{description}
+	\end{itemize}
+
+	\subsubsection{Denial of Service}
+	\begin{itemize}
+		\item cutting a wire, jamming a signal
+		\item \textbf{ping flood} overload ability to respond to pings
+		\item \textbf{smurf attack} spoof sender of ping as victim, and have return pings all go there
+		\item \textbf{syn flood} overflow memory with stored SYN packets
+		\item send packet fragments that can't be assembled
+		\item send packets that are all hashed into same bucket
+		\item \textbf{black hole attack} router advertises very low cost for destination and then drops all packets
+		\item \textbf{DNS cache poisoning} make packets route to wrong host
+	\end{itemize}
+
+	\subsubsection{Distributed Denial of Service}
+	DDoS makes it difficult to stop the source of the attack by using lots of machines
+	\begin{description}
+		\item[zombie/bot] computer controlled with malware
+		\item[botnet] network of computers used to DDoS
+		\item[amplification] use nodes that respond with more data than they are queried
+		\item[reflection] send queries with victim's address as source
+		\item[SNMP] simple network management protocol on many home routers which is usually vulnerable
+	\end{description}
+	Botnets can be controlled in many ways:
+	\begin{itemize}
+		\item central node: all bots connect and it gives commands
+		\item p2p distributing updates
+		\item fast flux: single host name maps to hundreds of addresses, constantly swap in/out of DNS to make tracking difficult
+		\item domain generation algorithm: generate a large set of domain and contact a tue subset of them for instructions
+	\end{itemize}
+
+	\subsubsection{Active Code}
+	Server can ask client to execute code on its behalf
+	\begin{itemize}
+		\item Java
+		\item Javascript
+		\item ActiveX
+		\item Flash
+	\end{itemize}
+	Can be dangerous depending on sandboxing, ``trusted'' source
+
 	\subsection{Network Security Controls}
+	\subsubsection{Segmentation and Separation}
+	\begin{itemize}
+		\item have servers on different machines
+		\item segment by functional and access requirements
+		\item split by vulnerability (inside/outside firewall)
+	\end{itemize}
+
+	\subsubsection{Redundancy}
+	\begin{itemize}
+		\item avoid single points of failure
+		\item different software, genetic diversity
+		\item sync redundant servers closely (so they can easily take over)
+	\end{itemize}
+
+	\subsubsection{Access Controls}
+	\begin{itemize}
+		\item router ACL: drop packets with particular source and address
+			\begin{itemize}
+				\item expensive for high traffic
+				\item difficult to gather logs
+				\item source addresses can be spoofed
+			\end{itemize}
+		\item firewalls: filter based on other critera than addresses
+	\end{itemize}
+
 	\subsection{Firewalls}
+	\subsubsection{Overview}
+	\begin{itemize}
+		\item all traffic goes through these choke points, \textbf{firewalls}
+		\item carefully examine traffic, possibly refuse it access
+		\item does not protect against attacks from inside
+	\end{itemize}
+
+	\subsubsection{Types}
+	\begin{description}
+		\item[packet filtering gateways] make decision based on header of a packet, can drop spoofed traffic
+		\item[stateful inspection] keep state to identify packets that belong together
+		\item[application proxies] app-specific firewall with full knowledge about communication and sophisticated processing
+		\item[forward proxy] accessing server outside the company
+		\item[reverse proxy] accessing company from outside
+		\item[personal] home computer with a whitelist, protect against attacks on servers
+		\item[Demilitarized Zone] subnet containing external services with internal and exteranl firewall
+	\end{description}
+
 	\subsection{Honeypots}
+	\subsubsection{Overview}
+	\begin{itemize}
+		\item set up unprotected computer as a trap for attacker
+		\item computer should have no activity
+		\item monitor for any activity as sign of break-in
+		\item continue monitoring honeypot to learn about new threats
+	\end{itemize}
+
+	\subsubsection{Types}
+	\textbf{low interaction} daemon that emulates running host(s)
+	\begin{itemize}
+		\item[+] easy to install/maintain
+		\item[-] limited amount of information gathered
+		\item[-] easier to detect
+	\end{itemize}
+	\textbf{high interaction} deploy real hardware/software, tracking with stealth network switches and keyloggers
+	\begin{itemize}
+		\item[+] can capture lots of information
+		\item[+] can caputure unexpected behaviour
+		\item[-] complex
+	\end{itemize}
+
 	\subsection{Intrusion Detection Systems}
+	\subsubsection{Overview}
+	\textbf{IDS} monitor activity to identify malicious events
+	\begin{itemize}
+		\item recieve events from sensors
+		\item store and analyze
+		\item take action
+	\end{itemize}
+
+	\subsubsection{Host-based}
+	Run on a host to protect this host
+	\begin{itemize}
+		\item[+] can exploit lots of information
+		\item[-] miss out on information of other hosts
+		\item[-] if host gets subverted, so does IDS (single point of failure)
+	\end{itemize}
+
+	\subsubsection{Network-based}
+	Run on a dedicated node to protect all attached hosts
+	\begin{itemize}
+		\item[+] difficult to subvert
+		\item[-] has to rely on information available in packets
+	\end{itemize}
+	\textbf{Distributed IDS} combination of host-based and network-based
+
+	\subsubsection{Signature-based}
+	Detect attack ``signatures''
+	\begin{itemize}
+		\item[+] may exploits statistical analysis to catch tough stuff
+		\item[-] may fail if attacker modifies attack (polymorphic worms)
+	\end{itemize}
+
+	\subsubsection{Heuristic/Anomaly-based}
+	Look for behaviour that is out of the ordinary
+	\begin{itemize}
+		\item model good behaviour and alert if system doesn't follow model
+		\item model bad behaviour and alert if system resembles model
+		\item classify as 
+			\begin{itemize}
+				\item good
+				\item suspicious
+				\item unknown
+			\end{itemize}
+		\item learn to classify unknown events over file
+	\end{itemize}
+	
+
+
+
+
+
 \end{document}
