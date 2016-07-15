@@ -946,4 +946,347 @@ strcpy(buffer, argv[1]);
 
 
 
+	\section{Internet Application Security and Privacy}
+	\subsection{Cryptography}
+	\subsubsection{Overview}
+	\begin{description}
+		\item[cryptanalysis] breaking secret messages
+		\item[cryptography] making secret messages
+	\end{description}
+	\begin{itemize}
+		\item confidentiality: prevent eavesdropping
+		\item integrity: prevent message modification
+		\item authenticity: prevent impersonation
+	\end{itemize}
+
+	\subsubsection{Kerckhoffs Principle}
+	The security of a cryptosystem should not rely on a secret that's hard (or expensive) to change
+	\begin{itemize}
+		\item no secret encryption \textit{methods}
+		\item large class of encryption methods
+		\item make the class public information
+		\item use a secret key to specify which one
+		\item system only as secure as number of keys
+	\end{itemize}
+	
+	\subsubsection{Attacker's Information}
+	The attacker (eavesdropping) may know
+	\begin{itemize}
+		\item algorithm (public class of encryption method)
+		\item some part of the plaintext
+		\item corresponding plaintext/cipher pairs
+		\item access to encryption/decryption oracle
+	\end{itemize}
+	
+	\subsection{Secret-key Encryption}
+	\subsubsection{Overview}
+	\begin{description}
+		\item[symmetric encryption] same key used to encrypt is used to decrypt
+		\item[one-time pad] key is random bitstring same length as plaintext, XOR'd, used only once
+	\end{description}
+	Need a secure medium to share the secret key between two parties
+
+	\subsubsection{Computational Security}
+	Most security is ``imperfect'' and can be cracked with enough effort: trying every key
+	\begin{itemize}
+		\item 40-bit crypto: old US legal export limit, 18 hours on 1 computer
+		\item 56-bit crypto: DES, 134 years
+		\item 128-bit crypto: modern standard, $635*10^{21}$ years
+	\end{itemize}
+
+	\subsubsection{Ciphers}
+	\textbf{stream cipher} pseudorandom key used to XOR plaintext
+	\begin{itemize}
+		\item RC4 is used today
+		\item can be very fast
+		\item tricky to use correctly (same key for two different messages\dots)
+	\end{itemize}
+	\textbf{block cipher} operate on message one block at a time (64 or 128 bits)
+	\begin{itemize}
+		\item AES is modern implementation
+		\item \textbf{mode of operation} what to do with multiple blocks
+		\begin{itemize}
+			\item ECB: encrypt each next block separately, you'll be able to see pattern
+			\item CBC, CTR, GCM: use initial value as salt, don't expose pattern
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Public-key Encryption}
+	\subsubsection{Overview}
+	\textbf{asymmetric cryptography} different keys for encryption, decryption
+	\begin{itemize}
+		\item publicize your public key
+		\item other people send you messages encrypted with your public key
+		\item use private key to decrypt their messages
+	\end{itemize}
+	Issues:
+	\begin{itemize}
+		\item shortcuts to crack (unlike secret-key) e.g. $2^{33}$ work to crack 128-bit RSA
+		\item takes a long time to encrypt
+	\end{itemize}
+
+	\subsubsection{Hybrid cryptography}
+	\textbf{hybrid cryptography} combine speed of secret key with asymmetry of public key
+	\begin{itemize}
+		\item pick random 128-bit key for secret-key encryption
+		\item encrypt message with secret key
+		\item encrypt secret key with public key of reciever
+		\item send reciever secret-keyed message and public-keyed secret key
+	\end{itemize}
+
+	\subsection{Integrity}
+	\subsubsection{Overview}
+	Traditionally use \textbf{checksum} to verify message hasn't changed, but Mallory can usually easily change the message to maintain the checksum, so we need a \textbf{cryptographic checksum} (hard to find different message with same checksum) \\
+
+	The method of integrity checking is just like encyrption and depends on key/secret:
+	\begin{itemize}
+		\item no key: cryptographic hash
+		\item secret key: MAC
+		\item public key: signing
+	\end{itemize}
+
+	\subsubsection{Cryptographic Hash}
+	Without requiring a key we can use a \textbf{cryptographic hash} to compute $y = h(x)$, called \textbf{message digest}
+	\begin{itemize}
+		\item preimage-resistance: given $y$, hard to find $x$
+		\item second preimage-resistance: given $x$, hard to find $x'$ where $h(x') = h(x)$
+		\item collision resistance: hard to find distinct $x_1, x_2$ where $h(x_1) = h(x_2)$
+	\end{itemize}
+	Hash the message and send the message digest, checking the recieved message with the hash, but it only work is there is a secure way of sending the message digest
+
+
+	\subsection{Authentication}
+	\subsubsection{Message Authentication Codes}
+	For secret key encryption, use \textbf{MAC} which :
+	\begin{itemize}
+		\item large class of hash functions, \textbf{MAC}s
+		\item use shared secret key to pick correct one
+		\item only if you know secret key, can you generate or check computed hash (\textbf{tag})
+		\item SHA-1-HMAC, CBC-MAC
+	\end{itemize}
+	Combine with a cipher, usually Encrypt-then-MAC
+
+
+	\subsubsection{Digital Signing}
+	If we want to \textit{publicly} prove who sent it, \textbf{non-repudiatiation}, then use digital signatures
+	\begin{itemize}
+		\item sign a message with a private \textbf{signature key}
+		\item verify the message with their public \textbf{verification key}
+	\end{itemize}
+	Signing vs public key cryptography
+	\begin{itemize}
+		\item hybrid signatures also available: signing a hash of the message
+		\item sign your public keys to make them trustworthy
+		\item signing keys are long-lived, encryption keys are short-lived
+	\end{itemize}
+
+	\subsubsection{Certificate Authorities}
+	Key management is difficult, how to securely find a verification key:
+	\begin{itemize}
+		\item \textbf{manual keyring} know it personally, SSH
+		\item \textbf{web of trust} trust a friend, PGP
+		\item \textbf{certificate authority} trust a third party, TLS
+	\end{itemize}
+	\textbf{Certificate Authority} a third party that keeps a directory of verification keys
+	\begin{itemize}
+		\item a user sends the CA their verification key and signed personal information
+		\item CA ensures information is correct
+		\item CA generates and \textit{signs} a \textbf{certificate} of user's personal information and verification key
+	\end{itemize}
+	Everyone should have a copy of a CA verification key and each CA can issue certificates for CAs in levels below them
+	
+
+	\subsection{Security Controls}
+	\subsubsection{Program and OS Security}
+	Secret key cryptography can be difficult to defend, so use public key if local machine only needs access to public part: decryption and signature verification
+	\begin{itemize}
+		\item only install app if it was signed by vendor (BB)
+		\item only upgrade app if it was signed by developer (Android)
+		\item only allow signed executables (iOS)
+	\end{itemize}
+	\subsubsection{Encryption}
+	Encrypted code
+	\begin{itemize}
+		\item processor only runs encrypted code
+		\item decryption is processor-dependent
+	\end{itemize}
+	Encrypted data
+	\begin{itemize}
+		\item disk drive encryption to defend when stolen/lost
+		\item doesn't protect against other users
+	\end{itemize}
+
+	\subsection{Link-layer Security}
+	\subsubsection{Overview}
+	Intended to protect LAN
+	\begin{itemize}
+		\item WEP
+		\item WPA
+		\item WPA2
+	\end{itemize}
+
+	\subsubsection{WEP}
+	\textbf{Wired Equivalent Protocol}, not very good and multiple issues
+	\begin{itemize}
+		\item only changing part of key, v, is only 24 bits long
+		\item checksum used is linear and easily defeated
+		\item plaintext/ciphertext pair is given away by response, and allows for easy injection
+		\item plaintext/ciphertext enough to get key and decrypt messages
+	\end{itemize}
+
+	\subsubsection{WPA/WPA2}
+	\textbf{Wifi Protected Access} replaced WEP as a short-term patch
+	\begin{itemize}
+		\item replaced CRC-32 with real MAC
+		\item IV is 48 bits 
+		\item key changed frequently
+	\end{itemize}
+	\textbf{WPA2} 802.11i standard of WPA
+	\begin{itemize}
+		\item replace RC4 and MAC with CCM authenticated encryption mode (with AES)
+		\item strong except in PSK (pre-shared key) mode
+	\end{itemize}
+
+	\subsection{Network-layer Security}
+	\subsubsection{VPN}
+	\textbf{Virtual Private Network} security across networks (end-to-end)
+	\begin{itemize}
+		\item send through local VPN gateway
+		\item gateway encrypts and sends to remote gateway (e.g. tunnelling)
+		\item remote gateway decrypts and sends along
+	\end{itemize}
+	\textbf{Tunnelling} sending the message of one protocol in payload of another, out of sequence
+	\begin{itemize}
+		\item IP-over-TCP, because usually it is TCP being sent over IP
+		\item PPP-over-DNS, link layer over application layer
+	\end{itemize}
+	\subsubsection{VPN Style}
+	\textbf{IPsec} standard VPN setup
+	\begin{itemize}
+		\item \textbf{transport} mode
+			\begin{itemize}
+				\item connecting a single laptop to a home network
+				\item only content of original IP packet is encrypted
+			\end{itemize}
+		\item \textbf{tunnel} mode
+			\begin{itemize}
+				\item connecting two networks
+				\item contents \textit{and header} of original IP packet encrypted and authenticated
+				\item result placed inside new IP packet going to remote gateway
+			\end{itemize}
+	\end{itemize}
+	\begin{description}
+		\item[Microsoft PPTP] older protocol with design flaw like WEP
+		\item[Tunnel PPP] IP-over-PPP-over-ssh-over-TCP-over-IP
+		\item[OpenSSH] IP-over-SSH tunnelling directly
+	\end{description}
+
+	\subsection{Transport-layer}
+	\subsubsection{Security}
+	\textbf{TLS} standardized SSL for protecting HTTP connections
+	\begin{itemize}
+		\item client tells server its ciphersuites
+		\item server responds with certificate
+			\begin{itemize}
+				\item host name
+				\item verification key
+				\item admin info
+				\item signature from CA
+			\end{itemize}
+		\item server chooses ciphersuite
+		\item client validates certificate
+		\item client and server run agreement protocol
+			\begin{itemize}
+				\item establish key for symmetric encryption
+				\item choose MAC algorithm from ciphersuite
+			\end{itemize}
+		\item now they communicate using symmetric encryption and MAC
+	\end{itemize}
+	TLS provides
+	\begin{itemize}
+		\item server auth
+		\item message integrity
+		\item message confidentiality
+		\item client auth (optional)
+	\end{itemize}
+
+	\subsubsection{Privacy}
+	\textbf{Tor} the onion router, allows making TCP connection without revealing IP
+	\begin{itemize}
+		\item connect to three onion routers sequentially, creating keys $k1, k2, k3$
+		\item send a message M encrypted as $E_{k1}(E_{k2}(E_{k3}(M)))$, which gets decrypted along the way
+		\item each node only knows the previous and next nodes, not sender or reciever
+			\begin{itemize}
+				\item the website only communicates with node 3
+				\item node 3 communicates with node 2 and the website
+				\item node 2 communicates with node 1 and node3
+				\item node 1 communicates with you and node 2
+			\end{itemize}
+		\item replies are encrypted sequentially so that you recieve $E_{k1}(E_{k2}(E_{k3}(M)))$ 
+	\end{itemize}
+	Tor provides anonymity that is 
+	\begin{itemize}
+		\item unlinkable in the long term (connecting tomorrow is likely using different nodes)
+		\item linkable in the short term (refresh will use the same nodes)
+	\end{itemize}
+
+	\subsubsection{Nymity}
+	Continuum of \textbf{nymiyty}
+	\begin{itemize}
+		\item verinymity: ID, SIN card \dots
+		\item persistent pseudonymity: username on a website
+		\item linkable anonymity: prepaid phone card
+		\item unlinkable anonymity: cash transaction, Tor
+	\end{itemize}
+	Easier to get to a higher level from lower, so always start as low as possible
+
+	\subsection{Application-layer Security and Privacy}
+	\subsubsection{Remote Login}
+	\textbf{SSH} secure shell
+	\begin{itemize}
+		\item client connects
+		\item server sends verification key
+		\item client and server run agreement protocol to establish session keys
+		\item client authenticates to server
+		\item server accepts auth, login proceeds 
+	\end{itemize}
+	Two ways to authenticate
+	\begin{itemize}
+		\item send password over encrypted channel (server knows hash of password)
+		\item sign random challenge with private signature key (server needs to know your public signature key)
+	\end{itemize}
+
+	\subsubsection{Email}
+	\textbf{PGP} pretty good privacy, public-key email encryption
+	\begin{itemize}
+		\item hybrid encyrption of email messages 
+		\item digital signatures on email messages
+	\end{itemize}
+	Obtaining others' public keys and signatures keys is difficult
+	\begin{itemize}
+		\item find \textbf{fingerprint}, cryptographic hash of the key
+		\item double check fingerprints with the user or someone that knows them
+		\item having a web of users verifying each other is called \textbf{web of trust}
+	\end{itemize}
+
+	\subsubsection{Instant Messaging}
+	\textbf{Perfect forward secrecy} future key compromises should not reveal past communication
+	\begin{itemize}
+		\item use a session key created using Diffie-Hellman
+		\item discard the session key after use
+		\item use long-term keys to authenticate Diffie-Hellman
+	\end{itemize}
+	\textbf{Deniable authentication} authenticate the other person, but can't convince a third party who sent the message
+	\begin{itemize}
+		\item shared-key authentication to compute the MAC
+		\item use MAC, so auth is deniable
+	\end{itemize}
+	Implementations:
+	\begin{itemize}
+		\item \textbf{Off-The-Record Messaging} IM providing confidentiality, deniability
+		\item \textbf{Signal Protocol} extends deniability using \textbf{DAKE} (triple Diffie-Hellman key exchange)
+	\end{itemize}
+
+
+
 \end{document}
