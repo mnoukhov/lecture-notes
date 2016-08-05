@@ -1289,4 +1289,281 @@ strcpy(buffer, argv[1]);
 
 
 
+
+	\section{Database Security and Privacy}
+	\subsection{Introduction}
+	\begin{description}
+		\item[relational db] structured queryable collection of records
+		\item[record] data consisting of elements
+		\item[elements] fields of a record
+		\item[schema] structure set by database admin
+		\item[subschema] result of a query
+		\item[DBMS] database management system, provides support for queries/management
+		\item[relational model] store records in one or multiple tables (\textbf{relations})
+	\end{description}
+	\begin{itemize}
+		\item each table has columns (\textbf{attributes}) and rows (\textbf{tuples})
+		\item tables can have relations between each other
+	\end{itemize}
+
+	\subsection{Security Requirements}
+	\subsubsection{Database Integrity}
+	\begin{description}
+		\item[logical] protect against db corruption
+		\item[physical] recover from physical problems
+	\end{description}
+	\begin{itemize}
+		\item perform backups
+		\item keep transaction logs
+	\end{itemize}
+
+	\subsubsection{Element Integrity}
+	\begin{description}
+		\item[element integrity] ensure correctness/accuracy of elements
+		\item[access control] limit who can update
+		\item[element checks] validate correctness
+	\end{description}
+	\begin{itemize}
+		\item prevents mistakes by users
+		\item enforced by triggers
+		\item e.g. must be numeric, no more than one president
+	\end{itemize}
+	\begin{description}
+		\item[changelog/shadow fields] keep track to undo accidental changes
+		\item[error detection codes] protect against OS or HDD problems
+	\end{description}
+
+	updates must be atomic and two-phase (gather info, make change) to ensure integrity
+
+	\subsubsection{Referential Integrity}
+	Each table has
+	\begin{description}
+		\item[primary key] minimal set of attributes to unique identify each tuple (userid)
+		\item[foreign key] primary keys of other tables
+		\item[referential integrity] no dangling foreign keys (for each foreign key, there is a corresponding entry as a primary key)
+	\end{description}
+
+	\subsubsection{Auditability}
+	\begin{itemize}
+		\item keep an audit log of all db accesses
+		\item retroactively identify who accessed forbidden data
+		\item decide on granularity of logging
+	\end{itemize}
+
+	\subsubsection{Access Control}
+	\begin{itemize}
+		\item control at relation, record, or element level
+		\item control all ops (select, insert \ldots)	
+		\item maybe consider past queries (can give more info than intended)
+		\item maybe consider type of query
+	\end{itemize}
+
+	\subsubsection{User Authentication/Availability}
+	\begin{itemize}
+		\item database may do own authentication
+		\item facilitate sharing but make sure availability doesn't suffer from concurrent access
+	\end{itemize}
+
+	\subsection{Data Disclosure and Inference}
+	
+	\subsubsection{Data Disclosure}
+	Types:
+	\begin{itemize}
+		\item exact data
+		\item bounds
+		\item negative result (e.g. num of felonies != 0)
+		\item existence 
+		\item probable value
+	\end{itemize}
+
+	Balance needs of:
+	\begin{description}
+		\item[security] forbid any queries that access sensitive data, even if aggregate non-sensitive
+		\item[precision] aggregated result should reveal as much non-sensitive data as possible
+	\end{description}
+	
+	\subsubsection{Inference Attack}
+	\begin{description}
+		\item[inference] deriving sensitive data from (supposedly) non-sensitive data
+		\item[direct attack] directly yield sensitive data (e.g. obfuscate query)
+		\item[indirect attack] infer sensitive data from statistical result, tracker attack
+	\end{description}
+
+	Controls:
+	\begin{description}
+		\item[suppression] suppress sensitive data from result
+	\end{description}
+	\begin{itemize}
+		\item n-item k-percent rule: if a subset of $n$ records is responsible for over $k$ percent of the result, omit the $n$ records
+	\end{itemize}
+	\begin{description}
+		\item[concealing] answer is close to actual value but not exact
+	\end{description}
+	\begin{itemize}
+		\item combined result: report set or range of possible values
+		\item random sample: compute result on random sample of database
+		\item random data perturbation: add/subtract small random error before computing result
+	\end{itemize}
+
+	extra:
+	\begin{itemize}
+		\item query analysis: maintain history of user's queries and observe possible inferences
+	\end{itemize}
+
+	\subsubsection{Tracker Attack}
+	If DBMS refuses to answer queries that match $<k$ or $> N-k$ records, we can use a \textbf{tracker} to find a query $C$ using unrelated query $T$ and query everything $S$
+
+
+	\begin{align*}
+		&\text{If $C$ matches} <k : & q(C) & = q(C \vee T) + q(C \vee \neg T) - q(S) \\
+		&\text{If $C$ matches} > N - k: & q(C) & = 2*q(S) - q(\neg C \vee T) - q(\neg C \vee \neg T)
+	\end{align*}
+
+	\subsubsection{Differential Privacy}
+	\begin{itemize}
+		\item query reponse should not depend on individual being/not being part of the dataset
+		\item query $k$ has $\eta$-differential privacy if for all datasets $D$ and $D'$ differing by one row, probability $K(D)$ has a specific output is at most $e^{\eta}*$ probabilty $K(D')$ has this output ($0 \leq \eta \leq 1$)
+		\item achieve this by adding noise to result
+	\end{itemize}
+
+	\subsubsection{Data Aggregation}
+	Aggregating less sensitive results can form sensitive results, and it can be done by multiple people together outside the DBMS, tough to stop.
+
+	\subsection{Multilevel Security Databases}
+	\subsubsection{Definition}
+	\begin{itemize}
+		\item classification of information by confidentiality (confidential/not confidential)
+		\item granularity of classification (can be down to element-level)
+		\item each object is classified
+	\end{itemize}
+
+	\subsubsection{*-Property}
+	Implementing *-property is difficult
+	\begin{itemize}
+		\item write-up without reading is tough
+		\item write-downs need sanitation
+		\item trusted processes can do anything
+	\end{itemize}
+
+	\subsubsection{Approaches}
+	\textbf{confidentiality} different answers for query depending on clearance
+	\begin{itemize}
+		\item[-] hiding existance can mean having to allow duplicate records at different clearances (\textit{polyinstatiation})
+	\end{itemize}
+
+	\textbf{partitioning} separate DBs for each classification level
+	\begin{itemize}
+		\item[+] simple
+		\item[-] data redundancy in multiple DBs
+		\item[-] high level user needs combined high + low level data
+	\end{itemize}
+
+	\textbf{encryption} encrypt data with a key unique to classification level
+	\begin{itemize}
+		\item use securely: same value in different records should have different ciphertext
+		\item[-] processing is expensive because of decryption
+	\end{itemize}
+
+	\textbf{integrity lock} provide integrity and access control, use data items:
+	\begin{itemize}
+		\item actual data
+		\item integrity level (concealable)
+		\item crypto signature (or MAC) for above and item name and record number
+	\end{itemize}
+
+
+	\begin{itemize}
+		\item[+] any db can be used to store data item + integrity locks
+		\item[+] trusted procedure handles access control + manages locks, e.g. enforce *-property
+		\item[-] takes up more space
+		\item[-] makes processing more expensive
+		\item[-] must encrypt (on top of this!) if there are other ways to access db
+	\end{itemize}
+
+
+	\subsection{Design of Secure Databases}
+	A trusted front-end:
+	\begin{itemize}
+		\item authenticates user and forwards query to DBMS
+		\item gets result from DBMS and remove items user shouldn't see
+		\item allows use of exisiting DBMS and databases
+	\end{itemize}
+
+	\textbf{commutative filters} rewrite user query according to user's clearance (remove attributes, add constraints)
+	\begin{itemize}
+		\item discard forbidden data items early on
+		\item may still need to do post-processing
+	\end{itemize}
+
+	\textbf{distributed/federated db} forwards user query only to DBs user can access
+	\begin{itemize}
+		\item may need to combine results
+		\item doesn't scale to many different clearance levels
+	\end{itemize}
+
+	\textbf{views} logival database that is a subset of another database
+	\begin{itemize}
+		\item elements can correspond to an element or combination (e.g. sum)
+		\item show user only rows they're allowed to see
+		\item set \texttt{UNDEFINED} any elements they're not allowed to see
+	\end{itemize}
+
+	\textbf{truman semantics} pretend that everything user sees is everything that exists, don't fail queries just return incorrect results
+
+	\subsection{Data Mining and Data Release}
+	\subsubsection{Security Problems}
+	confidentiality
+	\begin{itemize}
+		\item can reveal sensitive info by aggregating different sources, 
+		\item companies can sell data to each other
+	\end{itemize}
+
+	integrity
+	\begin{itemize}
+		\item mistakes in data can lead to negative impact on people (e.g. no fly list mixup)
+		\item difficult to correct mistakes if data has been widely shared
+		\item false negatives also dangerous
+	\end{itemize}
+
+	availability
+	\begin{itemize}
+		\item naming conventions make combining databases difficult (e.g. last name, name, family name)
+		\item must distinguish between inability to find data and inability to find correlation
+	\end{itemize}
+
+	privacy
+	\begin{itemize}
+		\item data mining may reveal sensitive information
+		\item use \textbf{quasi-identifiers} that don't allow for reidentification
+		\item laws (PIPEDA, HIPAA) should control collection, use, disclosure
+		\item secret gov't orgs are tougher to control
+	\end{itemize}
+
+	\subsubsection{Privacy Preservation Metrics}
+	\textbf{$k$-anonymity} for each record there are at least $k-1$ other records from which this one cannot be distinguished
+	\begin{itemize}
+		\item \textbf{homogeneity attack} if the $k$ rows are identical (e.g. both for the k-anonymous and for actual field, e.g. disease) then knowing that someone is in the table means you know what their field is (e.g. Bob is in table, Bob is (902**,196*-*-*-*), Bob has cancer)
+		\item \textbf{background knowledge attack} knowing background info allows you to guess which of possible sensitive fields it is (even if there are > 1)
+	\end{itemize}
+	\textbf{$l$-diversity} for any quasi-identifier, there should be $l$ ``well-represented'' values of the sensitive field \\
+	\textbf{$t$-closeness} ensure the distributions of values for any quasi-identifier are within $t$ of the distribution for the whole table
+
+	\subsubsection{Privacy Preserving Methods}
+	\textbf{value swapping} swapping values of some data fields for a subset of released records
+	\begin{itemize}
+		\item linking to other data can no longer be completely accurate
+		\item makes strong correlations less strong, makes weak correlations go away
+	\end{itemize}
+	\textbf{adding noise} adding small postive or negative error to each value
+	\begin{itemize}
+		\item given distribution of noisy data and distribution of noise, can calculate distribution of data (but not actual data)
+		\item protects privacy without sacrificing accuracy
+	\end{itemize}
+	\textbf{sampling} release only a subset of data with geographic coarsening and top/bottom coding 
+	\begin{itemize}
+		\item \textbf{geographic coarsening} restrict geographic identifiers to those containing a certain pop. (e.g 100k people)
+		\item \textbf{top/bottom coding} replace top/bottom identifier with ranges (e.g. $90, 95 \rightarrow \ge 90$)
+	\end{itemize}
+	\textbf{synthetic data} build a distribution model based on gathered data and generate synthetic data with similar characteristics
+
 \end{document}
