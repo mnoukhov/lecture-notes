@@ -718,7 +718,167 @@
 	\end{itemize}
 
 	\subsection{Complex Frameworks}
+	\subsubsection{C2}
+	\textbf{C2} indirect invocation where independednt components communicate only through message routing connectors with rules
+	\begin{itemize}
+		\item no component-component links
+		\item connector-connector links allowed
+		\item requests go \textit{up} in architecture
+		\item notifications flow \textit{down} in architecture
+		\item no circularity
+	\end{itemize}
+	characteristics:
+	\begin{itemize}
+		\item state components in upper layers
+		\item control logic in middle layers
+		\item interface components in lower layers
+	\end{itemize}
 
+	\subsubsection{Distributed Objects}
+	COBRA
+	\begin{itemize}
+		\item objects are all separate
+		\item procedure calls only interface to objects
+		\item adaptor interface between object and state
+	\end{itemize}
+
+	\subsection{Validation}
+	increase the confidence that architecture is fit for purpose
+	\begin{itemize}
+		\item scenarios: come up with scenarios that test quality requirements
+			\begin{itemize}
+				\item choose the quality attribute (scalability)
+				\item come up with a stimulus (user load doubles in 3 weeks)
+				\item find response (server scaled to two clusters)
+			\end{itemize}
+		\item prototypes
+			\begin{itemize}
+				\item proof of concept: can the architecture satisfy requirements
+				\item proof of technology: does the tech selected behave as expected
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Finding a Design}
+	\begin{itemize}
+		\item analogy searching: examine other fields for ideas that are analagous to the problem
+		\item brainstorming: rapidly generate many different ideas and thoughts
+		\item literature searching: examine current state-of-art and read about subject
+		\item morphological charts: identify all functions, means to do function, choose means that work
+		\item removing mental blocks: change problem to one you can solve
+		\item control design strategy: identify and review critical decisions
+		\item insights from reqs: find improvements to exisiting systems from reqs
+		\item insights from implementation: use constraints on implementation to narrow down
+	\end{itemize}
+
+	\section{Security and Trust}
+	refer to CS458 notes
+
+	\subsection{Security Models}
+	\subsubsection{CCAC}
+	\textbf{connector-centric architectural access control} safeguards resources based on the connections a requesting program has
+	\begin{itemize}
+		\item if no connections to resource, deny
+		\item if direct connections to resource, allow
+		\item else accumulate the safeguards needed to get from the requestor to object and check if the requestor has necessary priveleges
+	\end{itemize}
+
+	\subsection{Trust Management}
+	\subsubsection{Overview}
+	\begin{description}
+		\item[trust] subjective probability that an agent will do something to affect your actions
+		\item[reputation] expectation about entities behaviour
+		\item[decentralized] no central authority to coordinate and control
+		\item[trust management] how entities establish and maintain trust relationships
+	\end{description}
+	\begin{itemize}
+		\item credential and policy-based
+		\item reputation-based
+	\end{itemize}
+	\textbf{trust model} describes trust information and how it
+	\begin{itemize}
+		\item is used to establish trust
+		\item is combined to determine trustworthiness
+		\item is modified in response to experiences
+	\end{itemize}
+	\subsection{Threats}
+	Ways decentralized systems can be attacked:
+	\begin{itemize}
+		\item impersonation
+		\item fraudulent actions
+		\item misrepresentation
+		\item collusion 
+		\item additions of unknowns
+	\end{itemize}
+	Ways to combat threats:
+	\begin{itemize}
+		\item authentication: combat impersonation and repudiation
+		\item separation of internal and external data: resolve conflicts
+		\item making trust visible: shouldn't be localized to one component
+		\item comparable trust: should be able to measure it somehow
+	\end{itemize}
+
+	\subsection{Architectural Style}
+	communication unit
+	\begin{itemize}
+		\item handles interactions with other entities
+		\item no dependencies
+	\end{itemize}
+	information unit
+	\begin{itemize}
+		\item stores trust and app-specific info
+		\item depends on interactions with entities to get info
+	\end{itemize}
+	trust unit
+	\begin{itemize}
+		\item computes trusworthiness and guides trust-related decisions
+		\item depends on communication and information
+	\end{itemize}
+	application unit
+	\begin{itemize}
+		\item app-specific functionality
+		\item enables local decision making
+		\item builds on other three units
+	\end{itemize}
+
+	\subsection{PACE}
+	\textbf{Practical Architectural approach for Composing Egocentric trust} a trust-centered architecture based off of C2
+	\subsubsection{Communication Layer}
+	\begin{itemize}
+		\item multiple protocol handlers translate internal events into external messages and vice-versa
+		\item communication manager creates and manages protocol handlers
+		\item signature manager signs requests and verifies notifications
+	\end{itemize}
+	\subsubsection{Information Layer}
+	separates internal beliefs of a peer from reported info of other peers
+	\begin{itemize}
+		\item internal info stores internal beliefs
+		\item external info stores messages from others
+	\end{itemize}
+	\subsubsection{Trust Layer}
+	incorporates different trust models and algorithms
+	\begin{itemize}
+		\item key manager generates unique public-private keys
+		\item credential manager keeps track of peers identities
+		\item trust manager requests public keys from peers and responds to revocations
+	\end{itemize}
+	\subsubsection{Application Layer}
+	encapsulates user-interface and app-specific components
+	\begin{itemize}
+		\item application trust rules encapsulates chosen rules for assigning trust and supports trust relationships
+	\end{itemize}
+
+	\section{Design Patterns}
+	\begin{itemize}
+		\item observer
+		\item composite
+		\item facade
+		\item command
+		\item state
+		\item strategy
+		\item visitor
+		\item decorator
+		\item proxy
+	\end{itemize}
 
 
 
