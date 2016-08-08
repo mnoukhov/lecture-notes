@@ -261,4 +261,466 @@
 	recommended practice as the fundamental organization of a system, embodied in its components, their relationships to each other and the environment, and the principles governing its design and evolution. 
 	\end{quote}
 
+	major concepts
+	\begin{itemize}
+		\item processing/functionality/behaviour
+		\item data/information/store
+		\item interaction/communication/coordination
+	\end{itemize}
+	
+	\subsection{Components}
+	\textbf{component} encapsulates processing and data
+	\begin{itemize}
+		\item encapsulates a subset of the system’s functionality and/or data
+		\item restricts access to that subset via an explicitly defined interface
+		\item has explicitly defined dependencies on its required execution context
+		\item typically provides application-specific interface
+	\end{itemize}
+
+	\subsection{Connectors}
+	\textbf{connector} effecting and regulating interactions among components
+	\begin{itemize}
+		\item can be simple procedure calls or shared data access
+		\item provide application independent interaction facilities
+	\end{itemize}
+	functions:
+	\begin{itemize}
+		\item modelling arbritrary complex interactions
+		\item aiding system evolution (w/ flexibility)
+		\item support for connector interchange 
+	\end{itemize}
+
+	\subsubsection{Roles}
+	\begin{itemize}
+		\item communication
+			\begin{itemize}
+				\item supports different communication mechanisms (procedure call, message passing)
+				\item constraints on cummincation structure (pipes)
+				\item constriaints of quality of service (persistence)
+				\item separates communication from computation
+			\end{itemize}
+		\item coordination
+			\begin{itemize}
+				\item determine computation control
+				\item control delivery of data
+				\item separate control from computation
+				\item elements of contorl are in communication, conversion, facilitation
+			\end{itemize}
+		\item conversion
+			\begin{itemize}
+				\item interaction of mismatched components (adaptors, wrappers)
+				\item mismatches based on interaction
+					\begin{itemize}
+						\item type
+						\item number
+						\item frequency
+						\item order
+					\end{itemize}
+			\end{itemize}
+		\item facilitation
+			\begin{itemize}
+				\item mediate and streamline interaction of components intended to interoperate
+				\item govern access to shared data
+				\item ensure performance profiles (load balancing)
+				\item provide sync mechanisms (critical sections, monitors)
+			\end{itemize}
+	\end{itemize}
+
+	\subsubsection{Types}
+	\begin{itemize}
+		\item procedure call
+		\item data access
+		\item event
+		\item stream
+		\item linkage
+		\item distributor
+		\item arbitrator
+		\item adaptor
+	\end{itemize}
+
+	\subsection{Configuration}
+	\textbf{configuration} (topology) set of specific associations between components and connectors \\
+
+	non-functional constraints:
+	\begin{itemize}
+		\item technical: technologies to use, usually non-negotiable
+		\item business: design constraints for business reasons, usually non-negoitiable
+		\item quality: quality attributes, usually for users
+	\end{itemize}
+
+	\subsection{Architecture Views}
+	\textbf{logical view} 
+	\begin{itemize}
+		\item decompose the system structure into software components and connectors
+		\item Map functionality/requirements/use cases onto the components
+		\item concern: functionality
+		\item audience: devs and users
+	\end{itemize}
+	\textbf{process view}
+	\begin{itemize}
+		\item model dynamic aspects of architecture
+		\item describe how processes/threads communicate
+		\item concern: functionality, performance
+		\item audience: devs
+	\end{itemize}
+	\textbf{development view} 
+	\begin{itemize}
+		\item static organization of the software code artifacts
+		\item mapping between the logical view and the code is also required
+		\item concern: reuse, portability, build
+		\item audience: devs
+	\end{itemize}
+	\textbf{physical view}
+	\begin{itemize}
+		\item define the hardware environment (hosts, networks, storage, etc.) where the software will be deployed
+		\item mapping b/w logical and physical also necessary
+		\item concern: performance, availability, scalability, reliability
+		\item audience: dev ops
+	\end{itemize}
+
+	\subsection{Quality Attributes}
+	\textbf{performance} how much work the application needs to do in a given time
+	\begin{itemize}
+		\item throughput: amount of work to do in unit time (transactions per second)
+		\item response time: latency in processing a transaction (guaranteed vs average)
+		\item deadlines: limited window to complete a transaction
+	\end{itemize}
+
+	\textbf{scalability} how well a solution works when a problem size increases, what can increase?
+	\begin{itemize}
+		\item request load (e.g. more users)
+		\item simulataneous connections
+		\item data size
+		\item deployment
+	\end{itemize}
+
+	\textbf{modifiability} how easy it is to change the application for new funcitonality \\
+
+	\textbf{security} understanding security requirements and devising mechanisms to support them, most commonly
+	\begin{itemize}
+		\item authentication
+		\item authorization
+		\item encryption
+		\item integrity
+		\item non-repudiation
+	\end{itemize}
+
+	\textbf{availability} proportion of required time a system is usable
+	\begin{itemize}
+		\item downtime is caused by failures in applications
+		\item recoverability is close to availability
+	\end{itemize}
+
+	\textbf{integration} ease with which application can be incorporated into broader context (data integration, providing an API) \\
+
+	\textbf{portability} how easily an application can be executed on different hardware/software than what it was developed for
+	\begin{itemize}
+		\item good portability comes from modularity
+		\item will depend on libraries and platform choices
+	\end{itemize}
+
+	\textbf{testability} how easy is it to test an application
+	\begin{itemize}
+		\item more complex = more difficult to test
+	\end{itemize}
+
+	\textbf{supportability} how easy it is to support once deployed
+	\begin{itemize}
+		\item support involves diagnosing and fixing problems
+		\item good supportability involves built-in facilities (e.g. in-depth logs)
+	\end{itemize}
+
+	\textbf{implementaboility} how easy it is to implement
+
+	\section{Middleware Architectures}
+	\subsection{Introduction}
+	\textbf{middleware} connect software components so they can use exchange info with easy-to-use mechanisms, layer of software between application and OS
+	\begin{itemize}
+		\item location, service discovery, replication
+		\item protocol handling, quality of service
+		\item sync, concurrrency, storage
+		\item access control, authentication
+	\end{itemize}
+	examples of offerings
+	\begin{itemize}
+		\item app updates
+		\item messaging and notification services
+		\item integration brokering 
+		\item device detection 
+		\item location API
+		\item asset transcoding
+		\item mobile analytics
+		\item capacity offload
+		\item app-level security
+	\end{itemize}
+
+	\subsection{Layers}
+	Comes in four layers:
+	\begin{itemize}
+		\item business process orchestrators
+		\item message brokers
+		\item application servers
+		\item transport
+	\end{itemize}
+
+	\subsubsection{Transport}
+	basic pipes
+	\begin{itemize}
+		\item sending requests and moving data
+		\item making communication straightforward in distributed architectures
+	\end{itemize}
+	examples:
+	\begin{itemize}
+		\item message-oriented middleware
+		\item distributed OS
+		\item SOAP
+	\end{itemize}
+
+	\subsubsection{Application Server}
+	on top of transport, provides:
+	\begin{itemize}
+		\item transaction
+		\item security
+		\item directory services
+	\end{itemize}
+	examples:
+	\begin{itemize}
+		\item .NET
+		\item JEE
+		\item CCM
+	\end{itemize}
+
+	\subsubsection{Message Brokers}
+	on top of either application server or transport, provides message processing engine:
+	\begin{itemize}
+		\item fast message transformation
+		\item features for defining how to exchange and manipulates route messages between components
+	\end{itemize}
+	examples:
+	\begin{itemize}
+		\item Mute
+		\item WebSphere Message Broker
+		\item SonicMQ
+	\end{itemize}
+
+	\subsubsection{Business Process Orchestrators}
+	on top of message brokers, support workflow-style applications
+	\begin{itemize}
+		\item provide tools to describe business processes
+		\item execute and manage intermediate states during execution
+	\end{itemize}
+
+	\section{Architectural Analysis}
+	\subsection{Introduction}
+	\textbf{architectural analysis} the acticitty of discovering important system properties using system's architectural models
+	\begin{itemize}
+		\item analyzing the architecture we have designed and modeled
+	\end{itemize}
+
+	\subsection{Goals}
+	\textbf{completeness} 
+	\begin{itemize}
+		\item external: fulfill system's requirements using correct notation
+		\item internal: fully model all elements and properly capture all design decisions
+	\end{itemize}
+	\textbf{consistency} ensure that different model elements do not contract each other, internal
+	\begin{itemize}
+		\item name
+		\item interface: consistent return values, paramters \dots
+		\item behaviour: consistent behaviour of elements (e.g. 0-indexed or 1-indexed)
+		\item interaction: consistent function calls on object (e.g. should still be able to call \texttt{remove} on empty queue)
+		\item refinement: relationships must be maintained between high and lower level models (e.g. can't override lower level design decisions)
+	\end{itemize}
+	\textbf{compatibility} adheres to guidelines and constraints, external
+	\begin{itemize}
+		\item the adopted style(guide)
+		\item reference architecture
+		\item architectural standard
+	\end{itemize}
+	\textbf{correctness} architectural model fulfills system spec, and implementation fulfills model, external
+	\begin{itemize}
+		\item \textit{fulfillment} is key to correctness
+		\item account for non-functional elements, properties
+	\end{itemize}
+
+	\subsection{Cohesion/Coupling}
+	Two extra goals
+	\begin{description}
+		\item[cohesion] whether components fit cleanly with minimal overlap and extras
+		\item[coupling] whether components and connectors have excessive interaction
+	\end{description}
+	\begin{itemize}
+		\item component/connector-level
+			\begin{itemize}
+				\item does each component and connector provide specific service correctly
+				\item does the composition of components and connectors do this
+			\end{itemize}
+		\item subsystem/system-level: analyze compositions of components and connecttors to form subsystem, then complete system
+			\begin{itemize}
+				\item pairwise conformance of two interacting components in terms of interface
+				\item over-all properties as sub-systems and system is built
+			\end{itemize}
+		\item data exchanged
+			\begin{itemize}
+				\item structure: data typing, organization
+				\item flow through system: point-point, client-server \dots
+				\item properties: performance, security, statefulness \dots
+			\end{itemize}
+		\item consistency at different abstraction levels
+			\begin{itemize}
+				\item refined models stay consistent with higher levels
+			\end{itemize}
+		\item comparison of architectures
+			\begin{itemize}
+				\item composition (of components and connectors)
+				\item interactions (of components and connectors)
+				\item characteristics of data exchange
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Characteristics}
+	We are interested in several ``key concerns''
+	\begin{itemize}
+		\item structural (static): connectivity of components
+			\begin{itemize}
+				\item lowel level components contained in higher level composite
+				\item points of network distribution and concurrency paths
+			\end{itemize}
+		\item behavioral (static): individual component/connector functionalities
+			\begin{itemize}
+				\item composite and collaborative functionalities (especially w/ off the shelf components, connectors)
+			\end{itemize}
+		\item interaction (dynamic):  number and type of connectors and protocols
+			\begin{itemize}
+				\item timing 
+				\item synchronicity
+				\item buffering
+			\end{itemize}
+		\item non-functional (static/dynamic): properties across whole system
+			\begin{itemize}
+				\item security
+				\item performance
+				\item quality
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Levels of Formality}
+	level of formality in analysis requires levels of formality in models used
+	\begin{itemize}
+		\item informal (box-line) models
+			\begin{itemize}
+				\item high level analysis 
+				\item performed manually with little automation
+			\end{itemize}
+		\item semi-formal models (e.g. UML)
+			\begin{itemize}
+				\item deeper level of analysis
+				\item requires a little training 
+				\item partial automation
+			\end{itemize}
+		\item formal models (e.g. Wright, Acme)
+			\begin{itemize}
+				\item very deep analysis
+				\item requires good understanding of syntax + semantics used
+				\item better automation
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Types}
+	\textbf{static analysis} without executing models
+	\begin{itemize}
+		\item structural concerns
+	\end{itemize}
+	\textbf{dynamic analysis} executing/simulating models
+	\begin{itemize}
+		\item behaviour
+		\item interaction
+		\item some non-functional properties
+	\end{itemize}
+	\textbf{scenario-driven analysis} asserting a property for entire system 
+	\begin{itemize}
+		\item can be static of dynamic
+		\item very food for specific non-functional across whole system
+	\end{itemize}
+	
+	\subsection{Technique Categories}
+	\subsubsection{Inspection and Review}
+	requires
+	\begin{itemize}
+		\item preparation for inspection
+		\item preparation of participants
+		\item review/analysis of architectural material
+		\item anaysis of review results and recommended actions
+		\item follow-up and closeout
+	\end{itemize}
+	\begin{itemize}
+		\item Goals: completeness, consistency, correctness, and compatibility
+		\item Scope: spans components, connectors and the complete system; also includes data-exchange and compatibility to reference architecture and compliance to standards
+		\item Concerns: structural, behavioral, interaction and non-functional
+		\item Types of models: mostly semi-formal
+		\item Types of analysis: best for static analysis and scenario-based
+		\item Automation: manual
+		\item Stakeholders: all stakeholders may participate
+	\end{itemize}
+
+	\subsubsection{Model}
+	uses system's architectural descriptions and manipulation of the model
+	\begin{itemize}
+		\item Goals: internal completeness, consistency, correctness
+		\item Scope: spans components, connectors and the complete system; also includes data-exchange and compatibility to standards
+		\item Concerns: mostly structural
+		\item Types of models: mostly semi-formal to formal
+		\item Types of analysis: best for static analysis of connectivity, interface \dots
+		\item Automation: partially automated
+		\item Stakeholders: technical stakeholders
+	\end{itemize}
+
+	\subsubsection{Simulation}
+	software simultion of the architecture model
+	\begin{itemize}
+		\item Goals: completeness, consistency, correctness, and compatibility
+		\item Scope: entire system, specific subsystem, data exchange
+		\item Concerns: behavioral, interaction, non-functional
+		\item Types of models: formal
+		\item Types of analysis: dynamic, scenario-based
+		\item Automation: mostly automated
+		\item Stakeholders: all stakeholders may participate
+	\end{itemize}
+
+	\section{Architecture Design}
+	\subsection{Frameworks}
+	\begin{itemize}
+		\item n-tier client server
+			\begin{itemize}
+				\item web clients $\rightarrow$ web server $\rightarrow$ application server $\rightarrow$ databases
+			\end{itemize}
+		\item messaging
+			\begin{itemize}
+				\item clients $\rightarrow$ queue $\rightarrow$ server
+			\end{itemize}
+		\item publish-subscribe
+			\begin{itemize}
+				\item publisher $\rightarrow$ topic $\rightarrow$ subscriber
+			\end{itemize}
+		\item broker
+			\begin{itemize}
+				\item senders $\rightarrow$ (inport) broker (outport) $\rightarrow$ reciever
+			\end{itemize}
+		\item process coordinator
+			\begin{itemize}
+				\item process request $\rightarrow$ process coordinator $\rightarrow$ result
+					\begin{itemize}
+						\item step 1 $\rightarrow$ server 1
+						\item step 2 $\rightarrow$ server 2
+						\item \dots
+					\end{itemize}
+			\end{itemize}
+	\end{itemize}
+
+	\subsection{Complex Frameworks}
+
+
+
+
+
 \end{document}

@@ -269,7 +269,7 @@ strcpy(buffer, argv[1]);
 	\end{itemize}
 	\begin{description}
 		\item[salami attack] attack from many smaller attacks
-		\item[privelege escalation] raises privelege of attacker, can cause legitimate higher privelege code to execute attack
+		\item[privelege escalation] raises privelege of attacker, can cause legitimate higher privelege code to execute attack (e.g. \texttt{-froot} attack)
 		\item[rootkit] tool to gain priveleged access and then hide itself
 	\end{description}
 	\begin{itemize}
@@ -677,10 +677,10 @@ strcpy(buffer, argv[1]);
 		\item uncontrollable traffic flow through different nodes
 		\item different types of nodes/links
 	\end{itemize}
-	TCP/IP suite covers
+	TCP/IP suite covers (abridged)
 	\begin{itemize}
-		\item network access: ethernet, wifi \dots
-		\item internet: network, IP \dots
+		\item link: ethernet, wifi \dots
+		\item network: IP \dots
 		\item transport: TCP, UDP \dots
 		\item application: HTTP, FTP, SSL \dots
 	\end{itemize}
@@ -753,7 +753,7 @@ strcpy(buffer, argv[1]);
 	Discovering the \textit{existance} of communication between two parties (e.g. whistleblower) can be sensitive, and can be discovered by attacker looking at send and recieve addresses in headers
 
 	\subsubsection{Integrity Attacks}
-	Modify packets as they are being transmitted
+	Package modification (as they are being transmitted)
 	\begin{itemize}
 		\item change payload
 		\item change sender/reciever
@@ -761,7 +761,7 @@ strcpy(buffer, argv[1]);
 		\item delete or create packets
 		\item TCP will can use a checksum but that can be easily defeated
 	\end{itemize}
-	Poison DNS cache
+	DNS cache poisoning
 	\begin{itemize}
 		\item feed wrong mappings to system redirecting them to your address
 		\item DNNSEC created to combat this
@@ -939,11 +939,14 @@ strcpy(buffer, argv[1]);
 				\item unknown
 			\end{itemize}
 		\item learn to classify unknown events over file
+		\item[-] high rate of false positives
+		\item[-] can be fooled by sophisticated attack
 	\end{itemize}
-	
-
-
-
+	Two step process:
+	\begin{enumerate}
+		\item train on examples of normal behaviour (while definitely not infected)
+		\item test on running behaviour of vulnerable machine
+	\end{enumerate}
 
 
 	\section{Internet Application Security and Privacy}
@@ -960,14 +963,12 @@ strcpy(buffer, argv[1]);
 	\end{itemize}
 
 	\subsubsection{Kerckhoffs Principle}
-	The security of a cryptosystem should not rely on a secret that's hard (or expensive) to change
+	The security of a cryptosystem should not rely on a secret that's hard (or expensive) to change 
 	\begin{itemize}
-		\item no secret encryption \textit{methods}
-		\item large class of encryption methods
-		\item make the class public information
-		\item use a secret key to specify which one
+		\item ``The enemy knows the system'' - Claude Shannon
 		\item system only as secure as number of keys
 	\end{itemize}
+	Don't use a secret encryption \textit{method} but instead have a large class of public encryption methods and use a secret key to choose one
 	
 	\subsubsection{Attacker's Information}
 	The attacker (eavesdropping) may know
@@ -1093,7 +1094,7 @@ strcpy(buffer, argv[1]);
 		\item CA ensures information is correct
 		\item CA generates and \textit{signs} a \textbf{certificate} of user's personal information and verification key
 	\end{itemize}
-	Everyone should have a copy of a CA verification key and each CA can issue certificates for CAs in levels below them
+	Everyone should have a copy of a CA verification key and each CA can issue certificates for CAs in levels below them (\textbf{public key infrastructure})
 	
 
 	\subsection{Security Controls}
@@ -1126,9 +1127,23 @@ strcpy(buffer, argv[1]);
 	\end{itemize}
 
 	\subsubsection{WEP}
-	\textbf{Wired Equivalent Protocol}, not very good and multiple issues
+	\textbf{Wired Equivalent Protocol} terrible protocol, should guarantee
 	\begin{itemize}
-		\item only changing part of key, v, is only 24 bits long
+		\item confidentiality (prevent from reading your traffic)
+		\item access control (prevent from using your wifi)
+		\item data integrity
+	\end{itemize}
+	but doesn't do any of those things
+	\begin{itemize}
+		\item sender and reciever share secret $k$ (40 or 104 bits)
+		\item computer checksum $c(M)$
+		\item pick random IV $v$ and generate keystream $RC4(v, k)$
+		\item ciphertext = keystream $\oplus <M,c(M)>$
+		\item transmit $v$ and ciphertext
+	\end{itemize}
+	Many issues:
+	\begin{itemize}
+		\item v is only 24 bits long, and the only part of the encryption that changes
 		\item checksum used is linear and easily defeated
 		\item plaintext/ciphertext pair is given away by response, and allows for easy injection
 		\item plaintext/ciphertext enough to get key and decrypt messages
