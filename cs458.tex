@@ -1497,7 +1497,7 @@ strcpy(buffer, argv[1]);
 
 
 	\subsection{Design of Secure Databases}
-	A trusted front-end:
+	\textbf{trusted front-end} way of securing DB using regular insecure DB
 	\begin{itemize}
 		\item authenticates user and forwards query to DBMS
 		\item gets result from DBMS and remove items user shouldn't see
@@ -1507,13 +1507,13 @@ strcpy(buffer, argv[1]);
 	\textbf{commutative filters} rewrite user query according to user's clearance (remove attributes, add constraints)
 	\begin{itemize}
 		\item discard forbidden data items early on
-		\item may still need to do post-processing
+		\item[-] may still need to do post-processing
 	\end{itemize}
 
 	\textbf{distributed/federated db} forwards user query only to DBs user can access
 	\begin{itemize}
 		\item may need to combine results
-		\item doesn't scale to many different clearance levels
+		\item[-] doesn't scale to many different clearance levels
 	\end{itemize}
 
 	\textbf{views} logival database that is a subset of another database

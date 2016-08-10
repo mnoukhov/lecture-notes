@@ -271,7 +271,7 @@
 	\subsection{Components}
 	\textbf{component} encapsulates processing and data
 	\begin{itemize}
-		\item encapsulates a subset of the system’s functionality and/or data
+		\item encapsulates a subset of the system's functionality and/or data
 		\item restricts access to that subset via an explicitly defined interface
 		\item has explicitly defined dependencies on its required execution context
 		\item typically provides application-specific interface
@@ -295,7 +295,7 @@
 		\item communication
 			\begin{itemize}
 				\item supports different communication mechanisms (procedure call, message passing)
-				\item constraints on cummincation structure (pipes)
+				\item constraints on commincation structure (pipes)
 				\item constriaints of quality of service (persistence)
 				\item separates communication from computation
 			\end{itemize}
@@ -304,7 +304,7 @@
 				\item determine computation control
 				\item control delivery of data
 				\item separate control from computation
-				\item elements of contorl are in communication, conversion, facilitation
+				\item elements of control are in communication, conversion, facilitation
 			\end{itemize}
 		\item conversion
 			\begin{itemize}
@@ -337,6 +337,21 @@
 		\item arbitrator
 		\item adaptor
 	\end{itemize}
+
+	\subsubsection{In Practise}
+	To select a connector, determine:
+	\begin{itemize}
+		\item interaction and interconnection needs
+		\item roles to be fulfilled (e.g. communication)
+		\item each connector's:
+			\begin{itemize}
+				\item type (e.g. stream)
+				\item dimensions (e.g. delivery)
+				\item values for each dimension (e.g. best effort, once, at most once \dots)
+			\end{itemize}
+		\item if multi-type, atomic connector compatibilities
+	\end{itemize}
+
 
 	\subsection{Configuration}
 	\textbf{configuration} (topology) set of specific associations between components and connectors \\
@@ -430,7 +445,7 @@
 		\item good supportability involves built-in facilities (e.g. in-depth logs)
 	\end{itemize}
 
-	\textbf{implementaboility} how easy it is to implement
+	\textbf{implementability} how easy it is to implement
 
 	\section{Middleware Architectures}
 	\subsection{Introduction}
@@ -455,12 +470,12 @@
 	\end{itemize}
 
 	\subsection{Layers}
-	Comes in four layers:
+	Comes in four layers (from bottom):
 	\begin{itemize}
-		\item business process orchestrators
-		\item message brokers
-		\item application servers
 		\item transport
+		\item application servers
+		\item message brokers
+		\item business process orchestrators
 	\end{itemize}
 
 	\subsubsection{Transport}
@@ -512,18 +527,18 @@
 
 	\section{Architectural Analysis}
 	\subsection{Introduction}
-	\textbf{architectural analysis} the acticitty of discovering important system properties using system's architectural models
+	\textbf{architectural analysis} the activity of discovering important system properties using system's architectural models
 	\begin{itemize}
 		\item analyzing the architecture we have designed and modeled
 	\end{itemize}
 
 	\subsection{Goals}
-	\textbf{completeness} 
+	\textbf{completeness} (internal and external)
 	\begin{itemize}
 		\item external: fulfill system's requirements using correct notation
 		\item internal: fully model all elements and properly capture all design decisions
 	\end{itemize}
-	\textbf{consistency} ensure that different model elements do not contract each other, internal
+	\textbf{consistency} ensure that different model elements do not contradict each other (internal)
 	\begin{itemize}
 		\item name
 		\item interface: consistent return values, paramters \dots
@@ -531,13 +546,13 @@
 		\item interaction: consistent function calls on object (e.g. should still be able to call \texttt{remove} on empty queue)
 		\item refinement: relationships must be maintained between high and lower level models (e.g. can't override lower level design decisions)
 	\end{itemize}
-	\textbf{compatibility} adheres to guidelines and constraints, external
+	\textbf{compatibility} adheres to guidelines and constraints (external)
 	\begin{itemize}
-		\item the adopted style(guide)
+		\item the adopted style/styleguide
 		\item reference architecture
 		\item architectural standard
 	\end{itemize}
-	\textbf{correctness} architectural model fulfills system spec, and implementation fulfills model, external
+	\textbf{correctness} architectural model fulfills system spec, and implementation fulfills model (external)
 	\begin{itemize}
 		\item \textit{fulfillment} is key to correctness
 		\item account for non-functional elements, properties
@@ -867,7 +882,16 @@
 		\item application trust rules encapsulates chosen rules for assigning trust and supports trust relationships
 	\end{itemize}
 
-	\section{Design Patterns}
+	\section{Design Patterns and Styles}
+	\subsection{Architecture Styles}
+	\begin{itemize}
+		\item event-driven architecture
+		\item pipes and filters
+		\item multi-layered architecture
+		\item p2p architecture
+	\end{itemize}
+	\url{https://cs.uwaterloo.ca/~rtholmes/teaching/2015winter/cs446/slides/SE2_09-10-11_arch-styles.pdf}
+	\subsection{Design Patterns}
 	\begin{itemize}
 		\item observer
 		\item composite
@@ -878,7 +902,11 @@
 		\item visitor
 		\item decorator
 		\item proxy
+		\item mobile code
+		\item interpreter
 	\end{itemize}
+	\url{https://cs.uwaterloo.ca/~rtholmes/teaching/2015winter/cs446/slides/SE2_17_design-patterns.pdf}
+
 
 
 
