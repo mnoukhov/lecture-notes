@@ -1,0 +1,305 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={},
+  pdfsubject={Lecture notes from },
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+\usepackage{cleveref}
+\usepackage{enumitem}
+\usepackage{array}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{CS489: Machine Learning}}
+	\date{Winter 2017, \\ \center Notes written from Pascal Poupart's lectures.}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+	\section{Introduction}
+	\begin{description} 
+		\item[machine learning] giving computers ability to learn without being explicitly programmed
+		\item A machine learns from experience $E$ wrt to some class of tasks $T$ and performance measure $P$ if its performance in task $T$, as measured by $P$, improves with $E$
+	\end{description}
+
+	\subsection{Supervised Learning}
+	\begin{defn}
+		given a training set of examples $(x,f(x))$, return a hypothesis $h$ that approximates $h$
+	\end{defn}
+	Two types:
+	\begin{description}
+		\item[classification] where output space consists of \textit{categorical} values
+		\item[regression] where output space consists of \textit{numerical} values
+	\end{description}
+
+	\subsubsection{Hypothesis Space}
+	\begin{description}
+		\item[hypothesis space] set of all hypotheses $H$ that the learner may consider
+		\item[consistent] if hypothesis $h$ agrees with $f$ on all examples
+		\item[realizable] if the hypothesis space constains the consistent function
+	\end{description}
+	our objective can be restated as a search problem to find the hypothesis $h$ in hypothesis space $H$ that minimizes some objective
+
+	\subsection{Unsupervised Learning}
+
+	\section{Nearest Neighbour}
+
+	\subsection{Basic NN}
+	\begin{description}
+		\item[nearest neighbours] label any example with the label of its nearest neighbours
+	\end{description}
+	classification: $h(x) = y_{x*}$  \\
+	where $y_{x*} = \text{argmin}_{x'} d(x, x')$ is the label associated with the nearest neighbour
+
+	\subsection{KNN}
+	\begin{description}
+		\item[k-nearest neighbours] assign the most frequent label among $k$ nearest neighbours
+	\end{description}
+	let $knn(x)$ be the $k$ nearest neighbours \\
+	then $y_x = \text{mode}({y_{x'}|x' \in knn(x)})$
+
+	\begin{description}
+		\item[overfitting] a hypothesis $h$ with training accuracy higher than its own testing accuracy $\max (0, \text{trainAccuracy}(h) - \text{testAccuracy}(h))$
+			\begin{itemize}
+				\item classifier too expressive
+				\item noisy data
+				\item lack of data
+			\end{itemize}
+		\item[underfitting] a hypothesis $h$ with training accuracy lower than testing accuracy of some other hypothesis $h'$, 
+			$\max (0, \max_{h'} \text{trainAccuracy}(h) - \text{testAccuracy}(h'))$
+            \begin{itemize}
+                \item classifier not expressive enough
+            \end{itemize}
+        \item[$k$-fold cross validation] split data in $k$ equal subsets, run $k$ experiments testing on one subset, and training on all the others. Report average accuracy
+	\end{description}
+
+    \begin{description}
+        \item[weighted knn] weight each neighbour by distance
+        \item[knn regression] $y_x$ is a real value, $ y_x \leftarrow average({y_{x'}|x' \in knn(x)})$
+    \end{description}
+
+    \section{Linear Regression}
+    \label{sec:linear_regression}
+    
+    \subsection{Least Squares}
+    \label{sub:introduction}
+
+    find linear hypothesis $h$: $t = w^T \bar x$, find $w$ to minimize euclidean L2 loss
+    \begin{equation*}
+        w* = argmin_w \frac{1}{2} \sum_{n=1}^N (t_n - w^T \bar x_n)^2
+    \end{equation*}
+    where 
+$ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{-1} b$ or $Aw = b$ which can be solved as a linear system
+
+    \subsubsection{Regularization}
+    \label{ssub:Regularization}
+    Least squares can be unstable, overfit, so change optimization
+    \begin{equation*}
+        w* = argmin_w \frac{1}{2} \sum_{n=1}^N (t_n - w^T \bar x_n)^2 + \frac{\lambda}{2} \norm{w}^2_2
+    \end{equation*}
+    or $(\lambda I + A)w = b$
+
+    \subsection{Maximum Likelihood}
+    \label{sub:maximum_likelihood}
+    derive the same thing but from a different perspective: assume $y = w^T \bar x + $ gaussian noise so
+    \begin{align*}
+        Pr(y | \bar X, w, \sigma) &= N(y | w^T \bar X, \sigma^2) \\
+        w* &= argmax_w Pr(y | \bar X, w, \sigma)  \\
+            ... \\
+           &= argmin_w \sum_n (y_n - w^T \bar x_n)^2 
+    \end{align*}
+    which is the same as least squares
+    
+    \subsection{Maximum A Posteriori}
+    \label{sub:maximum_a_posteriori}
+
+    find $w*$ with highest posterior probability, knowing that prior $P(w) = N(0, \Sigma)$
+    \begin{align*}
+        Pr(w|X,y) &\propto Pr(w) Pr(y | X, w) \\
+        \intertext{therefore for optimization:}
+        w* &= argmax_w Pr(w | \bar X, y) \\
+           &... \\
+           &= argmin_w \sum_n (y_n - w^T \bar x_n)^2 + w^T \Sigma^{-1} w \\
+    \intertext{let $\Sigma^{-1} = \lambda I$}
+           &= argmin_w \sum_n(y_n - w^T \bar x_n)^2 + \lambda \norm{w}^2_2 \\
+    \end{align*}
+    
+    and we arrive at least squares with regularization
+
+    \subsection{Expected Squared Loss}
+    \label{sub:expected_squared_loss}
+
+    \begin{align*}
+        E[loss] &= \int_{x,y} Pr(x,y)(y - w^T \bar x)^2 dxdy \\
+             &= \int_{x,y} Pr(x,y)(y - f(x))^2 + \int_x Pr(x)(f(x) - w^T \bar x)^2 dx \\
+             &= \text{noise (constant) + error (relative to $w$)}
+        \intertext{lets consider the expected error wrt our dataset S}
+        E[error] &= E_S[(f(x) - w_S^T \bar)^2] \\
+                 &= (f(x) - E_S[w_S^T \bar x])^2 + E_S[(E_S[w_S^T \bar x] - w_S^T \bar x)^2] \\
+                 &= \text{bias$^2$ + variance}
+        \intertext{therefore putting it together}
+    E[loss] &= \text{bias$^2$ + variance + noise}
+    \end{align*}
+    
+    \subsection{Bayesian Linear Regression}
+    \label{sub:bayesian_linear_regression}
+    instead of using $w*$, compute weighted avg prediction using $Pr(w|\bar X, y)$
+
+    \begin{equation*}
+        Pr(w | \bar X, y) = N(\bar w, A^{-1})
+    \end{equation*}
+    \begin{flalign*}
+        \text{where } w &= \sigma^{-2} A^{-1} \bar X^T y& \\
+        A &= \sigma^{-2} \bar X^T \bar X + \Sigma^{-1}&
+    \end{flalign*}
+
+    let $x_*$ be the input for which we predict $y_*$
+
+    \begin{align*}
+        Pr(y_*|\bar x_*, \bar X, y) &= \int_w Pr(y_*|\bar x_*, w) Pr(w | \bar X, y) dw \\
+                                    & ... \\
+                                    &= N(\bar x_*^T A^{-1} \bar X^T y, \bar x_*^T A^{-1}\bar x_*)
+    \end{align*}
+    
+    \section{Statistical Learning}
+    \label{sec:statistical_learning}
+
+    \subsection{Introduction}
+
+    \begin{description}
+        \item[probability distribution] a specific probability for each event in our sample space
+        \item[joint distribution] spec of probabilities for all combinations of events $Pr(A \wedge B)$
+        \item[conditional probabilties] $Pr(A|B) = Pr(A \wedge B) / Pr(B)$
+    \end{description}
+
+    \subsection{Bayes Rules}
+    \label{sub:bayes_ruless}
+    
+    \begin{equation*}
+        Pr(B|A) = \frac{Pr(A|B)Pr(B)}{Pr(A)}
+    \end{equation*}
+    \begin{description}
+        \item[posterior] P(B|A)
+        \item[likelihood] P(A|B)
+        \item[prior] P(B)
+        \item[normalizing] P(A)
+        \item[evidence] A
+    \end{description}
+
+    \subsection{Bayesian Learning}
+    \label{sub:bayesian_learning}
+
+    computing the posterior of hypothesis given evidence using Bayes' theorem:
+    \begin{equation*}
+        Pr(H|e) = k Pr(e|H) Pr(H)
+    \end{equation*}
+
+    properties:
+    \begin{itemize}
+        \item[+] optimal (given prior)
+        \item[+] no overfitting (all hypotheses considered)
+        \item[-] intractable if hypothesis space is large
+    \end{itemize}
+    
+    \subsection{Approximate Bayesian Learning}
+    \label{sub:approximate_bayesian_learning}
+    
+    \begin{description}
+        \item[Maximum A Posteriori] make prediction based on most probable hypothesis (vs basing on all hypotheses weighted by probability)
+    \end{description}
+    \begin{equation*}
+        h_{map} = argmax_{h_i} Pr(h_i | e)
+    \end{equation*}
+    \begin{itemize}
+        \item[+] controlled overfitting
+        \item[+] converges as data increases
+        \item[-] less accurate than Bayesian prediction
+        \item[-] maybe be intractable!
+    \end{itemize}
+
+    \begin{description}
+        \item[Maximum Likelihood] simplify MAP by assuming uniform prior $Pr(h_i) = Pr(h_j) \forall i,j$
+    \end{description}
+    \begin{equation*}
+        h_{ml} = argmax_{h_i} Pr(e | h_i)
+    \end{equation*}
+    \begin{itemize}
+        \item[+] still converges
+        \item[-] least accurate because ignore prior info
+        \item[-] overfits
+    \end{itemize}
+    also, can be easier than MAP: $h_{ml} = argmax_h \sum_n \log Pr(e_n|h)$
+    
+    
+    
+    
+
+\end{document}
