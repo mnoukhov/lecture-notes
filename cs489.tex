@@ -10,7 +10,8 @@
 \usepackage{color}
 \usepackage{mathtools}
 \usepackage{multicol}
-\usepackage[lined]{algorithm2e}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
 \usepackage{float}
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
@@ -51,7 +52,6 @@
 \newtheorem*{theorem}{Theorem}
 
 \setlength{\marginparwidth}{1.5in}
-\setlength{\algomargin}{0.75em}
 
 \DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
 
@@ -298,7 +298,352 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
     \end{itemize}
     also, can be easier than MAP: $h_{ml} = argmax_h \sum_n \log Pr(e_n|h)$
     
+    \section{Mixture of Gaussians}
+    \label{sec:mixture_of_gaussians}
+
+    \subsection{Introduction}
+    Assume:
+    \begin{itemize}
+        \item each prior is frequency: $Pr(C = c_k) = \pi_k$
+        \item $Pr(x|C)$ is gaussian
+        \item covariance matrix $\Sigma$ is used for each class $Pr(x|c_k) \propto e^{- \frac{1}{2} (x-\mu_k)^T \Sigma^(-1) (x - \mu_k)}$
+    \end{itemize}
+
+    Where:
+    \begin{align*}
+        \pi    &= \frac{\sum_n y_n}{N}             &\text{average } y \\
+        \mu_k  &= \frac{\sum_{n \in c_k} x_n}{N_k} &\text{mean of class } k \\
+        \Sigma &= \frac{N_1}{N} S_1 + \frac{N_2}{N} S_2 \ldots &\text{covariance} \\
+        S_k    &= \frac{1}{N_k} \sum_{n \in c_k} (x_n - \mu_k)(x_n - \mu_k)^T &\text{weighted variance}\\
+    \end{align*}
+
+    \subsection{Two Class}
+    \label{sub:two_class}
     
+    Then if there are two classes $c_k$ and $c_j$,
+    \begin{align*}
+    Pr(c_k|x) &= \frac{1}{1 + e^{-w^T x + w_0)}} \\
+              &= \sigma (w^Tx + w_0)
+    \end{align*}
+    choose the best class as the one with probability $> 0.5$, so class boundary is at 
+
+    \begin{align*}
+        \sigma (w^T_k x + w_0) &= 0.5 \\
+        w^T_k \bar x &= 0 \text{ is a linear separator}
+    \end{align*}
+    
+    \subsection{Multi-class}
+    \label{sub:multi_class}
+    
+    Normalize using softmax: 
+    
+    \begin{align*}
+        Pr(c_k|x) &= \frac{Pr(c_k)Pr(x|c_k)}{\sum_j Pr(c_j) Pr(x|c_j)} \\
+                  &= \frac{e^{w^T_k \bar x}}{\sum_j e^{w^T_j \bar x}}
+    \end{align*}
+
+    
+    \section{Logistic Regression}
+    \label{sec:logistic_regression}
+    
+    \subsection{Introduction}
+    MoG is restrictive, assumes everything is a gaussian. Generalize to exponential family:
+    \begin{equation*}
+        Pr(x|\Theta_k) = \exp (\Theta^T_k T(x) - A(\Theta_k) + B(x))
+    \end{equation*}
+    \begin{flalign*}
+        \text{where } & \Theta_k : \text{parameters of class } k& \\
+                      & T(x), A(\Theta_k), B(x) : \text{arbitrary functions}& 
+    \end{flalign*}
+    and the posterior $Pr(c_k|x) = \sigma (w^T x + w_0)$ which we will learn directly by maximum likelihood, in general it is
+    \begin{itemize}
+        \item \textbf{logistic sigmoid} for binary 
+        \item \textbf{softmax} for multiclass
+    \end{itemize}
+
+    \subsection{Logisitc Regression Classification}
+    \label{sub:logisitc_regression_classification}
+    
+    For some dataset $(X,y)$ and for two classes $y \in {0,1}$:
+    \begin{equation*}
+        w^* = argmax_w \prod_n \sigma (w^T \bar x_n)^{y_n} (1-\sigma (w^T \bar x_n))^{1 - y_n}
+    \end{equation*}
+    so our objective is 
+    \begin{align*}
+        L(w) &= - \sum_n y_n \ln \sigma (w^T \bar x_n) + (1 - y_n) \ln (1 - \sigma (w^T \bar x_n))
+        \intertext{finding the min by setting derivative to 0}
+        \frac{dL}{dw} &= 0 \\
+        0 &= \sum_n [\sigma (w^T \bar x_n) - y_n] \bar x_n
+    \end{align*}
+    and since we can't isolate $w$ we use \textbf{Newton's Method} to iteratively solve:
+    \begin{equation*}
+        w \rightarrow w - H^{-1} \nabla L(w)
+    \end{equation*}
+    \begin{flalign*}
+        \text{where } &H = \bar X R \bar X^T \text{ is the hessian }& \\
+                      &R = 
+        \begin{bmatrix}
+            \sigma_1(1 - \sigma_1) & & \\
+                                   & ... & \\
+                                   & & \sigma_N(1 - \sigma_N)
+        \end{bmatrix} \\
+                      &\sigma_k = \sigma (w^T \bar x_k)
+    \end{flalign*}
+
+    \subsection{Regularization}
+    To ensure that we can inverse $H$ (so it isn't singular), add $\lambda$:
+    \begin{equation*}
+        H = \bar X R \bar X^T + \lambda I
+    \end{equation*}
+    
+    \subsection{Non-linear Regression}
+    \label{sub:non_linear_regression}
+    Non-linear regression using the same algorithm, map inputs to a different space! 
+
+    Use non-linear basis functions $\phi_i$, so for 
+    \begin{flalign*}
+        &\phi_0 (x) = 1& \\
+        &\phi_1 (x) = x& \\
+        &\phi_2 (x) = x^2&
+    \end{flalign*}
+    the hypothesis space is $H = \{x \leftarrow w_0 \phi_0 (x) + w_1 \phi_1 (x) + w_2 \phi_2 (x) | w_i \in \Re \}$
+    
+    \vspace{5mm}
+
+    common basis functions:
+    \begin{itemize}
+        \item polynomial $\phi_j (x) = x^j$
+        \item gaussian $\phi_j (x) = e^{- \frac{(x - \mu_j)^2}{2s^2}}$
+        \item sigmoid $\phi_j (x) = \sigma (\frac{x - \mu_j}{s})$
+        \item fourier, wavelets \ldots
+    \end{itemize}
+
+    
+    \section{Perceptron}
+    \label{sec:perceptron}
+    
+    \subsection{Computer vs Brain}
+    \label{sub:computer_vs_brain}
+    Computer:
+    \begin{itemize}
+        \item bunch of gates
+        \item electrical signals by gates
+        \item sequential and parallel
+        \item fragile
+    \end{itemize}
+    Brain 
+    \begin{itemize}
+        \item network of neurons
+        \item nerve signal propogate
+        \item parallel
+        \item robust (neurons die)
+    \end{itemize}
+
+    ANN Unit consists of weights $w$ and activation function $h$, so that output $y_j = h(W_j \bar x)$. Structure is either \textbf{feed-forward} or \textbf{recurrent}
+
+    \subsection{Perceptron Learning}
+    \label{sub:perceptron_learning}
+    
+    Learning is done separately for each unit $j$:
+    \begin{algorithmic}
+        \ForAll{pairs $(x,y)$}
+            \If{output is correct} 
+                \State {Do nothing}
+            \ElsIf{output = 0, label = 1} 
+                \State{$\forall_i W_{ji} \rightarrow W_{ji} + x_i$}
+            \ElsIf{output = 1, label = 0} 
+                \State{$\forall_i W_{ji} \rightarrow W_{ji} - x_i$}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+    
+    \subsection{Alternative Learning}
+    \label{sub:alternative_learning}
+    let $M$ be the set of misclassified examples (where $y_n w^T \bar x_n < 0$) then find $w$ to minimize number of misclassifications:
+    \begin{equation*}
+        E(w) = - \sum_{(x_n, y_n) \in M} y_n w^T \bar x_n
+    \end{equation*}
+    Use \textbf{gradient descent} 
+    \begin{equation*}
+        w \leftarrow w - \eta \nabla E 
+    \end{equation*}
+    where $\eta$ is the learning rate
+
+    \vspace{5mm}
+
+    If we adjust $w$ one example at a time, we use \textbf{sequential gradient descent} which is equivalent to threshold perceptron learning when $\eta = 1$
+
+    \subsection{Linear Separability}
+    \label{sub:linear_separability}
+    Threshold perceptron converges iff the data is linearly separable
+    
+    \begin{description}
+        \item[linear separator] $w^T \bar x$, since it is linear in $w$
+    \end{description} 
+
+    \subsection{Other Networks}
+    \label{sub:other_networks}
+    \begin{description}
+        \item[Sigmoid Perceptron] "soft" linear separators (same $H$ as \hyperref[sec:logistic_regression]{linear regression})
+    \end{description}
+    \begin{equation*}
+        E(w) = \frac{1}{2} \sum_n (y_n - \sigma (w^T \bar x_n))^2
+    \end{equation*}
+    \begin{algorithmic}
+        \ForAll{$(x_n, y_n)$}
+        \State $E_n \leftarrow y_n - \sigma (w^T \bar x_n)$
+        \State $w \leftarrow w + \eta E_n \sigma (w^T \bar x_n)(1 - \sigma (w^T \bar x_n)) \bar x_n$
+        \EndFor
+    \end{algorithmic} 
+
+    \section{Multilayer Neural Networks}
+    \label{sec:multilayer_neural_networks}
+    
+    \subsection{Introduction}
+    Previously, our basis functions were fixed, but we can remove that restriction by learning non-linear basis functions.
+    \begin{align*}
+        \label{eq:}
+        \text{hidden unit } z_j &= h_1 (w_j^{(1)} \bar x) \\
+        \text{output unit } y_k &= h_1 (w_j^{(2)} \bar x)  \\
+        \text{both units } y_k &= h_2(\sum_j w_{kj}^{(2)} h_1 (\sum_i w_{ji}^{(1)} x_i))
+    \end{align*}
+    if we consider our hidden input to be a basis function, then this is equivalent to a linear regression and a learned basis function, e.g.
+    \begin{itemize}
+        \item non-linear regression: $h_1$ is a non-linear function, $h_2$ is identity
+        \item non-linear classification: $h_1$ is a non-linear function, $h_2$ is sigmoid
+    \end{itemize}
+
+    \subsection{Backpropogation}
+    \label{sub:backpropogation}
+    Error function:
+    \begin{align*}
+        E(w) &= \frac{1}{2} \sum_n \norm{f(x_n, W) - y_n}^2_2 \\
+        \text{where } f(x,W) &= \sum_j w_{kj}^{(2)} \sigma (\sum_i w_{ji}^{(1)}x_i)
+        \intertext{so our update rule for gradient descent is}
+        w_{ji} &\leftarrow w_{ji} - \eta \frac{\delta E_n}{\delta w_{ji}} \\
+        \text{where } \frac{\delta E_n}{\delta w_{ji}}  &= \delta_j z_i
+    \end{align*}
+    Do gradient update in two phases:
+    \begin{enumerate}
+        \item \textbf{forward}: compute output $z_j$ of each unit $j$
+            \begin{equation*}
+                z_j = h(\sum_i w_{ji} z_i)
+            \end{equation*}
+        \item \textbf{backward}: compute delta $\delta_j$ at each unit $j$
+            \begin{equation*}
+                d_j = \begin{cases}
+                    h'(a_j)(z_i - y_i), &\text{ if $j$ is output} \\
+                    h'(a_j)\sum_k w_{kj} \delta_k &\text{ if $j$ is a hidden unit before $k$}
+                \end{cases}
+            \end{equation*}
+    \end{enumerate}
+
+    Analysis:
+    \begin{itemize}
+        \item fast computation
+        \item slow convergence, may get trapped in local optima
+        \item prone to overfitting, solve with
+            \begin{itemize}
+                \item early stopping
+                \item regularization
+            \end{itemize}
+    \end{itemize}
+
+    \section{Kernel Methods}
+    \label{sec:kernel_methods}
+
+    \subsection{Introduction}
+    Data may not be linearly separable, so map into a high-dimensional space where it is! This is computationally difficult though, so instead calculate a similarity measure (dot product) in the high dimensional space and use algorithms that only need that measure.
+    \begin{description}
+        \item[kernel methods] use large set of fixed non-linear basis functions, with a ``dual trick'' to make complexity depend on amount of data instead of number of basis functions
+        \item[kernel function] $k(x, x') = \phi(x)^T \phi(x') $ for some basis function $\phi(x)$
+    \end{description} 
+
+    linear regression objective, setting derivative to 0 gives us
+    \begin{align*}
+        w &= - \frac{1}{\lambda} \sum_n (w^T \phi (x_n) - y_n) \phi (x_n)
+    \intertext{so $w$ is a linear combination of inputs in feature space }
+    &= \{\phi (x_n) | 1 \leq n \leq N \} \\
+    \text{substitute }w &= \phi a \\
+    \text{where } \phi &= [\phi(x_1) \ldots \phi(x_n)] \\
+    a  &= [a_1, \ldots a_n]^T
+    \intertext{now let $K = \Phi^T \Phi$, therefore our prediction}
+    y_* &= \phi (x_*)^T \Phi a \\
+        &= k(x_*, X)(K + \lambda I)^{-1} y
+    \end{align*}
+    For this we need to just find dual solution $a$ instead of $w$
+    \begin{itemize}
+        \item now depends on \# of data instead of \# of basis function
+        \item can use many more basis functions
+        \item don't actually need $\Phi$, just need a semi-definite kernel $K, \exists \Phi \mid K = \Phi^T\Phi$ or all eigenvalues $\geq 0$
+    \end{itemize}
+
+
+    \subsection{Common Kernels}
+    \label{sub:common_kernels}
+    Common kernels:
+    \begin{itemize}
+        \item polynomial $k(x,x') = (x^Tx' + c)^M, c \geq 0$
+        \item gaussian $k(x,x') = \exp (-\frac{\norm{x - x'}^2}{2 \sigma^2})$
+    \end{itemize}
+
+    Also construct more kernels using rules. Let $k_1(x, x')$ and $k_2(x,x')$ be valid kernels, and $x = \begin{pmatrix} x_a \\ x_b \end{pmatrix}$ then it is also valid $k(x,x') = $
+    \begin{itemize}
+        \item $ck_1(x,x') \ \forall c > 0$
+        \item $f(x)k_1(x,x')f(x') \ \forall f$
+        \item $q(k_1(x,x')) \text{ where q is a polynomial with coeffs } \geq 0$
+        \item $\exp k_1(x,x')f(x') $
+        \item $k_1(x,x') + k_2(x,x') $
+        \item $k_1(x,x')k_2(x,x') $
+        \item $k_3(\phi (x),\phi (x'))$
+        \item $x^T A x' \text{ where A is symmetric positive semi-definite}$
+        \item $k_a(x_a,x_a') + k_b(x_b,x_b')$
+        \item $k_a(x_a,x_a') k_b(x_b,x_b')$
+    \end{itemize}
+
+
+    Kernels can also be defined wrt to sets, strings, graphs. E.g. $k(d_1, d_2) =$ similarity between two documents
+
+    \subsection{Example}
+    \label{sub:example}
+    Show that $k(x,z) = (x^T z)^2$ is a valid kernel by finding $\phi$
+    \begin{align*}
+        k(x,z) &= (x^T z)^2 \\
+               &= (x_1 z_1 + x_2 z_2)^2 \\
+               &= x_1^2 z_1^2 + 2 x_1 z_1 x_2 z_2 + x_2^2 z_2^2 \\
+               &= (x_1^2, \sqrt 2 x_1 x_2, x_2^2) (z_1^2, \sqrt 2 z_1 x_2, z_2^2)^T \\
+               &= \phi(x)^T \phi(z)
+    \intertext{after separating $x$ and $z$ we find that}
+    \phi(x) &= (x_1^2, \sqrt 2 x_1 x_2, x_2^2)^T
+    \end{align*}
+    
+    
+
+    \section{Gaussian Processes}
+    \label{sec:gaussian_processes}
+    
+
+    \section{Support Vector Machines}
+    \label{sec:support_vector_machines}
+    
+    \subsection{Comparison to Perceptron}
+    \label{sub:comparison_to_perceptron}
+
+    Perceptron:
+    \begin{itemize}
+        \item linear separator
+        \item simple update rule
+        \item prone to overfitting
+    \end{itemize}
+    SVM:
+    \begin{itemize}
+        \item unique max-margin linear separator
+        \item quadratic optimization
+        \item robust to overfitting
+    \end{itemize}
+    
+    
+     
     
     
 
