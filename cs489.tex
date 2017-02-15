@@ -90,6 +90,20 @@
 		\item A machine learns from experience $E$ wrt to some class of tasks $T$ and performance measure $P$ if its performance in task $T$, as measured by $P$, improves with $E$
 	\end{description}
 
+    Three types:
+    \begin{itemize}
+        \item supervised
+        \item unsupervised
+        \item reinforcement
+    \end{itemize}
+
+    Long-term goals:
+    \begin{itemize}
+        \item meta-programming
+        \item lifelong machine learning
+        \item transfer learning
+    \end{itemize}
+
 	\subsection{Supervised Learning}
 	\begin{defn}
 		given a training set of examples $(x,f(x))$, return a hypothesis $h$ that approximates $h$
@@ -107,8 +121,6 @@
 		\item[realizable] if the hypothesis space constains the consistent function
 	\end{description}
 	our objective can be restated as a search problem to find the hypothesis $h$ in hypothesis space $H$ that minimizes some objective
-
-	\subsection{Unsupervised Learning}
 
 	\section{Nearest Neighbour}
 
@@ -145,6 +157,17 @@
         \item[weighted knn] weight each neighbour by distance
         \item[knn regression] $y_x$ is a real value, $ y_x \leftarrow average({y_{x'}|x' \in knn(x)})$
     \end{description}
+
+    properties:
+    \begin{itemize}
+        \item[+] lazy learning (learn on test)
+        \item[+] concpetually simple
+        \item[+] flexible decision boundaries
+        \item[-] good distance measures are hard to find
+        \item[-] noise can strongly influence
+        \item[-] can't handle more than a few dozen attributes/features
+        \item[-] requires a lot of computation and memory
+    \end{itemize}
 
     \section{Linear Regression}
     \label{sec:linear_regression}
@@ -221,6 +244,9 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
         A &= \sigma^{-2} \bar X^T \bar X + \Sigma^{-1}&
     \end{flalign*}
 
+    \subsection{Bayesian Prediction}
+    \label{sub:bayesian_prediction}
+    
     let $x_*$ be the input for which we predict $y_*$
 
     \begin{align*}
@@ -228,6 +254,7 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
                                     & ... \\
                                     &= N(\bar x_*^T A^{-1} \bar X^T y, \bar x_*^T A^{-1}\bar x_*)
     \end{align*}
+
     
     \section{Statistical Learning}
     \label{sec:statistical_learning}
@@ -261,13 +288,17 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
     \begin{equation*}
         Pr(H|e) = k Pr(e|H) Pr(H)
     \end{equation*}
-
+    where $k$ is a normalization constant such that the sum of all $Pr(H | e) = 1$ \\
     properties:
     \begin{itemize}
         \item[+] optimal (given prior)
         \item[+] no overfitting (all hypotheses considered)
         \item[-] intractable if hypothesis space is large
     \end{itemize}
+    prediction:
+    \begin{equation*}
+        Pr(X|e) = \sum_i Pr(X|h_i) P(h_i|e)
+    \end{equation*}
     
     \subsection{Approximate Bayesian Learning}
     \label{sub:approximate_bayesian_learning}
@@ -275,9 +306,11 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
     \begin{description}
         \item[Maximum A Posteriori] make prediction based on most probable hypothesis (vs basing on all hypotheses weighted by probability)
     \end{description}
-    \begin{equation*}
-        h_{map} = argmax_{h_i} Pr(h_i | e)
-    \end{equation*}
+    \begin{align*}
+        h_{map} &= argmax_{h_i} Pr(h_i | e) \\
+                &= argmax_{h_i} Pr(e | h_i) Pr(h) \\
+        Pr(X | e) &= Pr(X | h_{map})
+    \end{align*}
     \begin{itemize}
         \item[+] controlled overfitting
         \item[+] converges as data increases
@@ -288,9 +321,10 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
     \begin{description}
         \item[Maximum Likelihood] simplify MAP by assuming uniform prior $Pr(h_i) = Pr(h_j) \forall i,j$
     \end{description}
-    \begin{equation*}
-        h_{ml} = argmax_{h_i} Pr(e | h_i)
-    \end{equation*}
+    \begin{align*}
+        h_{ml} &= argmax_{h_i} Pr(e | h_i) \\
+        Pr(X | e) &= Pr(X | h_{ml})
+    \end{align*}
     \begin{itemize}
         \item[+] still converges
         \item[-] least accurate because ignore prior info
@@ -298,6 +332,7 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
     \end{itemize}
     also, can be easier than MAP: $h_{ml} = argmax_h \sum_n \log Pr(e_n|h)$
     
+
     \section{Mixture of Gaussians}
     \label{sec:mixture_of_gaussians}
 
@@ -306,8 +341,13 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
     \begin{itemize}
         \item each prior is frequency: $Pr(C = c_k) = \pi_k$
         \item $Pr(x|C)$ is gaussian
-        \item covariance matrix $\Sigma$ is used for each class $Pr(x|c_k) \propto e^{- \frac{1}{2} (x-\mu_k)^T \Sigma^(-1) (x - \mu_k)}$
+        \item covariance matrix $\Sigma$ is used for each class 
     \end{itemize}
+
+    We can use maximum likelihood to estimate the parameters:
+    \begin{equation*}
+        Pr(x|c_k) \propto e^{- \frac{1}{2} (x-\mu_k)^T \Sigma^{-1} (x - \mu_k)}
+    \end{equation*}
 
     Where:
     \begin{align*}
@@ -322,9 +362,13 @@ $ \bar x = \begin{pmatrix} 1 \\ x \end{pmatrix} $ and we can solve with $w = A^{
     
     Then if there are two classes $c_k$ and $c_j$,
     \begin{align*}
-    Pr(c_k|x) &= \frac{1}{1 + e^{-w^T x + w_0)}} \\
-              &= \sigma (w^Tx + w_0)
+        Pr(c_k|x) &= \frac{1}{1 + e^{-(w^T x + w_0)}} \\
+                  &= \sigma (w^Tx + w_0)
     \end{align*}
+    \begin{flalign*}
+        \text{where } w &= \Sigma^{-1} (\mu_k - \mu_j) \\
+        w_0 &= -\frac{1}{2} \mu_k^T \Sigma^{-1} \mu_k + \frac{1}{2} \mu_j^T \Sigma^{-1} \mu_j + \ln \frac{\pi_k}{\pi_j}
+    \end{flalign*}
     choose the best class as the one with probability $> 0.5$, so class boundary is at 
 
     \begin{align*}
