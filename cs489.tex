@@ -714,6 +714,31 @@ can find a general function $f$
 Inversion of $K + \sigma I$ (and therefore this process) is cubic in number of training points
 (vs bayesian linear regression which is cubic in number of \textit{basis functions}
 
+\subsection{Gaussian Process Search}
+\label{sub:gaussian_process_search}
+
+let $f: x \to \Re$ be a mapping, find parameters $x*$ to optimize $f$ but \textit{f is unknown}
+\begin{equation*}
+    x* \gets argmax_x f(x)
+\end{equation*}
+
+\medskip
+
+Approach
+\begin{algorithmic}
+    \State initialize $f(x) ~ GP(m(x), k(x,x))$
+    \Repeat
+    \State select new $x$: $x_{new} \gets argmax_x \frac{k(x,x)}{\max_{x' \in X} f(x') - m(x)}$
+    \State evaluate $f(x_{new})$
+    \State update gaussian process
+    \begin{itemize}
+        \item $X \gets X \cup \{x_{new}\}$
+        \item $y \gets y \cup f(x_{new})$
+        \item $m(x) \gets k(x, X)(K + \sigma^{-2} I)^{-1} y$
+        \item $k(x) \gets k(x,x) - k(x, X)(K + \sigma^{-2} I)^{-1} k(X, x)$
+    \end{itemize}
+    \Until{$f$ is representative of your mapping}
+\end{algorithmic}
 
 \section{Support Vector Machines}
 \label{sec:support_vector_machines}
