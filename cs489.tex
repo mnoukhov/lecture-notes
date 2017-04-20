@@ -1533,7 +1533,7 @@ challenges
 \subsection{Gradient Descent}
 \label{sub:gradient_descent}
 
-Gradient Descent
+\textbf{Gradient Descent}
 \begin{align*}
     \theta^{(i+1)} & \gets \theta^{(i)} - \alpha_i \sum_n \nabla Loss(x_n, y_n; \theta^{(i)}) \\
     \text{where } & \alpha \in [0,1] \text{ is the learning rate} \\
@@ -1541,18 +1541,20 @@ Gradient Descent
     &m \text{ indexes GD iterations}
 \end{align*}
 
-Stochastic Gradient Descent
+\textbf{Stochastic Gradient Descent}
 \begin{align*}
     \theta^{(n+1)} & \gets \theta^{(n)} - \alpha_n \sum_n \nabla Loss(x_n, y_n; \theta^{(n)}) \\
-    \text{where } & n \text{ indexes data points and iterations} \\
+    \text{where } & n \text{ indexes data points and iterations}
 \end{align*}
 
-Converge if $\sum_{n=1}^\infty \alpha_n = \infty$ and $\sum_{n=1}^\infty (\alpha_n)^2 < \infty$
+Converges if $\sum_{n=1}^\infty \alpha_n = \infty$ and $\sum_{n=1}^\infty (\alpha_n)^2 < \infty$
 
-Adagrad: use a different step size for each parameter
+\bigskip
+
+\textbf{Adagrad} use a different step size for each parameter
 \begin{align*}
-    \theta^{(n+1)} & \gets \theta^{(n)} - \frac{\alpha_n}{\tau + \sqrt{s_m^{(n)}}} (\frac{\partial Loss(x_n, y_n; \theta^{(n)})}{\partial \theta_m^{(n)}})^2 \\
-    \text{where } & n \text{ indexes data points and iterations} \\
+    \theta^{(n+1)} & \gets \theta^{(n)} - \frac{\alpha_n}{\tau + \sqrt{s_m^{(n)}}} \frac{\partial Loss(x_n, y_n; \theta^{(n)})}{\partial \theta_m^{(n)}} \\
+    \text{where } s_m^{(n)} & \gets s_m^{(n-1)} +  \left(\frac{\partial Loss(x_n, y_n; \theta^{(n)})}{\partial \theta_m^{(n)}}\right)^2 \\
 \end{align*}
 
 
