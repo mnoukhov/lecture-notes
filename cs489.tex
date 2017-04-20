@@ -388,6 +388,10 @@ E[loss] &= \text{bias$^2$ + variance + noise}
         Pr(c_k|x) &= \frac{Pr(c_k)Pr(x|c_k)}{\sum_j Pr(c_j) Pr(x|c_j)} \\
                   &= \frac{e^{w^T_k \bar x}}{\sum_j e^{w^T_j \bar x}}
     \end{align*}
+    \begin{flalign*}
+        \text{where } w_k &= \mu_k^T \Sigma^{-1} \\
+        w_{k0} &= -\frac{1}{2} \mu_k^T \Sigma^{-1} \mu_k + \ln \pi_k
+    \end{flalign*}
 
 
     \section{Logistic Regression}
@@ -596,6 +600,20 @@ E[loss] &= \text{bias$^2$ + variance + noise}
             \end{itemize}
     \end{itemize}
 
+    \begin{ex}{Two layer network}
+       \begin{align*}
+           \intertext{Forward}
+           &\text{hidden units } a_j = \sum_i w_{ji} x_i, z_j = tanh(a_j) \\
+           &\text{output units } a_k = \sum_j w_{kj} z_j, z_k = a_k \\
+           \intertext{Backpropogation}
+           &\text{output units } \delta_k = z_k - y_k && \because h(a_k) = a_k, h'(a_k) = 1 \\
+           &\text{hidden units } \delta_j = (1 - z_j)^2 * \sum_{k=1}^K w_{kj} \delta_k && \because h(a_j) = tanh(a_k), h'(a_k) = (1-a_j)^2 \\
+           \intertext{Gradients}
+           &\text{hidden units } \frac{\partial E_n}{\partial w_{ji}} = \delta_j z_i = (1-z_j)^2 \sum_{k=1}^K w_{kj} \delta_k z_i \\
+           &\text{output units } \frac{\partial E}{\partial w_{ji}}  = \delta_k z_j = (z_k - y_k)z_j \\
+       \end{align*}
+    \end{ex}
+
     \section{Kernel Methods}
     \label{sec:kernel_methods}
 
@@ -719,6 +737,7 @@ The points that decide our separator, where $y_n w^T \phi(x_n) = 1$, are known a
 \subsection{Dual}
 \label{sub:dual}
 
+We want to be able to do calculations only specifying the kernel $k(x, x')$ and not the basis function $\phi(x)$.
 Reformulate as penalty for $x_n$ violating constraint
 
 \begin{align*}
@@ -1063,6 +1082,7 @@ Solutions:
             \item $h_i(x) = \max_{j \in [1, k]} (z_{ij})$ where $z_{ij} = x^T W_{ \ldots ij} + b_{ij}$
             \item doesn't have any places where gradient is close to 0
             \item enhances accuracy of dropout averaging
+            \item average nearby points to give a smoother function
         \end{itemize}
 \end{itemize}
 
@@ -1271,7 +1291,8 @@ Let $f$ and $g$ represent conditional distributions
     f &= Pr(h | x; W_f) \\
     g &= Pr(x | h; W_g)
 \end{align*}
-by using sigmoid, softmax, or linear units at the hidden and output layers
+by using sigmoid (binary distribution), softmax (discrete distribution), or linear units 
+(mean of unit variance Gaussian for continuous distribution) at the hidden and output layers
 
 \subsection{Generative Model}
 \label{sub:generative_model}
@@ -1521,6 +1542,13 @@ challenges
 
 \begin{itemize}
     \item bayesian learning: lends itself naturally because bayes theorem updates on every example given current state
+        \begin{align*}
+            Pr(\theta | data) &= k Pr(\theta) Pr(data | \theta) \\
+                              &= k Pr(\theta) \prod_{m=1}^N Pr(x_m | \theta)
+        \intertext{ so for $n^{th}$ posterior}
+        &= k_n Pr(\theta | x_1 \ldots x_{n-1}) Pr(x_n | \theta)
+        \intertext{making it easy to update the model for every example}
+        \end{align*}
     \item optimization-based learning: objective
 \end{itemize}
 
