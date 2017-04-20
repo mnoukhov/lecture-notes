@@ -1022,7 +1022,7 @@ $P(Y_1, X_1) =$
 \label{sec:deep_neural_networks}
 
 \subsection{Overview}
-\label{sub:overview}
+\label{sub:deep_neural_network_overview}
 
 \textbf{Deep Neural Network} ann with many hidden layers
 \begin{itemize}
@@ -1272,5 +1272,288 @@ Let $f$ and $g$ represent conditional distributions
     g &= Pr(x | h; W_g)
 \end{align*}
 by using sigmoid, softmax, or linear units at the hidden and output layers
+
+\subsection{Generative Model}
+\label{sub:generative_model}
+
+Sample $h$ from some distribution $Pr(h)$ and use the decoder to sample $x$, $Pr(x | h; W_g)$
+
+\section{Generative Networks}
+\label{sec:generative_networks}
+
+\subsection{Overview}
+\label{sub:overview}
+Design a neural network to generate data
+\begin{itemize}
+    \item input random noise
+    \item output data
+\end{itemize}
+
+Types
+\begin{itemize}
+    \item boltzmann machines
+    \item sigmoid belief networks
+    \item variational autoencoders
+    \item generative adversarial networks
+    \item generative moment matching networks
+    \item sum-product networks
+\end{itemize}
+
+
+\subsection{Variational Autoencoders}
+\label{sub:variational_autoencoders}
+
+\subsubsection{Encoder}
+\label{ssub:Encoder}
+
+Train encoder $P(h|x; W_g)$ to approach simple and fixed distribution (e.g. $N(h; 0, I)$)
+so that you can set $Pr(h) = N(h; 0, I)$, objective:
+
+\begin{align*}
+    & \max_W \sum_n Pr(x_n; W_f, W_g) - c KL(Pr(h|x_n; W_f) || N(h; OI) \\
+    & \text{where } KL = \text{Kullback-Liebler divergence}
+\end{align*}
+
+\subsubsection{Likelihood}
+\label{ssub:Likelihood}
+
+\begin{align*}
+    Pr(x_n; W_f, W_g) &= \int_h Pr(x_n|h ; W_g) Pr(h | x_n; W_f) dh
+    \intertext{since encoder approaches a normal distribution, force it to be gaussian}
+    &= \int_h Pr(x_n|h ; W_g) N(h; \mu_n(x_n; W_f), \sigma_n(x_n;W_f)I) dh
+    \intertext{approximate by a single sample}
+    &\approx Pr(x_n | h_n; W_g) \\
+    & \text{where } h_n ~ N(h; \mu_n(x_n; W_f), \sigma_n(x_n;W_f)I)\end{align*}
+
+
+\subsection{Generative Adversarial Networks}
+\label{sub:generative_adversarial_networks}
+
+\subsubsection{Overview}
+\label{ssub:gan_overview}
+
+
+Two networks:
+\begin{enumerate}
+    \item generator $g(z; W_g) \to x$
+    \item discriminator $d(x;W_d) \to Pr(x \text{ is real})$
+\end{enumerate}
+
+Objective
+\begin{equation*}
+    \min_{W_g} \max_{W_d} \sum_n \log d(x_n; W_d) + \log(1- d(g(z_n;W_g); W_d))
+\end{equation*}
+
+Issues
+\begin{itemize}
+    \item one network may dominate the other
+    \item local convergence
+\end{itemize}
+
+\subsubsection{Training}
+\label{ssub:gan_training}
+
+\begin{algorithmic}
+    \For{$k$ steps}
+    \State sample $z_1 \ldots z_m$ from $Pr(z)$
+    \State sample $x_1 \ldots x_m$ from training set
+    \State update discriminator with SGD
+    \begin{equation*}
+        \nabla W_d (\frac{1}{m} \sum_{n=1}^m [\log d(x_n; W_d) + \log(1- d(g(z_n;W_g); W_d))])
+    \end{equation*}
+    \EndFor
+    \State sample $z_1 \ldots z_m$ from $Pr(z)$
+    \State update generator with SGD
+    \begin{equation*}
+        \nabla W_g (\frac{1}{m} \sum_{n=1}^m \log(1- d(g(z_n;W_g); W_d)))
+    \end{equation*}
+\end{algorithmic}
+
+In the limit, yields
+\begin{itemize}
+    \item $Pr(x|z;W_g) \to $ true data distribution
+    \item $Pr(x \text{ is real}; W_d) \to 0.5$, real and fake data are indistinguishable
+\end{itemize}
+
+\section{Ensemble Learning}
+\label{sec:ensemble_learning}
+
+\subsection{Overview}
+\label{sub:ensemble_overview}
+\textbf{ensemble learning} method to select and combine ensemble of hypotheses into a better hypothesis, can enlarge hypothesis space
+
+
+\subsection{Bagging}
+\label{sub:bagging}
+\textbf{bagging} majority voting
+\begin{itemize}
+    \item each $h_i$ is wrong with probability $p$
+    \item the majority of $k$ is wrong with probability $\sum_{k > n/2} \binom{n}{k} p^k (1-p)^{n-k}$
+\end{itemize}
+weighted majority
+\begin{itemize}
+    \item give weight proportional to hypothesis accuracy
+\end{itemize}
+
+\subsection{Boosting}
+\label{sub:boosting}
+\begin{description}
+    \item[boosting] learn with a weighted training set (more weight = more important) and increase the weight on examples that are misclassified, this can \textit{boost} a weak learner
+    \item[weak learner] produces hypothesis at leas as good as random classifier
+\end{description}
+
+Applications
+\begin{itemize}
+    \item sensor fusion
+    \item collaborative filtering (Netflix challenge)
+    \item body part recognition (kinect)
+\end{itemize}
+
+\subsubsection{Framework}
+\label{ssub:Framework}
+
+\begin{algorithmic}
+    \State set all instance weights $w_x = 1$    
+    \Repeat
+    \State $h_i \gets$ learn(dataset, weights)
+    \State increase $w_x$ of misclassified examples $x$
+    \Until{sufficient number of hypotheses} \\
+    \Return weighted majority of $h_i$s with weights $w_i$ proportional to accuracy of $h_i$
+\end{algorithmic}
+
+\subsubsection{Paradigm}
+\label{ssub:Paradigm}
+
+\begin{itemize}
+    \item don't try to learn perfect hypothesis, just learn simple rules of thumb and boost them
+    \item good generalization
+    \item principled approach to combine many hypotheses
+\end{itemize}
+
+\subsubsection{AdaBoost}
+\label{ssub:AdaBoost}
+
+\begin{algorithmic}
+    \State $w_j \gets 1/N \ \forall j $
+    \For{$m=1 \to M$}
+    \State $h_m \gets$ learn(datset, $w$)
+    \State $err \gets 0$
+    \For{each $(x_j, y_j)$ in dataset}
+    \If{$h_m(x_j) \not = y_j$}
+    \State $err \gets err +w_j$
+    \EndIf
+    \EndFor
+    \For{each $(x_j, y_j)$ in dataset}
+    \If{$h_m(x_j) = y_j$}
+    \State $w_j \gets w_j \frac{err}{1-err}$
+    \EndIf
+    \EndFor
+    \State $w \gets \text{ normalize}(w)$
+    \State $z_m \gets \log (\frac{1-err}{err})$
+    \EndFor \\
+    \Return $weighted-majority(h,z)$
+\end{algorithmic}
+
+\section{Bagging and Distributed Computing}
+\label{sec:bagging_and_distributed_computing}
+
+\subsection{Independent Bagging}
+\label{sub:independengt_bagging}
+\begin{description}
+    \item[bagging] combine independent classifiers that were trained on subsets of the dataset (sampling w/o replacement)
+    \item[bootrap sampling] sample subset of data
+    \item[random projection] sample subset of features
+    \item[random forest] bag of decision trees
+\end{description}
+
+\begin{algorithmic}
+    \For{$k=1 \to K$}
+    \State $D_k \gets$ sample data subset
+    \State $F_k \gets$ sample feature subset
+    \State $h_k \gets$ train classifier based on $D_k$ and $F_k$
+    \EndFor
+    \If{classification} \\
+    \Return $majority(h_1(x) \ldots h_K(x))$
+    \ElsIf{regression} \\
+    \Return $average(h_1(x) \ldots h_K(x))$
+    \EndIf
+\end{algorithmic}
+
+Kinect: body part recognition
+\begin{itemize}
+    \item infrared + gray-scale depth map
+    \item features: depth difference between pairs of pixels
+    \item classification: forest of decision trees
+\end{itemize}
+
+\subsection{Distributed Computation}
+\label{sub:distributed_computation}
+``big data'' aka large scale machine learning requires distributed computation
+\begin{itemize}
+    \item GPU: performing arithmetic operations on all elements of a tensor in parallel
+    \item CPU: train classifiers with a different subset on each core
+        \begin{itemize}
+            \item don't combine parameters (e.g. adding together two NN that encode xor doesn't encode xor)
+            \item combine \textit{predictions} not parameters
+        \end{itemize}
+\end{itemize}
+
+\section{Stream Learning}
+\label{sec:stream_learning}
+
+\subsection{Overview}
+\label{sub:stream_learning_overview}
+
+\begin{description}
+    \item[online learning] new data continuously arrives
+    \item[stream learning] train as new data arrives
+\end{description}
+
+challenges
+\begin{itemize}
+    \item can't store all the data, revisit older data
+    \item algorithm must keep up with the stream, process quickly
+    \item patterns may change over time, must be able to update hypothesis on every point or batch
+\end{itemize}
+
+\subsection{Algorithms}
+\label{sub:algorithms}
+
+\begin{itemize}
+    \item bayesian learning: lends itself naturally because bayes theorem updates on every example given current state
+    \item optimization-based learning: objective
+\end{itemize}
+
+\begin{alignat*}{3}
+    & argmin_\theta \sum_n Loss(x_n, y_n; \theta) \\
+    & \text{where } Loss \text{ could be} &&= - \log Pr(y|x;\theta) \text{ neg log likelihood} \\
+    & &&= [y - h_\theta (x)]^2 \text{ squared error}
+\end{alignat*}
+
+\subsection{Gradient Descent}
+\label{sub:gradient_descent}
+
+Gradient Descent
+\begin{align*}
+    \theta^{(i+1)} & \gets \theta^{(i)} - \alpha_i \sum_n \nabla Loss(x_n, y_n; \theta^{(i)}) \\
+    \text{where } & \alpha \in [0,1] \text{ is the learning rate} \\
+    &n \text{ indexes data points} \\
+    &m \text{ indexes GD iterations}
+\end{align*}
+
+Stochastic Gradient Descent
+\begin{align*}
+    \theta^{(n+1)} & \gets \theta^{(n)} - \alpha_n \sum_n \nabla Loss(x_n, y_n; \theta^{(n)}) \\
+    \text{where } & n \text{ indexes data points and iterations} \\
+\end{align*}
+
+Converge if $\sum_{n=1}^\infty \alpha_n = \infty$ and $\sum_{n=1}^\infty (\alpha_n)^2 < \infty$
+
+Adagrad: use a different step size for each parameter
+\begin{align*}
+    \theta^{(n+1)} & \gets \theta^{(n)} - \frac{\alpha_n}{\tau + \sqrt{s_m^{(n)}}} (\frac{\partial Loss(x_n, y_n; \theta^{(n)})}{\partial \theta_m^{(n)}})^2 \\
+    \text{where } & n \text{ indexes data points and iterations} \\
+\end{align*}
+
 
 \end{document}
