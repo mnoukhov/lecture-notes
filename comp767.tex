@@ -1,0 +1,138 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={COMP767},
+  pdfsubject={Lecture notes from Doina Precup},
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+\let\ref\Cref
+
+\title{\bf{COMP767: Reinforcement Learning}}
+\date{Winter 2018, \\ \center Notes written from Doina Precup's lectures.}
+\author{Michael Noukhovitch}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{Definitions}
+\label{sub:definitions}
+Reinforcement learning is:
+\begin{description}
+    \item[agent-oriented learning] learning by interacting with an environment
+    \item[trial and error] only given delayed evaluative feedback
+    \item[science of the mind] one which is neither natural science nor applied technology
+\end{description}
+
+Framework:
+\begin{enumerate}
+    \item agent percieves the \textbf{state} of the environment
+    \item based on the state, it chooses an \textbf{action}
+    \item the action gives the agent a \textbf{reward}
+    \item a \textbf{policy} aims to maximize the agent's \textbf{long term expected reward}
+\end{enumerate}
+
+
+\subsection{Key Factors of RL}
+\label{sub:key_factors_of_rl}
+\begin{itemize}
+    \item trial and error search
+    \item environment is stochastic
+    \item reward may be delayed
+    \item balancing exploration and exploitation
+\end{itemize}
+
+\subsection{Classical Challenges}
+\label{sub:classical_challenges}
+\begin{itemize}
+    \item reward
+    \item delayed consequences
+    \item balancing exploration/exploitation
+    \item non-stationarity
+    \item fleeting nature of time and online data
+\end{itemize}
+
+
+
+
+
+\section{Bandit}
+\label{sec:bandit}
+
+
+
+
+
+
+\end{document}
