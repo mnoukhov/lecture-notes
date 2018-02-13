@@ -136,34 +136,36 @@ Framework:
 \section{Bandit}
 \label{sec:bandit}
 
-\subsection{Single-Armed Bandit}
-\label{ssub:single_armed_bandit}
-Simplest RL problem
+\subsection{Definition}
+\label{sub:definition}
+
+\textbf{One-armed bandit} Simplest RL problem
 \begin{itemize}
     \item pull the lever
     \item get some reward
     \item choose the best lever!
 \end{itemize}
 
-\subsection{k-armed Bandit}
-\label{ssub:k_armed_bandit}
+\textbf{k-armed bandit} extends to $k$ arms
 \begin{itemize}
     \item at every time step $t$, choose an action $A_t$ from $k$ possibilties
     \item recieve a reward $R_t$ dependent only on the action taken (i.i.d)
     \item $q_*(a) = \E [R_t | A_t = a], \medskip \forall a \in {1, \ldots k }$
 \end{itemize}
 
-\subsubsection{$\varepsilon$-Greedy Action Selection}
-\label{ssub:explot}
-Solve exploration/exploitation by usually selecting exploit (best action so far), but exploring (random action) with probability $\varepsilon$
-
+\subsection{Action Selection}
+\begin{description}
+    \item[greedy] the action with the current highest expected value (best one so far)
+    \item[exploitation] choosing the greedy action
+    \item[exploration] choosing not the greedy action
+    \item[$\varepsilon$-greedy] balance explore/exploit by choosing exploration (random) with probability $\varepsilon$
+\end{description}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\linewidth]{epsilon_10arm.png}
     \caption{$\epsilon$-greedy methods on 10-arm bandit}
     \label{fig:}
 \end{figure}
-
 
 \subsection{Learning Rules}
 \label{sub:learning_rules}
@@ -182,10 +184,10 @@ For a single action, update the new estimate based on old estimate and step size
 \label{ssub:recency_weighted_average}
 
 \begin{description}
-    \item[non-stationary] if the true action values change slowly over time
+    \item[stationary] if the true action values DO NOT change over time
 \end{description}
 
-if so, then we need to put more weight on recent samples (using exponential)
+if our bandit is non-stationary, then we need to put more weight on recent samples 
 \begin{equation*}
     Q_{n+1} = (1 - \alpha)^n Q_1 + \sum_{i=1}^n \alpha(1 - \alpha)^{n - i} R_i
 \end{equation*}
@@ -206,17 +208,8 @@ Reduce exploration over time after starting confident
     A_t = \argmax_a [Q_t(a) + c \sqrt{\frac{\log t}{N_t(a)}}]
 \end{equation*}
 
-\subsection{Evaluations}
-\label{sub:evaluations}
-\begin{description}
-    \item[regret] the difference between best option and the one we chose $\max_a q_*(a) - q_t(a)$
-    \item[expected total regret] $\E[\sum_t $ regret$_t]$ (optimal for UCB, Thomson sampling)
-    \item[best response] regret for $T$ experimental trials after policy is fixed
-\end{description}
-
-
-\subsection{Gradient-Bandit Algorithms}
-\label{sub:gradient_bandit_algorithms}
+\subsubsection{Gradient-Bandit Algorithms}
+\label{ssub:gradient_bandit_algorithms}
 
 Don't need to learn specific rewards, just learn the \textbf{preference} $H_t(a)$, and try and make the probability of choosing an action $\pi_t(a)$ be proportional to it.
 
@@ -230,6 +223,24 @@ if the reward for an action is better than average, increase its preference
     H_{t+1} &= H_t(a) + \alpha(R_t - \bar R_t)(1_{a = A_t} - \pi_t(a)) \\
 \end{eqnarray*}
 where $\bar R_t = $ average $R_i$
+
+\subsubsection{Associative Search}
+\label{ssub:associative_search}
+
+\begin{description}
+    \item[associative] a task where the situation/state of the agent changes the reward for an action
+    \item[contextual bandit] not just trial-and-error search, but also association between state and action values 
+    \item[full reinforcement learning] trial-and-error search, association between state and action, and actions affecting the next state of the agent
+\end{description}
+
+
+\subsection{Evaluations}
+\label{sub:evaluations}
+\begin{description}
+    \item[regret] the difference between best option and the one we chose $\max_a q_*(a) - q_t(a)$
+    \item[expected total regret] $\E[\sum_t $ regret$_t]$ (optimal for UCB, Thomson sampling)
+    \item[best response] regret for $T$ experimental trials after policy is fixed
+\end{description}
 
 \subsection{Conclusions}
 \label{sub:conclusions}
@@ -245,6 +256,72 @@ where $\bar R_t = $ average $R_i$
     \caption{bandit algorithm comparison}
     \label{fig:bandit-comparison}
 \end{figure}
+
+\section{Markov Decision Processes}
+\label{sec:markov_decision_processes}
+
+\subsection{Markov}
+\label{sub:markov}
+
+\begin{description}
+    \item[markov property] future independent of past given present
+    \item[markov chain] memoryless random process with states $S$ and transition probabilities $P$, $<S,P>$
+
+    \item[markov reward process] markov chain with values, rewards for states $R$, discount factor $\gamma$
+    \item[return] sum of discounted rewards $G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} \ldots$
+    \item[value function] long-term value of state $s$, $v(s) = E[G_t | S_t = s]$
+\end{description}
+
+\subsection{Returns and Values}
+\label{sub:returns_and_values}
+
+\begin{description}
+\end{description}
+
+
+
+
+\subsection{Policy Iteration}
+\label{sec:policy_iteration}
+
+\subsection{Asynchronous DP}
+\label{sub:asynchronous_dp}
+
+\begin{itemize}
+    \item choose
+\end{itemize}
+
+\section{Monte Carlo Methods}
+\label{sec:monte_carlo_methods}
+
+\subsection{MC Policy Evaluation}
+\label{sub:mc_policy_evaluation}
+
+learn $v_\pi(s)$ given some number of episodes under $\pi$ which contain $s$, using the average of the rewards after visiting $s$
+\begin{description}
+    \item[every visit MC] average returns for every visit to $s$
+    \item[first visit MC] average returns for only the first visit to $s$ (in an episode)
+\end{description}
+
+\subsection{On-Policy MC Control}
+\label{sub:on_policy_mc_control}
+
+\begin{description}
+    \item[on policy] learn about policy currently executing
+    \item[boltzmann exploration] choose with probability $\exp (- \frac{P(s)}{T} )$ where $T$ is a temperature.  \\
+        Over time, decrease from high $T$ (equiprobable) to low $T$ (biased towards best action)
+\end{description}
+
+\subsection{Advantages}
+\label{sub:advantages}
+Several advantages over DP
+\begin{itemize}
+    \item can learn directly from interaction with environment
+    \item no need for full models
+    \item no need to learn about all states
+    \item less harmed by violating Markov property
+\end{itemize}
+
 
 
 \end{document}
