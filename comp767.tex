@@ -386,7 +386,7 @@ no closed form, so solve using iterative solutions
 \label{sec:dynamic_programming}
 
 \subsection{Introduction}
-\label{sub:introduction}
+\label{sub:dp_introduction}
 
 \begin{description}
     \item[dynamic programming] solving problems by breaking down into subproblems
@@ -558,16 +558,17 @@ For basic TD(0)
 \label{ssub:advantages_of_td}
 
 \begin{itemize}
-    \item learn before knowing the final outcome
-        \begin{itemize}
-            \item learn online after every step
-        \end{itemize}
-    \item learn without the final outcome
+    \item incomplete sequences
         \begin{itemize}
             \item learn from incomplete/non-terminating sequences
         \end{itemize}
-    \item low variance, some bias (vs. high variance, no bias)
+    \item online
         \begin{itemize}
+            \item learn online after every step
+        \end{itemize}
+    \item lower variance, some bias
+        \begin{itemize}
+            \item vs. MC high variance, no bias
             \item more efficient
             \item more sensitive to initial value
             \item also converges (except w/ function approximation)
@@ -624,8 +625,8 @@ For basic TD(0)
     \item[eligibility trace] combine both, $E_t(s) = \gamma \lambda E_{t-1}(s) + \mathbbm{1} (S_t = s)$
 \end{description}
 
-\subsubsection{Backward-View TD-$\lambda$}%
-\label{ssub:backward-view}
+\subsubsection{Views of TD-$\lambda$}%
+\label{ssub:views_of_td_lambda}
 
 \begin{description}
     \item[forward-view] look into future to compute $G_t^\lambda$
@@ -644,7 +645,7 @@ For basic TD(0)
 \end{align*}
 
 \subsection{Summary}%
-\label{sub:summary}
+\label{sub:td_summary}
 
 \begin{figure}[ht]
     \centering
@@ -653,14 +654,268 @@ For basic TD(0)
     \label{fig:td-lambda-summary}
 \end{figure}
 
+\section{Model-Free Control}%
+\label{sec:model_free_control}
+
+\subsection{Introduction}%
+\label{sub:mc_introduction}
+
+\begin{description}
+    \item[on-policy] learn about policy $\pi$ from experiences sampled using $\pi$
+    \item[off-policy] learn about policy $\pi$ from experiences sampled using $\mu$
+\end{description}
+
+\subsection{On-Policy MC Control}%
+\label{sub:on_policy_mc_control}
+
+\subsubsection{Problems with Model-Based}%
+\label{ssub:problems_with_model_based}
+\begin{enumerate}
+    \item policy improvement over $V(s)$: not possible since it requires a model of the MDP, so instead use $Q(s,a)$
+    \item greedy policy improvement: not guaranteed to explore all options
+\end{enumerate}
+
+\subsubsection{Model-Free MC}%
+\label{ssub:model_free_mc}
+every episode:
+\begin{itemize}
+    \item policy evaluation $Q \approx q_\pi$
+    \item policy improvement with $\epsilon$-greedy
+\end{itemize}
+
+\subsubsection{GLIE}%
+\label{ssub:glie}
+
+\begin{description}
+    \item[GLIE] greedy in the limit with infinite exploration
+\end{description}
+\begin{itemize}
+    \item all state-action pairs are explored infinitely many times
+    \item policy converges on a greedy policy
+\end{itemize}
+GLIE MC
+\begin{align*}
+    N(S_t, A_t) &\gets N(S_t, A_t) + 1 \\
+    Q(S_t, A_t) &\gets Q(S_t, A_t) + \frac{1}{N(S_t, A_t)} (G_t - Q(S_t, A_t)) \\
+    \text{where } \pi &\gets \epsilon \text{-greed} \\
+    \epsilon &\gets \frac{1}{k}
+\end{align*}
+
+\subsection{On-Policy TD Learning}%
+\label{sub:on_policy_td_learning}
+
+\subsubsection{SARSA}%
+\label{ssub:sarsa}
+\textbf{SARSA} on-policy, model-free TD
+\begin{itemize}
+    \item apply TD to use Q(S,A)
+    \item use $\epsilon$-greedy
+    \item update every time step
+\end{itemize}
+
+\begin{equation*}
+    Q(S,A) \gets Q(S,A) + \alpha (R + \gamma Q(S',A') - Q(S,A))
+\end{equation*}
+
+converges if
+\begin{itemize}
+    \item GLIE sequence of policies
+    \item \textbf{Robbins-Morris} sequence of step sizes (sum $\to \infty$, sum of squares $< \infty$)
+\end{itemize}
+
+\subsubsection{SARSA($\lambda$)}%
+\label{ssub:sarsa_lambda}
+$n$-step SARSA
+\begin{equation*}
+    q_t^{(n)} = R_{t+1} + \gamma R_{t+2} + \ldots + \gamma^{n-1} R_{t+n} + \gamma^n Q(S_{t+n})
+\end{equation*}
+Forward-view SARSA($\lambda$)
+\begin{align*}
+    q_t^\lambda &= (1 - \lambda) \sum_{n=1}^\infty \lambda^{n-1} q_t^{(n)} \\
+    Q(S_t, A_t) \gets Q(S_t, A_t) + \alpha (q_t^{(n)} - Q(S_t, A_t))
+\end{align*}
+Backward-view SARSA($\lambda$) using eligibility trace
+\begin{align*}
+    E_0(s,a) &= 0 \\
+    E_t(s,a) &= \gamma \lambda E_{t-1}(s,a) + \ind(S_t = s, A_t =a) \\
+    \delta_t &= R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t) \\
+    Q(s,a) &\gets Q(s,a) + \alpha \delta_t E_t(s,a)
+\end{align*}
+
+
+\subsection{Off-Policy Learning}%
+\label{sub:off_policy_learning}
+
+\subsubsection{Advantages of Off-Policy}%
+\label{ssub:advantages_of_off_policy}
+\textbf{off-policy} evaluate target policy $\pi$ to compute $v_\pi$ while follow behaviour policy $\mu$
+\begin{itemize}
+    \item learn about optimal policy while following exploratory policy
+    \item learn about multiple policies following one policy
+\end{itemize}
+
+\subsubsection{Importance Sampling}%
+\label{ssub:importance_sampling}
+\textbf{importance sampling} estimate the expectation of a different distribution
+\begin{align*}
+    \E_{X \approx P}
+\end{align*}
+for MC
+\begin{itemize}
+    \item drastically increase variance
+    \item not usable if $\mu = 0$ when $\pi \not = 0$
+\end{itemize}
+\begin{equation*}
+    G_t^{\pi / \mu} = \frac{\pi(A_t, S_t)}{\mu(A_t, S_t)}\frac{\pi(A_{t+1}, S_{t+1})}{\mu(A_{t+1}, S_{t+1})}\ldots \frac{\pi(A_T, S_T)}{\mu(A_T, S_T)} G_t
+\end{equation*}
+for TD
+\begin{itemize}
+    \item much lower variance than MC
+    \item policies only need to be similar over a single step (TD(0))
+\end{itemize}
+\begin{equation*}
+    V(S_t) \gets V(S_t) + \alpha\Big(\frac{\pi(A_t | S_t)}{\mu(A_t|S_t)} (R_{t+1} + \gamma V(S_{t+1})) - V(S_t)\Big)
+\end{equation*}
+
+\subsection{Q-Learning}%
+\label{sub:q_learning}
+Q-Learning
+\begin{itemize}
+    \item choose next action using behaviour $A_{t+1} \sim \mu(\cdot | S_t)$
+    \item consider alternative action $A' \sim \pi(\cdot | S_t)$
+    \item update $Q$ towards value of alternative
+\end{itemize}
+\begin{equation*}
+    Q(S_t, A_t) \gets Q(S_t, A_t) + \alpha (R_{t+1} + \gamma Q (S_{t+1}, A') - Q(S_t, A_t))
+\end{equation*}
+Off-Policy Control with Q-Learning
+\begin{itemize}
+    \item target policy $\pi$ is greedy
+    \item behaviour policy $\mu$ is $\epsilon$-greedy
+\end{itemize}
+\begin{equation*}
+    Q(S_t, A_t) \gets Q(S_t, A_t) + \alpha (R_{t+1} + \gamma \max_{a} Q (S_{t+1}, a) - Q(S_t, A_t))
+\end{equation*}
+
+\subsection{Summary}%
+\label{sub:model_free_summary}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{model-free-summary.png}
+    \caption{Model-Free Summary}
+    \label{fig:model-free-summary}
+\end{figure}
+
 \section{Value Function Approximation}%
 \label{sec:value_function_approximation}
 
 \subsection{Introduction}%
-\label{sub:introduction}
+\label{sub:vfa_introduction}
+tabular learning is insufficient
+\begin{itemize}
+    \item if there are too many states/actions
+    \item if it is too slow to learn the value of each state individually
+\end{itemize}
+\textbf{function approximation} estimate value function
+\begin{itemize}
+    \item generalize to unseen states
+    \item update $w$ using learning
+\end{itemize}
+\begin{align*}
+    \hat v(s,w) \approx v_\pi(s) \\
+    \hat q(s, a, w) \approx q_\pi(s,a)
+\end{align*}
+we need a training method suitable for data that is
+\begin{itemize}
+    \item non-iid
+    \item non-stationary
+\end{itemize}
 
 \subsection{Incremental Methods}%
 \label{sub:_incremental_methods}
+
+\subsubsection{Gradient Descent}%
+\label{ssub:gradient_descent}
+
+\textbf{gradient descent} if $J(w)$ is a differentiable function of $w$, find local minima with negative gradient
+\begin{align*}
+    \Delta w &= - \frac{1}{2} \alpha \nabla_w J(w) \\
+             &= \alpha \E_\pi[(v_\pi(S) - \hat v(S,w)) \nabla_w \hat v(S,w)]
+\end{align*}
+\textbf{stochastic gradient descent} samples the gradient
+\begin{equation*}
+    \Delta w = \alpha (v_\pi(S) - \hat v(S,w)) \nabla_w \hat v(S,w)
+\end{equation*}
+
+\subsubsection{Linear Function Approximation}%
+\label{ssub:linear_function_approximation}
+
+\begin{description}
+    \item[feature vector] representation of state $x(S) = (x_1(S) \ldots x_n(S))$
+    \item[linear value FA] represent $\hat v$ by linear combination of features
+\end{description}
+\begin{align*}
+    \hat v (S, w) &= x(S)^Tw \\
+    J(w) &= \E_\pi[(v_\pi(S) - x(S)^Tw)^2] \\
+    \nabla_w \hat v(S,w) &= x(S) \\
+    \Delta w &= \alpha(v_\pi(S) - \hat v(S,w)) x(S)
+\end{align*}
+table lookups (tabular learning) are a special case of linear value FA
+\begin{align*}
+    \hat v(S,w) =
+    \begin{pmatrix}
+        \ind(S = s_1) \\
+        \ldots \\
+        \ind(S = s_n)
+    \end{pmatrix} \cdot
+    \begin{pmatrix}
+       w_1 \\
+       \ldots \\
+       w_n
+    \end{pmatrix}
+\end{align*}
+
+\subsubsection{Incremental Prediction}%
+\label{ssub:incremental_prediction}
+No true value function $v_\pi$ is given, instead substitute a target
+\begin{itemize}
+    \item MC, target is return $G_t$
+    \item TD(0), target is TD target $R_{t+1} + \gamma \hat v(S_{t+1}, w)$
+    \item TD($\lambda$), target is $\lambda$-return $G_t^\lambda$
+\end{itemize}
+\begin{equation*}
+    \Delta w = \alpha ( \text{target} - \hat v(S_t, w)) \nabla_w \hat v(S_t, w)
+\end{equation*}
+\begin{itemize}
+    \item MC $\Delta w = \alpha (G_t - \hat v(S_t, w)) x(S_t)$
+        \begin{itemize}
+            \item training data $<S_1, G_1>, <S_2, G_2>, \ldots$
+            \item converges to local optimum
+        \end{itemize}
+    \item TD(0) $\Delta w = \alpha \delta x(S)$
+        \begin{itemize}
+            \item training data $<S_1, R_2 + \gamma \hat v(S_2, w)>, \ldots$
+            \item converges close to global optimum
+        \end{itemize}
+    \item TD($\lambda$) backwards $\Delta w = \alpha \delta_t E_t$
+        \begin{itemize}
+            \item $\delta_t = R_{t+1} + \gamma \hat v(S_{t+1}, w) - \hat v(S_t, w)$
+            \item $E_t = \gamma \lambda E_{t-1} + x(S_t)$
+            \item training data $<S_1, G_1^\lambda>, <S_1, G_2^\lambda> \ldots$
+        \end{itemize}
+\end{itemize}
+
+\subsubsection{Incremental Control}%
+\label{ssub:incremental_control}
+
+Approximate action-value function $\hat q(S, A, w) \approx q_\pi(S,A)$
+\begin{equation*}
+    \Delta w = \alpha(q_\pi(S,A) - \hat q(S,A,w))\nabla_w \hat q(S, A, w)
+\end{equation*}
+
+
+
 
 \subsection{Batch Methods}%
 \label{sub:batch_methods}
@@ -697,6 +952,7 @@ but since we don't know $v^\pi_t$
 \begin{itemize}
     \item must learn off policy
 \end{itemize}
+
 
 
 
@@ -746,7 +1002,7 @@ a set of options and a policy induces a Semi-MDP
 
 \begin{align*}
     q(s,o) &= \sum_a \pi_o (a,s) (r(s,a) + )   \\
-    u(s',o) & = (1 - \beta_o(s')) q(s', o) + \Beta_o(s') \sum_{o'} \mu (o'|s')q(s',o') &\\
+    u(s',o) & = (1 - \beta_o(s')) q(s', o) + \beta_o(s') \sum_{o'} \mu (o'|s')q(s',o') &\\
     &= q(s',o) - \beta_o(s')(q(s',o) - v(s')) \\
     &= q(s',o) - \beta_o(s')A(s',o) \\
 \end{align*}
@@ -772,5 +1028,33 @@ everything behaves like an MDP over transformed reward and transition functions/
 
 \subsubsection{TD at SMDP level}
 \label{ssub:td_at_smdp_level}
+
+
+\section{Extras}%
+\label{sec:extras}
+
+\subsection{Stuff For Midterm}%
+\label{sub:stuff_for_midterm}
+
+\begin{itemize}
+    \item type of FA
+    \item on vs off policy
+    \item bootstrapping (TD) vs not-boostrapping (MC)
+    \item batch vs online (vs minibatch)
+    \item model-based (dyna, LSTD/LSPI) vs model-free (Q-learning, TD, \ldots)
+\end{itemize}
+
+
+\subsection{Importance Sampling}%
+\label{sub:importance_sampling}
+
+DP: breadth
+offpolicy importance sampling
+actual policy we want / policy we used to get data
+
+Tree backup (Q-sigma)
+\begin{align*}
+    Q(s,a) &\approx r(s,a) + \gamma \sum_{a'} \pi(a'|s') Q(s',a') \\
+\end{align*}
 
 \end{document}
