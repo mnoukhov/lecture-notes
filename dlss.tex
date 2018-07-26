@@ -1,0 +1,396 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={},
+  pdfsubject={Lecture notes from },
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+    \let\ref\Cref
+
+    \title{\bf{Deep Learning Summer School}}
+    \date{Summer 2018}
+    \author{Michael Noukhovitch}
+
+    \maketitle
+    \newpage
+    \tableofcontents
+    \newpage
+
+    \section{Neural Networks I \ {\small (Hugo Larochelle)}}%
+    \label{sec:neural_networks_i}
+
+    \subsection{Basics}%
+    \label{sub:basics}
+
+    \subsubsection{Artificial Neuron}%
+    \label{ssub:artificial_neuron}
+    \begin{description}
+        \item[pre-activation] $a(x) = w^T x + b$
+        \item[activation function] $h(x) = g(a(x))$
+    \end{description}
+
+    \subsubsection{Capacity of Neural Networks}%
+    \label{ssub:capacity_of_neural_networks}
+
+    combining two simple linear neurons, can create a more complex non-linear shape \\
+
+    \textbf{universal approximation} a single hidden layer NN can approximate any continuous function arbitrarily well (given enough neurons)
+
+    \subsubsection{Multilayer Neural Network}%
+    \label{ssub:multilayer_neural_network}
+
+    we can have $L$ hidden layers, e.g. at layer $k$
+    \begin{align*}
+        a^{(k)} (x) &= b^{(k)} + W^{(k)}h^{(k-1)} (x) \\
+        h^{(k)} (x) &= g(a^{(k)}(x))
+    \end{align*}
+
+    \textbf{output layer} ($k = L+1$)
+    \begin{equation*}
+        h^{(L+1)}(x) = o(a^{(L+1)}(x)) = f(x)
+    \end{equation*}
+
+    \subsubsection{Activation Function}%
+    \label{ssub:activation_function}
+
+    \begin{description}
+        \item[sigmoid] $\frac{1}{1 + \exp(-a)}$ probability of a bernouilli
+        \item[tanh] $\frac{\exp(a) - \exp(-a)}{\exp(a) + \exp(-a)}$ squashes between -1 and 1
+        \item[relu] $\max(0,a)$ does not saturate
+        \item[softmax] multi-class conditional probabilities
+    \end{description}
+
+    \subsection{Training Neural Networks}%
+    \label{sub:training_neural_networks}
+
+    \subsubsection{Optimization}%
+    \label{ssub:optimization}
+
+    learning as an optimization problem
+    \begin{description}
+        \item[loss function] $l(f(x;\theta), y)$ between output and true label
+        \item[regularizer] $\Omega(\theta)$ penalize certain parameters $\theta$
+    \end{description}
+    use \textbf{Stochastic Gradient Descent}
+    \begin{enumerate}
+        \item initialize $\theta$
+        \item[]for $N$ epochs
+        \item[]for each example $x,y$
+        \item calculate gradient $\Delta = -\nabla l(\ldots)$
+        \item take a step $\theta \gets \theta + \alpha \Delta$
+    \end{enumerate}
+
+    \subsubsection{Loss Function}%
+    \label{ssub:loss_function}
+
+    maximize the probability of correct class (\textbf{maximum likelihood}) \\
+    equivalently \textbf{minimize} the negative log-probability aka \textbf{cross-entropy}
+
+    \begin{equation*}
+        l(f(x), y) = - \sum_c 1_(y=c) \ldots
+    \end{equation*}
+
+    \subsubsection{Backpropogation}%
+    \label{ssub:backpropogation}
+
+    use chain rule to compute gradients
+
+    \begin{enumerate}
+        \item compute gradient wrt pre-activation \\
+            \begin{equation*}
+                \nabla_{a^{(L+1)}(x)} - \log f(x)_y \gets - (e(y) - f(x))
+            \end{equation*}
+        \item[]for layer $k$ from $L+1$ to $1$
+        \item compute gradient of hidden layer parameter
+        \item compute gradient of hidden layer below
+        \item compute gradient of pre-activation below
+    \end{enumerate}
+
+    reversing the flow graph representation gives us backprop for free \ref{sec:automatic_differentiation}
+
+
+    \subsubsection{Initialization}%
+    \label{ssub:initialization}
+
+    \begin{itemize}
+        \item biases $\gets 0$
+        \item weights $\gets$ random sample
+            \begin{itemize}
+                \item 0 doesn't work with tanh
+                \item same value doesn't work
+                \item break symmetry, close to 0
+            \end{itemize}
+    \end{itemize}
+
+    \subsubsection{Model Selection}%
+    \label{ssub:model_selection}
+
+    search for the best hyperparameters with
+    \begin{itemize}
+        \item \textbf{grid search} search all possible options
+        \item \textbf{random search} sample from distribution over hyperparams
+        \item bayesian optimization, pbt, \ldots
+    \end{itemize}
+
+    use a \textbf{validation set} of examples to choose the best model \\
+    stop training with \textbf{early stopping} when validation error is lowest
+
+    \subsubsection{Tricks}%
+    \label{ssub:tricks}
+
+    \begin{itemize}
+        \item \textbf{normalize} your (real-valued) data
+        \item \textbf{decay} your learning rate
+        \item update your gradient on a \textbf{batch} of examples
+        \item use exponential average of previous gradients, "gaining \textbf{momentum}"
+        \item use adaptive learning rates: \textbf{Adagrad}, \textbf{RMSProp}, \textbf{Adam}
+    \end{itemize}
+
+    \subsubsection{Gradient Checking}%
+    \label{ssub:gradient_checking}
+
+    debug your implementation of fprop/bprop with a finite-difference approximation
+
+    \begin{equation*}
+        \frac{df(x)}{dx} \approx \frac{f(x + \epsilon) - f(x - \epsilon)}{2\epsilon}
+    \end{equation*}
+
+    \subsubsection{Debug on Small Dataset}%
+    \label{ssub:debug_on_small_dataset}
+
+    overfit on a subsubset of your dataset, issues:
+    \begin{itemize}
+        \item units saturated before first update? initialization, regularization
+        \item training error unstable? learning rate scheduling
+    \end{itemize}
+
+    \subsection{Regularization}%
+    \label{sub:regularization}
+
+
+    \subsubsection{Unsupervised Pretraining}%
+    \label{ssub:unsupervised_pretraining}
+
+    \begin{description}
+        \item[unsupervised pretraining] initialize hidden layers by using unsupervised learning to represent the latent structure of data
+        \item[fine-tuning] training after initialization to adapt to data
+        \item[auto-encoder] feed-forward NN traine to reproduce it's input
+    \end{description}
+
+    \subsubsection{Dropout}%
+    \label{ssub:dropout}
+
+    \begin{description}
+        \item[dropout] remove hidden units stochastically (usually $p = 0.5$) \\
+
+    \end{description}
+
+    \subsubsection{Batch Normalization}%
+    \label{ssub:batch_normalization}
+
+    normalize inputs to speed up training
+    \begin{itemize}
+        \item normalize each unit's pre-activation
+        \item subsubtract mean and std deviation, calculated per minibatch
+        \item learn a linear transformation of the normalized pre-activation
+        \item account for it during backprop
+        \item use global mean and std deviation at test time
+    \end{itemize}
+
+
+    \section{Automatic Differentiation \ {\small (David Duvenaud)}}%
+    \label{sec:automatic_differentiation}
+
+    \subsection{Basic Autodiff}%
+    \label{sub:basic_autodiff}
+
+    \begin{description}
+        \item[auto diff] programmatically finding gradients for operations
+        \item[forward mode] building the jacobian on, in the order of initial operations (expensive)
+        \item[reverse mode] keeping track of jacobian at every step and adding then in reverse
+    \end{description}
+
+    \subsubsection{Implementation}%
+    \label{ssub:implementation}
+
+    \begin{description}
+        \item[static] read and generate source code (Tensorflow)
+        \item[dynamic] monitor function exection at runtime (Pytorch, autograd)
+    \end{description}
+
+    \begin{enumerate}
+        \item trace execution as composition of primitives
+        \item define vector-Jacobian product (VJP) operator for each primitive
+        \item compose VJPs backwards
+    \end{enumerate}
+
+
+    fun stuff:
+    \begin{itemize}
+        \item we get higher order autodiff for free \\
+            since tape-based dynamic autodiff traces execution, we automatically trace the autodifferentiation itself,
+            and just need to follow the execution trace of the previous autodiff
+        \item forward mode is actually just a special case of reverse mode
+        \item VJPs are as cheap as gradients
+    \end{itemize}
+
+    \subsection{Advanced Autodiff}%
+    \label{sub:advanced_autodiff}
+
+    \subsubsection{Higher Order Ops}%
+    \label{ssub:higher_order_ops}
+
+    higher order gradients are possible by changing vector-Jacobian for vector-Hessian etc \ldots
+
+    \subsubsection{Meta-Optimization}%
+    \label{ssub:meta_optimization}
+
+    can optimize through the whole network to learn the learning rate for the training
+
+    \subsubsection{Implicit Function Theorem}%
+    \label{ssub:implicit_function_theorem}
+
+
+
+    \section{Neural Networks II {\small Hugo Larochelle}}%
+    \label{sec:neural_networks_ii_small_hugo_larochelle_}
+
+    \subsection{Types}%
+    \label{sub:types}
+
+    \begin{description}
+        \item[supervised] examples have labels
+        \item[unsupervised] examples don't have labels
+        \item[semi-supervised] some examples have labels
+        \item[multi-task] multiple labels per example
+        \item[transfer] multiple labels but test on a specific label
+        \item[structured] labels have arbitrary structure
+        \item[domain adaptation] training and testing distributions are different
+        \item[zero-shot] examples are completely novel
+    \end{description}
+
+    \subsection{Intriguing Properties}%
+    \label{sub:intriguing_properties}
+
+    \begin{itemize}
+        \item there are powerful small changes that create visual adversarial examples
+        \item bad local optima are unlikely (for high dimensional loss surface like NNs)
+        \item NNs are strangely non-convex
+        \item flat minima are better than sharp minima (probably?)
+        \item NNs can easily memorize
+        \item knowledge can be distilled
+        \item catastrophic forgetting is a real issue with SGD
+    \end{itemize}
+
+    \section{Intro to Convolutional Neural Networks {\small Jon Shlens}}%
+    \label{sec:introduction_to_cnns_small_jonathan_shlens_}
+
+    \subsection{Convolutional Neural Networks}%
+    \label{sub:convolutional_neural_networks}
+
+    images are different from other data
+    \begin{itemize}
+        \item fully connected layers would use too many parameters to input an image
+        \item convolutions provide translational invariance
+    \end{itemize}
+
+    convolutional neural networks
+    \begin{itemize}
+        \item learn filters that pass over the image
+        \item use fewer parameters
+        \item use more computations
+    \end{itemize}
+
+    \subsection{Modern Developments}%
+    \label{sub:modern_developments}
+
+    \begin{itemize}
+        \item normalization stabilizes activations and is important for training \\
+            Group Normalization (Wu and He 2018)
+        \item vanishing gradients motivate deeper, better architectures
+        \item architectures transfer across tasks
+        \item learned architecture searches find even better models \\
+            NAS (Zoph 2016), DARTS (Liu et al 2018)
+    \end{itemize}
+
+    \subsection{Understanding CNNs}%
+    \label{sub:understanding_cnns}
+
+    how to approach what CNNs understand at each layer?
+    \begin{itemize}
+        \item find images/pixels that elicit largest activation
+        \item reconstruct image from network activations
+        \item distort pixels to amplify activations (deep dream)
+        \item change lower level activations while maintaining high-level (neural style transfer)
+    \end{itemize}
+
+
+
+\end{document}
