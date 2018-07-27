@@ -391,6 +391,198 @@
         \item change lower level activations while maintaining high-level (neural style transfer)
     \end{itemize}
 
+    \section{Deep Computer Vision {\small Sanja Fidler}}%
+    \label{sec:deep_computer_vision}
+
+    \subsection{Segmentation}%
+    \label{sub:segmentation}
+
+    \begin{description}
+        \item[semantic] assign each pixel a category based on the object it belongs to
+        \item[unsupervised] group pixels
+        \item[co-segmentation] same objects from different images
+        \item[instance] semantic but differentiate instances (e.g. car 1, car 2)
+        \item[panoptic]
+    \end{description}
+
+    convert classification network to segmentation network by pre-training and converting fully connected to fully convolutional layers
+
+    \begin{description}
+        \item[CRF] conditional random field (unary, pairwise, and optional global term)
+        \item[dense CRF] all pixels are connected pairwise
+    \end{description}
+
+    \subsection{3D Semantic Segmentation}%
+    \label{sub:3d_semantic_segmentation}
+    \begin{description}
+        \item[fusion] late fusion of CNNs over depth and image
+        \item[multi-view] CNN over every viewpoint
+        \item[VoxNet] 3D convolution over point cloud
+        \item[OctNet] exploit sparsity in 3D representation using octree
+        \item[PointNet] represent point clouds directly
+        \item[3D Graph NN] point cloud graph
+    \end{description}
+
+    \section{Generative Models II}%
+    \label{sec:generative_models_ii}
+
+    \subsection{Data Prediction}%
+    \label{sub:data_prediction}
+
+    \subsubsection{Conditional Generative Models}%
+    \label{ssub:conditional_generative_models}
+
+    challenges
+    \begin{enumerate}
+        \item output is high-dimensional, structured
+        \item uncertainty in mapping, distribution of possibilities
+    \end{enumerate}
+
+    two methods
+    \begin{enumerate}
+        \item model $p(x,)$ and use inference to get $p(x|y)$
+        \item directly model $p(x|y)$
+    \end{enumerate}
+
+    \textbf{GAN}
+    \begin{itemize}
+        \item a generator $G$ creates fake images
+        \item a discriminator $D$ tries to discern between the fake image and a real image
+    \end{itemize}
+    \textbf{conditional GAN}
+    \begin{itemize}
+        \item add class $y$ as extra input to both $G$ and $D$
+        \item
+    \end{itemize}
+
+    \subsubsection{Structured Prediction}%
+    \label{ssub:structured_prediction}
+
+    want to model whole joint
+    \begin{itemize}
+        \item a GAN with sufficient capacity samples from full joint at equilibrium
+        \item needs sufficient capacity and a lot of data
+    \end{itemize}
+
+    \textbf{conditional VAE}
+    \begin{itemize}
+        \item condition on observation $x$
+        \item $z$ learns to encode difference between $x$ and $y$
+    \end{itemize}
+
+    \subsection{Domain Mapping}%
+    \label{sub:domain_mapping}
+    \begin{description}
+        \item[domain mapping] given two un-paired datasets $x,y$, lets us translate an input $x$ to $y$
+        \item[cycleGAN] map from $x \to \hat y \to \hat x$ and minimize reconstruction
+            \begin{itemize}
+                \item why do we get correct mapping? \textbf{simplicity hypothesis}
+                \item minimizing cycle loss in turn minimizes condition entropy
+            \end{itemize}
+        \item[domain adaption] given classifier in one domain, map it to another domain
+    \end{description}
+
+    \subsection{Representation Learning}%
+    \label{sub:representation_learning}
+
+    Generative models learn good representations
+    \begin{itemize}
+        \item generative models must learn to model the data distribution
+        \item good models should learn to model the semantics of the data
+        \item learned semantics should correspond to the same stuff we care about
+    \end{itemize}
+    Representation Learning with Contrastive Predictive Coding (van der Oord et al 2018)
+    \begin{itemize}
+        \item encode sequence with RNN
+        \item predict future latent states
+        \item modelling new states is now easier since you have predictions about what they should be before you see them
+    \end{itemize}
+
+    \subsection{Model-based Intelligence}%
+    \label{sub:model_based_intelligence}
+
+    \textbf{Yann Lecun's cake}
+    \begin{itemize}
+        \item cake: understanding and modelling the world around us well
+        \item cherry on top: planning and reasoning using that representation
+    \end{itemize}
+
+    deep visual foresight (Finn and Levine 2017)
+    \begin{enumerate}
+        \item model to predict future frame given action
+        \item specify target future frame
+        \item select best action for that
+    \end{enumerate}
+    world models (Ha and Schmidhuber 2018)
+    \begin{enumerate}
+        \item simulate video game with RNN
+        \item train a policy on the simulation (latent space)
+        \item policy works on the real game
+    \end{enumerate}
+    incentivizing exploration in RL with deep predictive models (Stadie et al 2015)
+    \begin{enumerate}
+        \item model to predict next state given action and previous state
+        \item reward agent for visiting "surprising" states
+    \end{enumerate}
+
+
+
+    \section{Interpretability {\small Been Kim}}%
+    \label{sec:interpretability_small_been_kim_}
+
+    \subsection{Why Interpretability}%
+    \label{sub:introduction}
+
+    there is \textbf{no one-size-fits-all} method for interpretability
+    \begin{itemize}
+        \item decision trees can't explain the most important factor
+        \item rule lists can be too long to be understandable
+    \end{itemize}
+
+    the goal is use machine learning more \textbf{responsibly}
+    \begin{itemize}
+        \item
+    \end{itemize}
+
+    the issue is \textbf{underspecification} of what we truly want
+    \begin{itemize}
+        \item neither more data nor better algorithms can solve it
+    \end{itemize}
+
+    \subsection{Interpretability Methods}%
+    \label{sub:interpretability_methods}
+
+    before training: \textbf{exploratory data analysis}
+    \begin{itemize}
+        \item visualize data by features, splits
+        \item find examples that are outliers in their class
+    \end{itemize}
+
+    during training: building a model
+    \begin{itemize}
+        \item rule-based methods as a model (e.g. rule lists)
+        \item fit a simpler function for each feature
+        \item choose representative examples to cluster
+        \item train on sparse features
+        \item learn a monotonic function (always increasing)
+        \item distill your model
+    \end{itemize}
+
+    after training: investigate the model
+    \begin{itemize}
+        \item \textbf{ablation} train without certain features to see their effect
+        \item test \textbf{input-feature importance} by sensitivity analysis (e.g. saliency maps)
+        \item concept activation vector \textbf{CAV} separates activations of true class and rest
+    \end{itemize}
+
+    \subsection{Evaluating Methods}%
+    \label{sub:evaluating_methods}
+
+    \begin{itemize}
+        \item testing with humans
+        \item ground truth experiments
+    \end{itemize}
+
 
 
 \end{document}
