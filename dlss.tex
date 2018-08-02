@@ -319,7 +319,7 @@
 
 
 
-    \section{Neural Networks II {\small Hugo Larochelle}}%
+    \section{Neural Networks II {\small(Hugo Larochelle)}}%
     \label{sec:neural_networks_ii_small_hugo_larochelle_}
 
     \subsection{Types}%
@@ -349,7 +349,7 @@
         \item catastrophic forgetting is a real issue with SGD
     \end{itemize}
 
-    \section{Intro to Convolutional Neural Networks {\small Jon Shlens}}%
+    \section{Intro to Convolutional Neural Networks {\small(Jon Shlens)}}%
     \label{sec:introduction_to_cnns_small_jonathan_shlens_}
 
     \subsection{Convolutional Neural Networks}%
@@ -391,22 +391,28 @@
         \item change lower level activations while maintaining high-level (neural style transfer)
     \end{itemize}
 
-    \section{Deep Computer Vision {\small Sanja Fidler}}%
+    \section{Deep Computer Vision {\small(Sanja Fidler)}}%
     \label{sec:deep_computer_vision}
 
     \subsection{Segmentation}%
     \label{sub:segmentation}
 
+    convert classification network to segmentation network
+    \begin{enumerate}
+        \item pre-training
+        \item converting fully connected to fully convolutional layers
+    \end{enumerate}
+    \hfill \\
+    types of segmentation
     \begin{description}
         \item[semantic] assign each pixel a category based on the object it belongs to
         \item[unsupervised] group pixels
         \item[co-segmentation] same objects from different images
-        \item[instance] semantic but differentiate instances (e.g. car 1, car 2)
-        \item[panoptic]
+        \item[instance] differentiate instances (e.g. car 1, car 2)
+        \item[panoptic] instance + semantic
     \end{description}
-
-    convert classification network to segmentation network by pre-training and converting fully connected to fully convolutional layers
-
+    \hfill \\
+    regularize for segmentation
     \begin{description}
         \item[CRF] conditional random field (unary, pairwise, and optional global term)
         \item[dense CRF] all pixels are connected pairwise
@@ -423,7 +429,7 @@
         \item[3D Graph NN] point cloud graph
     \end{description}
 
-    \section{Generative Models II}%
+    \section{Generative Models II {\small(Phil Isola)}}%
     \label{sec:generative_models_ii}
 
     \subsection{Data Prediction}%
@@ -527,7 +533,7 @@
 
 
 
-    \section{Interpretability {\small Been Kim}}%
+    \section{Interpretability {\small(Been Kim)}}%
     \label{sec:interpretability_small_been_kim_}
 
     \subsection{Why Interpretability}%
@@ -583,6 +589,663 @@
         \item ground truth experiments
     \end{itemize}
 
+    \section{Theoretical Understanding {\small(Sanjeev Arora)}}%
+    \label{sec:theoretical_understanding_sanjeev_arora_}
+
+    \subsection{Optimization}%
+    \label{sub:optimization}
+
+    \subsection{Generalization}%
+    \label{sub:generalization}
+
+    overparametrization may help optimization
+
+    overfitting is possible
+
+    but we still have excess capacity
+
+    previous ideas
+    \begin{itemize}
+        \item flat minima is tough to quantify
+        \item bounds on true capacity and parameters is elusive
+    \end{itemize}
+
+    \textbf{noise stability} networks' higher layers are stable to noise introduced in lower layers
+    \begin{itemize}
+        \item
+    \end{itemize}
+
+    \subsection{Depth}%
+    \label{sub:depth}
+
+    does depth help?
+    \begin{itemize}
+        \item[+] better expressiveness
+        \item[-] more difficult optimization
+    \end{itemize}
+    but overparametrization can actually accelerate training because of SGD
+
+    \subsection{Unsupervised Learning}%
+    \label{sub:unsupervised_learning}
+
+    manifold assumption
+    \begin{itemize}
+        \item learn joint probability $p(X,Z)$
+        \item code $Z$ should be a good representation of $X$ on a manifold
+    \end{itemize}
+
+    GAN
+    \begin{itemize}
+        \item generator ``wins'' if objective $\approx 0$, equilibrium
+        \item
+    \end{itemize}
+
+    mode collapse
+    \begin{itemize}
+        \item theorem: mode collapse happens if discriminator is too small
+        \item for discriminator of size $N$, generator with $N \log N$ images wins
+    \end{itemize}
+
+    \subsection{Simpler Methods}%
+    \label{sub:simpler_methods}
+
+    we should first understand linear models before approaching deep models
+    \begin{itemize}
+        \item linear methods for sentence embeddings can be just as effective
+    \end{itemize}
+
+    \section{Optimization I {\small(Jimmy Ba)}}%
+    \label{sec:optimization_i_small_jimmy_ba_}
+
+    \subsection{Random Search vs Gradient Descent}%
+    \label{sub:random_search_vs_gradient_descent}
+
+    learning in neural networks is difficult
+    \begin{itemize}
+        \item non-convex, many local optima
+        \item not smooth, unknown lipschitz constant
+        \item millions of trainable weights
+    \end{itemize}
+
+    learning with \textbf{random search}
+    \begin{enumerate}
+        \item perturb weights by random vector $\Delta W \sim N(0,\mu^2I)$
+        \item evaluate perturbed averaged loss
+        \item add the perturbation weighted by the perturbed loss
+        \item[!!] intuitively $d$ samples gives directional gradient,
+    \end{enumerate}
+    more efficient if we query the gradient directly, \textbf{gradient descent} \\
+
+    \subsection{Better Search Directions}%
+    \label{sub:better_search_directions}
+
+    single gradient can be bad on a bad curvature (zig-zagging)
+    \begin{itemize}
+        \item \textbf{momentum} keeping a running average of gradient updates
+        \item momentum with a lookahead trick gives \textbf{nesterov momentum}
+        \item stochastically sample a subset, \textbf{batch}, and \textbf{decay learning rate}
+    \end{itemize}
+
+    gradient descent needs a constraint for the loss
+    \begin{itemize}
+        \item \textbf{euclidean} constraints are used normally
+        \item \textbf{probability} can be constrained with KL (natural gradient)
+    \end{itemize}
+
+    \subsection{``White-Box'' Optimization}%
+    \label{sub:_white_box_optimization}
+
+    first order methods can still fail
+    \begin{itemize}
+        \item second order methods, find good preconditioning matrix that focuses on the weight space that hasn't been explored much
+        \item speed up learning for parameters with low variance, \textbf{Adam} and \textbf{Adagrad}
+        \item \textbf{distributed learning} with larger batch size
+    \end{itemize}
+
+    \textbf{KFAC}, kronecker factored natural gradient
+    \begin{itemize}
+        \item address scalability in the natural gradient, factorize fischer information
+        \item memory efficient and tractable inverse
+        \item still computationally expensive, so distribute
+    \end{itemize}
+
+
+    \section{Optimization II {\small(Jorge Nocedal)}}%
+    \label{sec:optimization_ii}
+
+    \subsection{Deterministic and Stochastic}%
+    \label{sub:deterministic_and_stochastic}
+
+    there is a continuum between two worlds, with similarities
+    \begin{itemize}
+        \item large-scale non-linear \textbf{deterministic} (optimal trajectory)
+        \item \textbf{stochastic} optimization (SGD)
+    \end{itemize}
+
+    momentum
+    \begin{itemize}
+        \item 2D intuition can be deceiving
+        \item not convergent on convex functions
+        \item similar to CG but that breaks down with noise
+    \end{itemize}
+
+    SGD
+    \begin{itemize}
+        \item deterministic GD has simple proof of convergence in convexity
+        \item SGD is more complex, proven to converge with $\alpha \to 0$
+    \end{itemize}
+
+    \subsection{First and Second Order}%
+    \label{sub:}
+    first order methods
+    \begin{itemize}
+        \item lack of state
+        \item not solvable through universal formula
+        \item suffer from ill-conditioning
+    \end{itemize}
+
+    second order information
+    \begin{itemize}
+        \item inexact newton method with hessian sub-sampling
+        \item natural gradient methods
+        \item quasi-newton with progressive sampling
+    \end{itemize}
+
+    \subsection{SGD}%
+    \label{sub:sgd}
+
+    tricks to converge
+    \begin{itemize}
+        \item changing batch size instead of step size
+        \item robust optimization (similar to adversarial learning)
+        \item progressive sampling batch size, and learning to sample
+    \end{itemize}
+
+    instead of scaling step size, focus on step direction $\to $ \textbf{newton's method}
+    \begin{itemize}
+        \item \textbf{quasi-newton} subsamples in the case when matrix is too big to invert
+        \item newton moves in direction of smallest eigenvalue, so approximate \textbf{inexact newton} approximates the smallest
+        \item non-convex case can be solved by following \textbf{newton-CG} until negative curvature, then following it
+    \end{itemize}
+
+    \section{Recurrent Neural Networks}%
+    \label{sec:recurrent_neural_networks}
+
+    \subsubsection{Reccurent Neural Networks}%
+    \label{ssub:reccurent_neural_networks}
+
+    \subsubsection{Generative RNNs}%
+    \label{ssub:generative_rnns}
+
+
+    \subsubsection{Conditional RNNs}%
+    \label{ssub:conditional_rnns}
+
+    \begin{itemize}
+        \item sequence to vector
+        \item vector to sequence
+        \item sequence to sequence
+    \end{itemize}
+
+    \textbf{teacher forcing} during training, previous $y$ is true $y$ taken from training data
+    \begin{itemize}
+        \item at test time, prev $y$ is generated
+        \item mismatch
+    \end{itemize}
+    \textbf{scheduled sampling} stochastically choose to either generate or take $y$
+    \textbf{professor forcing} using a GAN to sample trajectories?
+
+
+    \subsection{Deeper RNNs}%
+    \label{sub:deeper_rnns}
+
+    \begin{description}
+        \item[stacking] stacking hidden layers
+        \item[mixing hidden, input, output] hid to out, hid to hid, in to hid
+        \item[skip connections] mixing, with skips
+    \end{description}
+
+    \subsubsection{Architechtures}%
+    \label{ssub:architechtures}
+
+    dimensional
+    \begin{description}
+        \item[recursive] tree-structured recursive computation
+        \item[multi-directional] 2D graph where input comes from two separate dimensions
+        \item[bidirectional] concatenation of forward and backward RNNs hidden states
+    \end{description}
+
+    modifications
+    \begin{description}
+        \item[mutliplicative] replace addition by dot product in hidden
+        \item[multi-scale] different time scale RNNs
+    \end{description}
+
+    \subsection{Long Term Dependencies}%
+    \label{sub:long_term_dependencies}
+
+    \subsubsection{The Problem}%
+    \label{ssub:the_problem}
+
+    a simple neuron can store 1 bit as a dynamical system
+    \begin{itemize}
+        \item basins of attraction
+        \item gradient must be high at boundary of basins
+    \end{itemize}
+    spectral radius determines stability
+    \begin{itemize}
+        \item if > 1 then noise can kick neuron out of state
+        \item if < 1 it is stable
+    \end{itemize}
+    gradient calculation requires multiplying each neuron's matrix
+    \begin{itemize}
+        \item if spectral norms are < 1 $\to$ total product goes to 0
+    \end{itemize}
+
+    gradient that is propogated will therefore either increase (if above 1) or decrease (if below 1) causing it to either \textbf{explode} or \textbf{vanish}
+
+
+    \subsubsection{Solutions}%
+    \label{ssub:solutions}
+
+    delays and hierarchies
+    \begin{itemize}
+        \item learned time scales / hierarchies (Chung et al 2016)
+        \item hierarchical multiscale RNNs (Chung et al 2017)
+    \end{itemize}
+
+    gating
+    \begin{itemize}
+        \item self-loop for gradients, learned gating
+        \item eigenvalue of Jacobian only slightly less than 1
+        \item LSTM (Hochreiter and Schmidhuber 1997)
+        \item GRU (Cho et al 2014)
+    \end{itemize}
+
+    attention
+    \begin{itemize}
+        \item learn to weigh your whole input vector based on current state
+        \item soft content-based attention (Bahdanau et al 2014)
+    \end{itemize}
+
+
+    \subsubsection{Attention}%
+    \label{ssub:attention}
+
+    attention networks
+    \begin{itemize}
+        \item graph attention networks (Velickovic 2018)
+        \item attention for memory, NTM (Bahadanau et al 2014)
+        \item pointing unknown words (Gulcehre 2016)
+    \end{itemize}
+
+    self-attention (Google 2017)
+    \begin{itemize}
+        \item encode location, transform location based on attention from others
+        \item parallalelized
+        \item self-attentive backtracking (Ke et al 2018)
+    \end{itemize}
+
+    \subsubsection{Consciousness Prior}%
+    \label{ssub:consciousness_prior}
+
+    \begin{itemize}
+        \item we reason in latent space
+        \item our representations have few, low-dimensional variables
+        \item constrain by selecting relevant abstract concepts
+    \end{itemize}
+
+    two levels of representation: \textbf{consciousness prior}
+    \begin{itemize}
+        \item high-dependsional abstract representation
+        \item low-dimensional conscious thought
+        \item attention mechanism over both to create conscious thought
+        \item objective function in abstract space, mutual information between past and future
+    \end{itemize}
+
+    \section{Language Understanding {\small(Graham Neubig)}}%
+    \label{sec:language_understanding_small_graham_neubig_}
+
+    \subsection{Overview}%
+    \label{sub:overview}
+
+    \begin{itemize}
+        \item language modelling
+        \item text classification
+        \item sequence transduction
+        \item structurual analysis
+        \item semantic analysis
+    \end{itemize}
+
+    \subsection{Sentence Classification}%
+    \label{sub:sentence_classification}
+
+    bag of words
+    \begin{itemize}
+        \item sum of word's value + softmax
+        \item can't handle negations, double-negatives
+    \end{itemize}
+
+    deep continuous bag of words
+    \begin{itemize}
+        \item cbow + tanh activations
+        \item effective but still can't handle sequential dependencies
+    \end{itemize}
+
+    bag of ngrams, CNNs
+    \begin{itemize}
+        \item ngrams: sliding window over sentence
+        \item soft bag of ngrams + pooling: time delay NN (Waibel et al 1989) $\approx$ 1D conv
+        \item great for short-distance feature extractions
+        \item fail on long-distance dependencies
+    \end{itemize}
+
+    RNN
+    \begin{itemize}
+        \item recurrence allows for "remembering"
+        \item long term and sequential dependencies
+        \item credit assignment is difficult
+    \end{itemize}
+
+    count-based models
+    \begin{itemize}
+        \item counting frequency and dividing
+    \end{itemize}
+
+    \subsection{Language Models}%
+    \label{sub:stuff}
+
+    word embedddings
+    \begin{itemize}
+        \item create a space for words that semantically represents them
+        \item sharing strength and reducing parameter space
+    \end{itemize}
+
+    RNN LMs
+    \begin{itemize}
+        \item RNNs using word embeddings
+        \item long terms dependencies and also smaller parameters space
+        \item effective and standard method
+    \end{itemize}
+
+    evaluation
+    \begin{itemize}
+        \item log-likelihood
+        \item per-word log-likelihood
+        \item per-word cross entropy ($\log 2$)
+        \item perplexity ($e^{\text{LL}}$)
+    \end{itemize}
+
+    \subsubsection{Conditioned Language Models}%
+    \label{ssub:conditioned_language_models}
+
+    generate text according to specification
+    \begin{itemize}
+        \item condition RNN through hidden state
+    \end{itemize}
+
+    \subsection{Generation Problem}%
+    \label{sub:generation_problem}
+
+    \begin{description}
+        \item[sampling] generate a random sentence
+        \item[ancestral sampling] generate words one-by-one
+    \end{description}
+
+    \begin{itemize}
+        \item \textbf{greedy search} pick word with highest prob
+        \item \textbf{beam search} keep multiple hypotheses
+    \end{itemize}
+
+    \begin{description}
+        \item[argmax] generate sentence with highest prob, e.g. sentence translation
+    \end{description}
+    \begin{itemize}
+        \item \textbf{attention} keep vector of context
+        \item \textbf{self-attention}
+    \end{itemize}
+
+    \subsection{Parsing and Tagging}%
+    \label{sub:parsing}
+
+    linearized tree + seq2seq
+    \begin{itemize}
+        \item make your tree a string and ``translate''
+        \item simple but doesn't exploit structure
+    \end{itemize}
+
+    bi-LSTM CRF
+    \begin{itemize}
+        \item CRF layer ensure consistency between tags
+        \item training and test with dynamic programming
+    \end{itemize}
+
+    stack LSTMs (Dyer et al 2015)
+    \begin{itemize}
+        \item 3 LSTMS: over words and over compositional representation
+        \item gives better structural and semantic understanding, exploit structure
+    \end{itemize}
+
+    \subsection{Small Data}%
+    \label{sub:small_data}
+
+    pre-training on another task
+    \begin{itemize}
+        \item word embeddings (Fasttext)
+        \item sentence representation (Dai et al 2015)
+        \item contextual word embeddings (ELMo)
+    \end{itemize}
+
+    multi-task learning
+    \begin{itemize}
+        \item jointly training on your task and another
+    \end{itemize}
+
+    cross-domain
+    \begin{itemize}
+        \item learn over many languages simultaneously to help translating other
+        \item fine-tuning on your specific language
+        \item adding language tags
+    \end{itemize}
+
+    design models that scale, similar to our own linguistic understanding
+
+    \subsection{Semantics}%
+    \label{sub:semantics}
+
+    \subsubsection{Semantic Parsing}%
+    \label{ssub:semantic_parsing}
+
+    executable representations
+    \begin{itemize}
+        \item parsing to SQL queries
+        \item parsing to commands, compositional trees
+        \item parsing to source code
+    \end{itemize}
+
+    semantic parsing with syntax
+    \begin{itemize}
+        \item express as abstract syntax tree (AST)
+        \item works better than just seq2seq
+    \end{itemize}
+
+
+    \subsubsection{Machine Reading}%
+    \label{ssub:machine_reading}
+
+    multiple-choice question tasks
+    \begin{itemize}
+        \item MCTest 500 passages, 2k questions
+        \item RACE 28k passages, 100k questions
+    \end{itemize}
+
+    span selection
+    \begin{itemize}
+        \item SQuAD 500 passages, 100k questions
+        \item triviaQA
+    \end{itemize}
+
+    necessary
+    \begin{itemize}
+        \item extract only salient parts
+        \item do abstract reasoning on language
+    \end{itemize}
+
+    bidirectional language flow (Seo et al 2017)
+    \begin{itemize}
+        \item calculate doc2ctxt, ctxt2doc
+        \item concatenate representations and extract
+    \end{itemize}
+
+    memory networks (Sukhbaatar et al 2015)
+    \begin{itemize}
+        \item multiple layers of attention to save/read info
+        \item does "reasoning"
+    \end{itemize}
+
+    \subsection{Challenges}%
+    \label{sub:challenges}
+
+    \begin{itemize}
+        \item scaling down to scarce data
+        \item robust solutions in big data scenarios
+        \item deeper reasoning
+        \item interpretability
+    \end{itemize}
+
+
+    \section{Multi-modal Learning {\small (Jamie Kiros)}}%
+    \label{sec:multi_modal_learning_small_jamie_kiros_}
+
+    \begin{itemize}
+        \item encoding
+        \item decoding
+        \item \ldots
+    \end{itemize}
+
+    \subsection{Building Blocks}%
+    \label{sub:building_blocks}
+
+    \begin{description}
+        \item[matching] learning a joint embedding space for retrieval
+        \item[fusion] combining representations of modalities
+            \begin{itemize}
+                \item simple
+                \item gating
+                \item bilinear pooling
+            \end{itemize}
+        \item[FiLM] condition one modality on another
+            \begin{itemize}
+                \item VQA (Perez et al 2017)
+                \item RL with instructions (Chaplot et al 2017)
+            \end{itemize}
+        \item[translation] from one modality to another
+    \end{description}
+
+    \subsection{Research}%
+    \label{sub:research}
+
+    \begin{description}
+        \item[grounding] learning one modality given correspondance in another
+        \item[contextualization] harness large corpus to learn contextualized word embeddings (Peters et al 2018)
+            \begin{itemize}
+                \item winograd schemas
+            \end{itemize}
+        \item[multi-apt representations] flexible modulation across contexts/tasks
+            \begin{itemize}
+                \item InferLite (Kiros and Chan 2018) multi-apt sentence embeddings
+            \end{itemize}
+        \item[relevance realization] zoning in on what's relevant
+            \begin{itemize}
+                \item dynamic representation, changing with relevance
+                \item aligning books and movies (Kiros and Zhu 2015)
+            \end{itemize}
+        \item[specificity] certain images have more variability in their possible descriptions
+            \begin{itemize}
+                \item increase specificity through grounding, GuessWhat?! (De Vries et al 2017)
+                \item Hierarchical Neural Story Generation (Fan et al 2018)
+            \end{itemize}
+    \end{description}
+
+    \section{Generative Models for Music {\small(Sageev Oore)}}%
+    \label{sec:generative_models_for_music_small_sageev_oore_}
+
+    \subsection{Music}%
+    \label{sub:music}
+
+    \subsubsection{Music Background}%
+    \label{ssub:music_background}
+
+    \begin{description}
+        \item[pitch] perceptual concept
+        \item[interval] distance between pitches, not easily relative
+        \item[consonance] ``niceness'' not always good, not invariant
+        \item[dynamics] you can ``weight'' notes, changes overall sound
+    \end{description}
+
+    it is difficult to evaluate a melody, a good composer might make any melody work
+
+    \subsubsection{Representations}%
+    \label{ssub:representations}
+
+    \begin{description}
+        \item[MIDI] sequential description of music data
+            \begin{itemize}
+                \item good for pitch
+                \item not good for timbre
+            \end{itemize}
+        \item[score] what notes to play, interpreted by performer
+        \item[spectrogram] frequencies and their intensity
+    \end{description}
+
+    we can consider MIDI / score a sort of \textit{language}
+
+    \subsection{Modelling}%
+    \label{sub:modelling}
+
+    \subsubsection{Score}%
+    \label{ssub:score}
+
+    sequence tutor (jacques et al 2017)
+    \begin{itemize}
+        \item RNN that has to follow rules made by a Q-network
+    \end{itemize}
+
+    musical dialogue (Bretan et al 2017)
+    \begin{itemize}
+        \item call and response music
+        \item music embeddings with an auto-encoder
+        \item clustering + unit selection to create response
+    \end{itemize}
+
+    "flat" note VAE
+    \begin{itemize}
+        \item hierarchical decoder with biLSTM encoder
+    \end{itemize}
+
+    \subsubsection{Performance}%
+    \label{ssub:performance}
+
+    performance RNN (Simon and Oore 2017)
+    \begin{itemize}
+        \item train on single-instrument human performance
+        \item generate directly in the performance space
+    \end{itemize}
+
+
+    relative self-attention for music (Huang et al 2018)
+    \begin{itemize}
+        \item using the transformer for music generation
+    \end{itemize}
+
+    \subsubsection{Audio}%
+    \label{ssub:audio}
+
+    musical timbre transfer (Huang et al 2018)
+    \begin{itemize}
+        \item cycleGAN to transform waveform
+        \item transfer flute to violin
+    \end{itemize}
 
 
 \end{document}
