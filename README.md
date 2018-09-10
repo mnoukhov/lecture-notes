@@ -6,8 +6,6 @@ They are not meant to be replacement for lectures/lecture notes/textbooks but ra
 
 ## University of Waterloo
 ### Winter 2015
-CS 341 Algorithms (Timothy Chan)
-
 CS 348 Databases (Grant Wedell)
 
 CS 349 User Interfaces (Michael Terry)
@@ -21,8 +19,6 @@ CS 446 Software Design and Architecture (Victoria Sakhini)
 
 CS 458 Computer Security and Privacy (Erinn Atawater)
 
-CS 486 Intro to AI (Peter Van Beek)
-
 ### Winter 2017
 CS 489 Intro to ML (Pascal Poupart)
 
@@ -31,14 +27,8 @@ ECE 459 Programming for Performance (Jeffrey Zarnett) [notes](https://github.com
 SYDE 556 Simulating Neurobiological Systems (Chris Eliasmith) [notes](http://compneuro.uwaterloo.ca/courses/syde-750.html)
 
 ## Lund University
-### Fall 2015 
+### Fall 2015
 EDA040 Concurrency (Klass Nilsson)
-
-ETSF10 Internet Protocols (Jens Andersson)
-
-## Universite de Montreal
-### Fall 2017
-IFT6269 Probabilist Graphical Models (Simone Lacoste-Julien)
 
 ## McGill University
 ### Winter 2018
