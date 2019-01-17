@@ -1,0 +1,204 @@
+\documentclass[]{article}
+\usepackage[margin = 1.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage[pdftex,
+pdfauthor={Michael Noukhovitch},
+pdftitle={},
+pdfsubject={Lecture notes from },
+pdfproducer={LaTeX},
+pdfcreator={pdflatex}]{hyperref}
+\usepackage[lined]{algorithm2e}
+%\usepackage{cleveref}
+%\usepackage[T1]{fontenc}
+%\usepackage{mathtools}
+%\usepackage{listings}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\parindent}{0in}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+
+%\definecolor{dkgreen}{rgb}{0,0.6,0}
+%\definecolor{gray}{rgb}{0.5,0.5,0.5}
+%\definecolor{mauve}{rgb}{0.58,0,0.82}
+%\lstset{
+%language=C,
+%aboveskip=3mm,
+%belowskip=3mm,
+%showstringspaces=false,
+%columns=flexible,
+%basicstyle={\small\ttfamily},
+%numbers=none,
+%numberstyle=\tiny\color{gray},
+%keywordstyle=\color{blue},
+%commentstyle=\color{dkgreen},
+%stringstyle=\color{mauve},
+%breaklines=true,
+%breakatwhitespace=true,
+%tabsize=4
+%}
+
+%\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+%\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+
+%\makeatletter
+%\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+%\makeatother
+
+\begin{document}
+\let\ref\Cref
+
+\title{\bf{IFT 6135: Representation Learning}}
+\date{Winter 2019 \\ \center Notes written from Aaron Courville's lectures.}
+\author{Michael Noukhovitch}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Neural Networks}%
+\label{sec:neural_networks}
+
+\subsection{Artificial Neuron}%
+\label{sub:artificial_neuron}
+
+$g(b + w^Tx)$
+\begin{description}
+    \item[pre-activation] $b + w^Tx$
+    \item[connection weights] $w$
+    \item[neuron bias] $b$
+    \item[activation function] $g$
+\end{description}
+
+\subsection{Activation Functions}%
+\label{sub:activation_functions}
+
+\begin{description}
+    \item[linear] $a$
+    \item[sigmoid] $\frac{1}{1 + \exp(-a)}$
+    \item[tanh] $\frac{\exp{a} - \exp{-a}}{\exp(a) + \exp(-a)}$
+    \item[ReLU] $\max(0,a)$
+    \item[maxout] $\max_{j \in [1,k]} a_j$
+    \item[softmax] $\frac{\exp(a_i)}{\sum_c \exp(a_c)} \forall i$
+\end{description}
+
+\subsection{Neural Networks}%
+\label{sub:single_layer_neural_network}
+
+\subsubsection{Single Layer}%
+\label{ssub:single_layer}
+
+\begin{description}
+    \item[neuron capacity] a single neuron can do binary classification iff linearly separable
+    \item[universal approximation theorem] (Hornik, 1991)
+        a single-layer NN can approximate any continuous function given enough hidden units
+\end{description}
+
+\subsubsection{Multi Layer}%
+\label{ssub:multi_layer}
+
+\begin{description}
+    \item[input] $h^{(0)} = x$
+    \item[hidden layer pre] $a^{(k)} (x) = b^{(k)} + W^{(k)} h^{(k-1)}(x)$
+    \item[hidden layer activation] $h^{(k)} = g(a^{(k)}(x))$
+    \item[output] $h^{(L+1)}(x) = o(a^{(L+1)}(x))$
+\end{description}
+
+\subsection{Biological Inspiration}%
+\label{sub:biological_inspiration}
+
+
+\section{Training Neural Networks}%
+\label{sec:training_neural_networks}
+
+\subsection{Empirical Risk Minimization}%
+\label{sub:empirical_risk_minimization}
+learning as optimization
+\begin{equation*}
+    \argmin_\theta \frac{1}{T} \sum_t l(f(x^{(t)};\theta), y^{(t)}) + \lambda \Omega(\theta)
+\end{equation*}
+
+\begin{description}
+    \item[loss function] $l$ is a surrogate for what we truly want (upper bound)
+    \item[regularizer] $\Omega$ penalizes certain values of $\theta$
+\end{description}
+
+\subsection{Stochastic Gradient Descent}%
+\label{sub:stochastic_gradient_descent}
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    initialize $\theta$ \;
+    \For{$n$ \textup{epochs}}{
+        \ForEach{\textup{training example} $x^{(t)}, y^{(t)}$}{
+            $\Delta \gets -\nabla_\theta l(f(x^{(t)};\theta), y^{(t)}) - \lambda \nabla_\theta \Omega(\theta)$ \;
+            $\theta \gets \theta + \alpha \Delta$ \;
+        }
+    }
+\end{algorithm}
+where $\nabla$ is the gradient, $\alpha$ is the learning rate
+
+\subsection{Gradient Computation}%
+\label{sub:gradient_computation}
+
+given a categorical output with classes $c$, let softmax output be $f(x)_c = p(y = c|x)$
+
+\begin{align*}
+    \intertext{gradients for output}
+    \frac{\partial}{\partial f(x)_c} - \log f(x)_y &= \frac{-1_{(y=c)}}{f(x)_y} \\
+    \nabla_{f(x)} - \log f(x)_y &= \frac{-1}{f(x)_y} \begin{bmatrix} 1_{(y=0)} \\ \dots \\ 1_{(y=C-1)} \end{bmatrix} \\
+    &= \frac{-e(y)}{f(x)_y}
+    \intertext{gradients for pre-activation}
+    \frac{\partial}{\partial a^{(L+1)}(x)} - \log \sigma(a^{(L+1)}(x))_y &= -(1_{(y=c)} - f(x)_y) \\
+    \nabla_{f(x)} - \log f(x)_y &= -(e(y) - f(x))
+\end{align*}
+
+where $e(y)$ gives the one-hot vector of length $C$ with 1 at index $y$, and $\sigma$ is the sigmoid function
+
+
+\subsection{Backpropogation}%
+\label{sub:backpropogation}
+
+To simplify things, use the chain rule to rewrite gradients in terms of in terms of the layers above them
+
+\begin{algorithm}[H]
+    \BlankLine
+    \DontPrintSemicolon
+    compute output gradient $\nabla_{a^{(L+1)}(x)} - \log f(x)_y = -(e(y) - f(x))$ \;
+    \For{$k = L+1 \to 1$}{
+        hidden layer weights \;
+        \Indp $\nabla_{W^{(k)}(x)} - \log f(x)_y = (\nabla_{a^{(k)}(x)} - \log f(x)_y) h^{(k-1)}(x)^T$ \;
+        \Indm hidden layer biases \;
+        \Indp $\nabla_{b^{(k)}(x)} - \log f(x)_y = \nabla_{a^{(k)}(x)} - \log f(x)_y$ \;
+        \Indm output below \;
+        \Indp $\nabla_{h^{(k-1)}(x)} - \log f(x)_y = {W^{(k)}}^T (\nabla_{a^{(k)}(x)} - \log f(x)_y)$ \;
+        \Indm pre-activation below \;
+        \Indp $\nabla_{a^{(k-1)}(x)} - \log f(x)_y = (\nabla_{h^{(k-1)}(x)} - \log f(x)_y) \bigodot [\dots, g'(a^{(k-1)}(x)_j, \dots] $
+    }
+\end{algorithm}
+
+
+\subsection{Flow Graph}%
+\label{sub:flow_graph}
+
+
+
+\end{document}
