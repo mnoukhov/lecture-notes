@@ -1,0 +1,177 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={},
+  pdfsubject={Lecture notes from },
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+    \let\ref\Cref
+
+    \title{\bf{IFT 6268 Self-Supervised Representation Learning}}
+    \date{Fall 2020 \\ \center Notes written from Aaron Courville's lectures.}
+    \author{Michael Noukhovitch}
+
+    \maketitle
+    \newpage
+    \tableofcontents
+    \newpage
+
+
+
+    \section{Introduction}
+
+    \subsection{Transfer Learning}%
+    \label{sub:transfer_learning}
+
+    Domain $D$ consists of a feature space $\mathbb{X}$ and marginal po
+
+    Given a source domain $D_s$ and learning task $T_s$, a target domain $D_t$ and learning task $T_t$. \textbf{Transfer learning} aims to improve learning a function $f$ to
+    \begin{enumerate}
+        \item \textbf{inductive} same domain, different tasks
+        \item \textbf{transductive} different domain, same task \textbf{domain adaptation}
+        \item \textbf{unsupervised} both different
+    \end{enumerate}
+
+    SSL is usually source unlabelled, target labelled
+
+    For SSL, the source task $T_s$
+    \begin{itemize}
+        \item unsupervised
+        \item extracts semantic information from input
+        \item learns correct invariances
+    \end{itemize}
+
+    \subsection{Image Methods}%
+    \label{sub:questions}
+
+    Rotation prediction: how much each image is rotated
+    \begin{itemize}
+        \item generate your own label
+        \item but learning the answer gets you some semantic knowledge about images
+    \end{itemize}
+
+
+    GANs: is it SSL?
+    \begin{itemize}
+        \item if you're just creating a generator, no (just generative modelling)
+        \item learning a discriminator augmented with fake data (Salimans et al, 2016), yes
+    \end{itemize}
+
+    \subsection{Contrastive Methods}%
+    \label{sub:contrastive_methods}
+
+    Mutual information $I(X,Y) = D_{KL}(P_{X,Y} || P_X \otimes P_Y)$
+    \begin{itemize}
+        \item intersection of marginal entropies
+        \item difficult to compute
+    \end{itemize}
+
+    MINE (Belghazi et al, 2018) optimize a lower bound to MI
+    \begin{itemize}
+        \item encode an image with a network
+        \item learn a discriminator with lower bound MI loss
+    \end{itemize}
+
+    Deep Infomax (Hjelm et al, 2019) try to learn ``important'' image regions
+    \begin{itemize}
+        \item use local image patches
+        \item MI between global vector and local patches
+    \end{itemize}
+
+    CPC (van der Oord, 2018)
+    \begin{itemize}
+        \item predict feature vectors from context vectors
+        \item single neurons learn semantic meaning
+    \end{itemize}
+
+    \subsection{Iterated Learning}%
+    \label{sub:iterated_learning}
+
+    \textbf{Iterated learning} uses learners to teach other learners
+    \begin{itemize}
+        \item compositional structure of NL may have emerged through teaching language (Kirby et al, 2014)
+        \item may encourage compositional structure in neural models
+        \item may encourage systematic generalization
+    \end{itemize}
+
+    \textbf{Self-training} similarly learns from its own pseudo-labels
+    \begin{itemize}
+        \item self-training with noisy students (Xie et al, 2020) iterates on imagenet
+    \end{itemize}
+
+    \textbf{Systematic generalization} is generalizing through shared rules between training and testing, not shared distribution
+    \begin{itemize}
+        \item seq2seq models can't regularly do that (Lake and Baroni, 2016)
+        \item maybe SSL can help here
+    \end{itemize}
+
+
+
+\end{document}

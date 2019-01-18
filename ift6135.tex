@@ -7,14 +7,9 @@
 \usepackage{multicol}
 \usepackage{float}
 \usepackage{enumitem}
-\usepackage[pdftex,
-pdfauthor={Michael Noukhovitch},
-pdftitle={},
-pdfsubject={Lecture notes from },
-pdfproducer={LaTeX},
-pdfcreator={pdflatex}]{hyperref}
 \usepackage[lined]{algorithm2e}
-%\usepackage{cleveref}
+\usepackage{hyperref}
+
 %\usepackage[T1]{fontenc}
 %\usepackage{mathtools}
 %\usepackage{listings}
@@ -63,7 +58,6 @@ pdfcreator={pdflatex}]{hyperref}
 %\makeatother
 
 \begin{document}
-\let\ref\Cref
 
 \title{\bf{IFT 6135: Representation Learning}}
 \date{Winter 2019 \\ \center Notes written from Aaron Courville's lectures.}
@@ -154,10 +148,24 @@ learning as optimization
         }
     }
 \end{algorithm}
-where $\nabla$ is the gradient, $\alpha$ is the learning rate
+\begin{description}
+    \item[gradient] $\nabla$
+    \item[learning rate] $\alpha$
+\end{description}
+this requires:
+\begin{itemize}
+    \item a loss function
+    \item gradient computation \ref{sub:gradient_computation}
+    \item a regularizer \ref{sub:regularization}
+    \item initialization \ref{sub:initialization}
+\end{itemize}
 
 \subsection{Gradient Computation}%
 \label{sub:gradient_computation}
+
+\subsubsection{Manual}%
+\label{ssub:manual}
+
 
 given a categorical output with classes $c$, let softmax output be $f(x)_c = p(y = c|x)$
 
@@ -174,8 +182,8 @@ given a categorical output with classes $c$, let softmax output be $f(x)_c = p(y
 where $e(y)$ gives the one-hot vector of length $C$ with 1 at index $y$, and $\sigma$ is the sigmoid function
 
 
-\subsection{Backpropogation}%
-\label{sub:backpropogation}
+\subsubsection{Backpropogation}%
+\label{ssub:backpropogation}
 
 To simplify things, use the chain rule to rewrite gradients in terms of in terms of the layers above them
 
@@ -195,10 +203,97 @@ To simplify things, use the chain rule to rewrite gradients in terms of in terms
     }
 \end{algorithm}
 
+\subsubsection{Flow Graph}%
+\label{ssub:flow_graph}
+represent execution as a modular, acyclic flow graph of boxes with
+\begin{itemize}
+    \item method \texttt{fprop} children $\to$ parents
+    \item method \texttt{bprop} parents $\to$ children
+\end{itemize}
+debug with \textbf{finite difference approximation}
+\begin{equation*}
+    \frac{\partial f(x)}{\partial x} \approx \frac{f(x - \epsilon) - f(x + \epsilon)}{2\epsilon}
+\end{equation*}
 
-\subsection{Flow Graph}%
-\label{sub:flow_graph}
+\subsection{Regularization}%
+\label{sub:regularization}
 
+\subsubsection{Methods}%
+\label{ssub:methods}
+
+\begin{description}
+    \item[L2] $\sum_{k,i,j} (W_{i,j}^{(k)})^2$
+        \begin{itemize}
+            \item gradient $2 W^{(k)}$
+            \item like a gaussian prior
+        \end{itemize}
+    \item[L1] $\sum_{k,i,j} | W_{i,j}^{(k)} |$
+        \begin{itemize}
+            \item gradient $\text{sign}(W^{(k)})$
+            \item laplacian prior, pushes weights to be 0
+        \end{itemize}
+    \item[early stopping] stop training when validation error increases (with lookahead)
+\end{description}
+
+\subsubsection{Bias-Variance Tradeoff}%
+\label{ssub:bias_variance_tradeoff}
+
+for a learning algorithm:
+\begin{description}
+    \item[variance] variance between using different training sets
+    \item[bias] difference between average model and true solution
+\end{description}
+
+
+\subsection{Initialization}%
+\label{sub:initialization}
+
+\begin{itemize}
+    \item bias $\to 0$
+    \item weights $\sim$ \texttt{uniform}$(-b,b), \ \ b = \frac{\sqrt{6}}{\sqrt{H_k + H_{k-1}}}$
+        \begin{itemize}
+            \item 0 doesn't work for $\tanh$
+            \item same value makes everything behave same
+        \end{itemize}
+\end{itemize}
+
+\subsection{Model Selection}%
+\label{sub:model_selection}
+
+\begin{description}
+    \item[training set] train the model
+    \item[validation set] select hyperparameters
+    \item[test set] estimate generalization error
+    \item[grid search] try all hyperparameters
+    \item[random search] sample distribution of hyperparameters
+\end{description}
+
+\subsection{Optimization}%
+\label{sub:optimization}
+
+\subsubsection{SGD}%
+\label{ssub:sgd}
+
+Training NN with SGD
+\begin{itemize}
+    \item \textbf{non-convex} because there isn't a global optimum
+    \item convergence if $\sum_{t=1}^\infty \alpha_t = \infty$ and $\sum_{t=1}^\infty \alpha_t^2 < \infty$
+\end{itemize}
+Tricks
+\begin{description}
+    \item[decaying learning rate] e.g. $ \frac{\alpha}{1 + \delta t}$
+    \item[mini-batching] using $>1$ example for gradient computation
+    \item[exponentially decaying] average of previous gradients
+\end{description}
+
+\subsubsection{Newton's Method}%
+\label{ssub:newton_s_method}
+locally approximate loss using Taylor Expansion, minimize by solving
+\begin{align*}
+    0 &= \nabla_\theta l(f(x;\theta^{(t)}),y) + (\nabla^2_\theta l(f(x;\theta^{(t)}),y)) ( \theta - \theta^{(t)}) \\
+    \theta^{(t+1)} &= \theta^{(t)} - (\nabla^2_\theta l(f(f;\theta^{(t)}),y))^{-1} (\nabla_\theta l(f(x;\theta^{(t)}),y))
+\end{align*}
+but only practical if there are few parameters (to invert Hessian), and locally convex (invertible Hessian)
 
 
 \end{document}
