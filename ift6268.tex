@@ -84,8 +84,55 @@
     \newpage
 
 
-
     \section{Introduction}
+
+    \subsection{Motivation}%
+    \label{sub:motivation}
+
+    We want good representation learning but
+    \begin{itemize}
+        \item scaling supervised learning isn't feasible
+        \item we need to learn useful representations unsupervised, but need more info
+    \end{itemize}
+
+    \textbf{Self-supervised learning} (SSL) recover useful/semantic representations by training models to answer specific questions about the data
+    \begin{itemize}
+        \item between supervised and unsupervised
+        \item can procedurally generate infinite annotation
+        \item answering the question requires fundamental understanding
+        \item main challenge is choosing a good question that allows to learn \textit{without} extra labels
+    \end{itemize}
+
+    \subsection{Autoencoders}%
+    \label{sub:autoencoders}
+
+    Generative models (AE, VAE) have been historically ineffective compared to supervised
+    \begin{itemize}
+        \item caveat of LM (BERT predicting input)
+        \item caveat of small data (unsupervised pretraining)
+    \end{itemize}
+
+    Old school AE
+    \begin{itemize}
+        \item couldn't learn semantics of MNIST
+        \item even adding depth didn't help
+    \end{itemize}
+
+    denoising AE (Vincent et al, 2008) reproduces from noisy $x$
+    \begin{itemize}
+        \item $x + \text{noise} = \tilde x$ used to predict $x$
+        \item representation robust to noise
+        \item formally corresponds to learning an energy function that has lows at true $x$
+    \end{itemize}
+
+    contractive AE (Rifai et al, 2011) adds loss on all information
+    \begin{itemize}
+        \item autoencoder loss to keep ``good'' information
+        \item secondary loss on the jacobian of the encoder to throw away all information
+        \item total effect to reduce ``bad'' information kept
+        \item can use second order methods and might be more stable than dAE
+    \end{itemize}
+
 
     \subsection{Transfer Learning}%
     \label{sub:transfer_learning}
