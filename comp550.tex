@@ -1,0 +1,190 @@
+\documentclass[]{article}
+\usepackage{etex}
+\usepackage[margin = 1.5in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage[lined]{algorithm2e}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+\usepackage[pdftex,
+  pdfauthor={Michael Noukhovitch},
+  pdftitle={},
+  pdfsubject={Lecture notes from },
+  pdfproducer={LaTeX},
+  pdfcreator={pdflatex}]{hyperref}
+
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem*{theorem}{Theorem}
+
+\setlength{\marginparwidth}{1.5in}
+\setlength{\algomargin}{0.75em}
+
+\DeclarePairedDelimiter{\set}{\lbrace}{\rbrace}
+
+\definecolor{darkish-blue}{RGB}{25,103,185}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=darkish-blue,
+    filecolor=darkish-blue,
+    linkcolor=darkish-blue,
+    urlcolor=darkish-blue
+}
+\newcommand{\lecture}[1]{\marginpar{{\footnotesize $\leftarrow$ \underline{#1}}}}
+
+\makeatletter
+\def\blfootnote{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+	\let\ref\Cref
+
+	\title{\bf{Natural Language Processing}}
+	\date{Fall 2020, McGill\\ \center Notes written from Jackie Cheung's lectures}
+	\author{Michael Noukhovitch}
+
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+
+    \section{Introduction}%
+    \label{sec:introduction}
+
+    \subsection{Overview}%
+    \label{sub:overview}
+
+    \textbf{language} is a form of communication
+    \begin{itemize}
+        \item \textit{arbitrary} pairing between form and meaning
+        \item very expressive and productive
+        \item nearly universal
+        \item uniquely human*
+    \end{itemize}
+
+    \textbf{computational linguistics} modelling natural language with computational models
+    \begin{itemize}
+        \item acoustic signals
+        \item NL understanding (comprehension)
+        \item NL generation (production)
+    \end{itemize}
+
+    goals of the field
+    \begin{itemize}
+        \item practical technologies (NLP)
+        \item understanding how language works (CL)
+    \end{itemize}
+
+    models and techniques
+    \begin{itemize}
+        \item gathering data
+        \item evaluation
+        \item statistical methods (ML)
+        \item rule-based systems
+    \end{itemize}
+
+    some example problems
+    \begin{itemize}
+        \item is language an instinct? (Chomsky)
+        \item language processing to understand meaning of sentence
+        \item can we learn mathematical properties of language
+    \end{itemize}
+
+    types of language
+    \begin{itemize}
+        \item \textbf{text} an idealization of spoken language
+            \begin{itemize}
+                \item luckily English is similar between writing and speaking, and there is lots of data on it
+                \item older work used ``clean'' language but recent work ventures into messy data (e.g. Twitter)
+            \end{itemize}
+        \item \textbf{speech} is much messier
+            \begin{itemize}
+                \item automatic speech recognition (ASR)
+                \item text-to-speech generation (TTS)
+            \end{itemize}
+    \end{itemize}
+
+    \subsection{Domains of Language}%
+    \label{sub:domains_of_language}
+
+    \textbf{phonetics} study of speech sounds
+    \begin{itemize}
+        \item articulation, transmission
+        \item how each sound is made in the mouth
+    \end{itemize}
+    \textbf{phonology} rules that govern sound patterns
+    \begin{itemize}
+        \item how the sounds are organized
+        \item ``p'' in peach and speach are the same phoneme but phonetically distinct (aspiration)
+    \end{itemize}
+    \textbf{morphology} word formation and meaning
+    \begin{itemize}
+        \item anti-dis-establish-ment-arian-ism
+    \end{itemize}
+    \textbf{syntax} structure of language
+    \begin{itemize}
+        \item ``I a woman saw park in the'' is \textbf{ungrammatical}
+        \item \textbf{ambiguity} different possible meaning for the same phrase
+    \end{itemize}
+    \textbf{semantics} meaning of language
+    \begin{itemize}
+        \item ``Ross wants to marry \textbf{a} Swedish woman''
+    \end{itemize}
+    \textbf{pragmatics} meaning of language in context
+    \begin{itemize}
+        \item different from literal meaning
+        \item \textbf{deixis} interpretation that relies on extra-linguistic context
+        \item ``dessert would be delicious''
+    \end{itemize}
+    \textbf{discourse} structure of larger spans of language
+    \begin{itemize}
+        \item do large spans of text form a coherent story
+    \end{itemize}
+
+    \subsection{Technology}%
+    \label{sub:technology}
+
+    combination of hand-crafted knowledge and ML on data
+    \begin{itemize}
+        \item rule-based systems
+        \item machine learning
+        \item knowledge representation
+    \end{itemize}
+
+
+\end{document}
