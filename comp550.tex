@@ -15,11 +15,11 @@
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
 \usepackage[pdftex,
-  pdfauthor={Michael Noukhovitch},
-  pdftitle={},
-  pdfsubject={Lecture notes from },
-  pdfproducer={LaTeX},
-  pdfcreator={pdflatex}]{hyperref}
+pdfauthor={Michael Noukhovitch},
+pdftitle={},
+pdfsubject={Lecture notes from },
+pdfproducer={LaTeX},
+pdfcreator={pdflatex}]{hyperref}
 
 \usepackage{cleveref}
 \usepackage{enumitem}
@@ -29,20 +29,20 @@
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
 \lstset{
-  language=C,
-  aboveskip=3mm,
-  belowskip=3mm,
-  showstringspaces=false,
-  columns=flexible,
-  basicstyle={\small\ttfamily},
-  numbers=none,
-  numberstyle=\tiny\color{gray},
-  keywordstyle=\color{blue},
-  commentstyle=\color{dkgreen},
-  stringstyle=\color{mauve},
-  breaklines=true,
-  breakatwhitespace=true,
-  tabsize=4
+    language=C,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=4
 }
 
 \theoremstyle{definition}
@@ -72,119 +72,306 @@
 \makeatother
 
 \begin{document}
-	\let\ref\Cref
+\let\ref\Cref
 
-	\title{\bf{Natural Language Processing}}
-	\date{Fall 2020, McGill\\ \center Notes written from Jackie Cheung's lectures}
-	\author{Michael Noukhovitch}
+\title{\bf{Natural Language Processing}}
+\date{Fall 2020, McGill\\ \center Notes written from Jackie Cheung's lectures}
+\author{Michael Noukhovitch}
 
-	\maketitle
-	\newpage
-	\tableofcontents
-	\newpage
+\maketitle
+\newpage
+\tableofcontents
+\newpage
 
-    \section{Introduction}%
-    \label{sec:introduction}
+\section{Introduction}%
+\label{sec:introduction}
 
-    \subsection{Overview}%
-    \label{sub:overview}
+\subsection{Overview}%
+\label{sub:overview}
 
-    \textbf{language} is a form of communication
-    \begin{itemize}
-        \item \textit{arbitrary} pairing between form and meaning
-        \item very expressive and productive
-        \item nearly universal
-        \item uniquely human*
-    \end{itemize}
+\textbf{language} is a form of communication
+\begin{itemize}
+    \item \textit{arbitrary} pairing between form and meaning
+    \item very expressive and productive
+    \item nearly universal
+    \item uniquely human*
+\end{itemize}
 
-    \textbf{computational linguistics} modelling natural language with computational models
-    \begin{itemize}
-        \item acoustic signals
-        \item NL understanding (comprehension)
-        \item NL generation (production)
-    \end{itemize}
+\textbf{computational linguistics} modelling natural language with computational models
+\begin{itemize}
+    \item acoustic signals
+    \item NL understanding (comprehension)
+    \item NL generation (production)
+\end{itemize}
 
-    goals of the field
-    \begin{itemize}
-        \item practical technologies (NLP)
-        \item understanding how language works (CL)
-    \end{itemize}
+goals of the field
+\begin{itemize}
+    \item practical technologies (NLP)
+    \item understanding how language works (CL)
+\end{itemize}
 
-    models and techniques
-    \begin{itemize}
-        \item gathering data
-        \item evaluation
-        \item statistical methods (ML)
-        \item rule-based systems
-    \end{itemize}
+models and techniques
+\begin{itemize}
+    \item gathering data
+    \item evaluation
+    \item statistical methods (ML)
+    \item rule-based systems
+\end{itemize}
 
-    some example problems
-    \begin{itemize}
-        \item is language an instinct? (Chomsky)
-        \item language processing to understand meaning of sentence
-        \item can we learn mathematical properties of language
-    \end{itemize}
+some example problems
+\begin{itemize}
+    \item is language an instinct? (Chomsky)
+    \item language processing to understand meaning of sentence
+    \item can we learn mathematical properties of language
+\end{itemize}
 
-    types of language
-    \begin{itemize}
-        \item \textbf{text} an idealization of spoken language
-            \begin{itemize}
-                \item luckily English is similar between writing and speaking, and there is lots of data on it
-                \item older work used ``clean'' language but recent work ventures into messy data (e.g. Twitter)
-            \end{itemize}
-        \item \textbf{speech} is much messier
-            \begin{itemize}
-                \item automatic speech recognition (ASR)
-                \item text-to-speech generation (TTS)
-            \end{itemize}
-    \end{itemize}
+types of language
+\begin{itemize}
+    \item \textbf{text} an idealization of spoken language
+        \begin{itemize}
+            \item luckily English is similar between writing and speaking, and there is lots of data on it
+            \item older work used ``clean'' language but recent work ventures into messy data (e.g. Twitter)
+        \end{itemize}
+    \item \textbf{speech} is much messier
+        \begin{itemize}
+            \item automatic speech recognition (ASR)
+            \item text-to-speech generation (TTS)
+        \end{itemize}
+\end{itemize}
 
-    \subsection{Domains of Language}%
-    \label{sub:domains_of_language}
+\subsection{Domains of Language}%
+\label{sub:domains_of_language}
 
-    \textbf{phonetics} study of speech sounds
-    \begin{itemize}
-        \item articulation, transmission
-        \item how each sound is made in the mouth
-    \end{itemize}
-    \textbf{phonology} rules that govern sound patterns
-    \begin{itemize}
-        \item how the sounds are organized
-        \item ``p'' in peach and speach are the same phoneme but phonetically distinct (aspiration)
-    \end{itemize}
-    \textbf{morphology} word formation and meaning
-    \begin{itemize}
-        \item anti-dis-establish-ment-arian-ism
-    \end{itemize}
-    \textbf{syntax} structure of language
-    \begin{itemize}
-        \item ``I a woman saw park in the'' is \textbf{ungrammatical}
-        \item \textbf{ambiguity} different possible meaning for the same phrase
-    \end{itemize}
-    \textbf{semantics} meaning of language
-    \begin{itemize}
-        \item ``Ross wants to marry \textbf{a} Swedish woman''
-    \end{itemize}
-    \textbf{pragmatics} meaning of language in context
-    \begin{itemize}
-        \item different from literal meaning
-        \item \textbf{deixis} interpretation that relies on extra-linguistic context
-        \item ``dessert would be delicious''
-    \end{itemize}
-    \textbf{discourse} structure of larger spans of language
-    \begin{itemize}
-        \item do large spans of text form a coherent story
-    \end{itemize}
+\textbf{phonetics} study of speech sounds
+\begin{itemize}
+    \item articulation, transmission
+    \item how each sound is made in the mouth
+\end{itemize}
+\textbf{phonology} rules that govern sound patterns
+\begin{itemize}
+    \item how the sounds are organized
+    \item ``p'' in peach and speach are the same phoneme but phonetically distinct (aspiration)
+\end{itemize}
+\textbf{morphology} word formation and meaning
+\begin{itemize}
+    \item anti-dis-establish-ment-arian-ism
+\end{itemize}
+\textbf{syntax} structure of language
+\begin{itemize}
+    \item ``I a woman saw park in the'' is \textbf{ungrammatical}
+    \item \textbf{ambiguity} different possible meaning for the same phrase
+\end{itemize}
+\textbf{semantics} meaning of language
+\begin{itemize}
+    \item ``Ross wants to marry \textbf{a} Swedish woman''
+\end{itemize}
+\textbf{pragmatics} meaning of language in context
+\begin{itemize}
+    \item different from literal meaning
+    \item \textbf{deixis} interpretation that relies on extra-linguistic context
+    \item ``dessert would be delicious''
+\end{itemize}
+\textbf{discourse} structure of larger spans of language
+\begin{itemize}
+    \item do large spans of text form a coherent story
+\end{itemize}
 
-    \subsection{Technology}%
-    \label{sub:technology}
+\subsection{Technology}%
+\label{sub:technology}
 
-    combination of hand-crafted knowledge and ML on data
-    \begin{itemize}
-        \item rule-based systems
-        \item machine learning
-        \item knowledge representation
-    \end{itemize}
+combination of hand-crafted knowledge and ML on data
+\begin{itemize}
+    \item rule-based systems
+    \item machine learning
+    \item knowledge representation
+\end{itemize}
+
+\section{Text Classification}%
+\label{sec:text_classification}
+
+\subsection{Basics}%
+\label{sub:basics}
+
+\textbf{text classification} assign a label or category to a piece of text
+\begin{itemize}
+    \item sentiment analysis
+    \item spam detection
+    \item language identification
+    \item authorship attribution
+\end{itemize}
+
+\textbf{supervised} output data is labelled
+\begin{itemize}
+    \item learn a function, minimize $\theta$ with loss on data
+    \item e.g. spam classificaiton, predict POS
+    \item \textbf{regression} $y$ is continuous
+    \item \textbf{classification} $y$ is discrete
+\end{itemize}
+\textbf{unsupervised} output data is unlabelled
+\begin{itemize}
+    \item learn a density
+    \item e.g. grammar induction, word-relatedness (word2vec)
+\end{itemize}
+
+\subsection{Building a text classifier}%
+\label{ssub:building_a_text_classifier}
+
+\begin{itemize}
+    \item define problem, collect data
+    \item extract feats
+    \item train a classifier on train data
+    \item apply classifier to test data
+\end{itemize}
+
+problem definition
+\begin{itemize}
+    \item problem
+    \item input
+    \item output categories
+    \item how to annotate
+\end{itemize}
+
+\subsection{Feature Extraction}%
+\label{ssub:feature_extraction}
+
+
+\textbf{feature extraction} get ``important'' properties of documents
+\begin{itemize}
+    \item convert text into numerical format
+    \item e.g. word counts as features \textit{unigram counts}
+\end{itemize}
+
+\textbf{lemma} remove affixes get dictionary word ``flies $\to$ fly''
+\textbf{stemming} remove affix get stem ``airliner $\to$ airlin''
+\begin{itemize}
+    \item rule-based e.g. (Porter, 1980) ``ies $\to$ i''
+\end{itemize}
+\textbf{n-grams} sequences of adjacent words
+\begin{itemize}
+    \item presence or absence
+    \item counts
+    \item proportion of total document
+    \item scaled version (tf-idf)
+\end{itemize}
+\textbf{POS tags} crudely capture syntactic pattern (PTB dataset)
+\textbf{stop-word removal} remove common uninformative words
+
+\subsection{Models}%
+\label{sub:models}
+
+\textbf{training} select parameters $\theta^*$ according to some objective
+
+types of models
+\begin{itemize}
+    \item \textbf{generative} models joint distribution $P(x, y)$
+        \begin{itemize}
+            \item less flexible features as they need to be consistent with each other
+        \end{itemize}
+    \item \textbf{discriminative} models conditional $P(y|x)$
+        \begin{itemize}
+            \item can be more flexible in terms of features
+        \end{itemize}
+\end{itemize}
+
+\subsubsection{Naive Bayes}%
+\label{ssub:naive_bayes}
+
+\textbf{Naive Bayes} probabilistic classifier that uses Bayes' Rule $P(y|x) = \frac{P(y)P(x|y)}{P(x)}$
+\begin{itemize}
+    \item generative
+    \item assumes data $x$ is generated independently conditioned on class $P(x_i | y)$
+    \item graphical assumption $P(x,y) = P(y) \prod_i P(x_i|y)$
+\end{itemize}
+
+In NLP, we can assume NB over a \textit{categorical} distribution and train
+\begin{itemize}
+    \item loss $L = \prod_{(x,y) \in D} P(y) \prod_i P(x_i|y)$
+    \item learn $P(Y=y)$ proportion of samples with class $y$
+    \item learn $P(X_i = x| Y= y)$ proportion of samples with feature $x$ given class $y$
+\end{itemize}
+
+Inference time we want $P(y|x)$
+\begin{align}
+    P(y|x) &= P(x,y) | P(x) \\
+           &= P(y) \prod_i P(x_i|y) / P(x)
+\end{align}
+where $P(x)$ is the marginalized over all classes
+
+how to deal with multiple instances
+\begin{itemize}
+    \item \textbf{type} identity of a word (count each word once)
+    \item \textbf{token} instance of a word (count number of occurences)
+\end{itemize}
+
+\subsubsection{Logistic Regression}%
+\label{ssub:logistic_regression}
+
+\textbf{logistic regression} linear regression with a logit activation
+\begin{itemize}
+    \item $P(y|x) = \frac{1}{Z} \exp (\sum_i a_i x_i)$
+    \item squash output between $(0,1)$
+\end{itemize}
+
+train log-likelihood with \textit{gradient descent}
+
+\begin{align}
+    \log L(\theta) &= \prod_{(x,y) \in D} \log P(y|x;\theta) \\
+                   &=  \prod_{(x,y) \in D} (\sum_i a_i x_i - \log Z)
+\end{align}
+
+\subsubsection{Support Vector Machines}%
+\label{ssub:support_vector_machines}
+
+SVM learns linear decision to maximize margin to nearest sample in each of two classes
+\begin{itemize}
+    \item can be non-linear using \textit{kernels}
+\end{itemize}
+
+\subsubsection{Neural Network}%
+\label{ssub:neural_network}
+
+\textbf{Perceptron} logistic regression with Perceptron learning rule
+$f(x) = \begin{cases} 1 & \text{if } wx+b > 0 \\ 0 & \text{else} \end{cases}$
+
+\textbf{Stacked Perceptron} stacks perceptron neurons
+
+\textbf{Artificial Neural Network} stacked neurons with non-linear activation functions
+\begin{itemize}
+    \item can learn complex functions
+    \item need lots of data and computational power
+\end{itemize}
+
+
+
+
+\subsection{Model Selection}%
+\label{sub:model_selection}
+
+How to choose preprocessing, model, etc.. evaluate on unseen data!
+
+Data split
+\begin{itemize}
+    \item \textbf{training} learning the model, 60-90\%
+    \item \textbf{dev/validation} evaluating while learning the model
+    \item \textbf{testing} evaluate once at the end to see how well you do
+\end{itemize}
+
+\textbf{k-fold cross-validation} split training data into $k$ folds, train on $k-1$ fold and test on the last
+
+key issues
+\begin{itemize}
+    \item which eval measure to use
+    \item stastical significance of test
+    \item do these tests matter?
+\end{itemize}
+
+
+
+
+
+
+
+
 
 
 \end{document}
