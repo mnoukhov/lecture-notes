@@ -1649,4 +1649,220 @@ entity grid extensions
         \end{itemize}
 \end{itemize}
 
+\section{Machine Translation}%
+\label{sec:machine_translation}
+
+\subsection{Introduction}%
+\label{sub:introduction}
+
+\subsubsection{Basics}%
+\label{ssub:basics}
+
+history
+\begin{itemize}
+    \item early optimisim using word-word and translation rules
+    \item ALPAC report (1966) criticized MT prospects, AI winter
+\end{itemize}
+
+why is MT difficult
+\begin{itemize}
+    \item \textbf{lexical gaps} no 1-1 mapping between languages (e.g. dark blue)
+    \item morphological e.g. number, tense
+    \item syntactic e.g. word order
+    \item semantic e.g. spatial relations
+    \item pragmatic e.g. politeness, presupposition (e.g. again)
+\end{itemize}
+
+\textbf{Sapir-Whorf} hypothesis: the language you speak affect your thoughts
+\begin{itemize}
+    \item \textit{strong}: language determines and constrains all actions and thoughts
+    \item \textit{weak}: language may influence action and thoughts
+    \item e.g. Kuuk Thaayore use NESW instead of up-right-down-left
+\end{itemize}
+
+\subsubsection{Evaluation}%
+\label{ssub:evaluation}
+
+BLEU (Papieni et al, 2002) uses precision-oriented n-gram overlap
+\begin{itemize}
+    \item check if each $n$-gram in proposed translation is also in reference
+    \item geometric mean over different $n$
+    \item additional brevity penalty to account for common, short words
+\end{itemize}
+
+\subsubsection{Vauqouis Triangle}%
+\label{ssub:vauqouis_triangle}
+
+Vauquois triangle visually distinguishes MT systems (\ref{fig:vauquois})
+\begin{itemize}
+    \item direct
+    \item syntactic
+    \item semantic
+    \item \textbf{interlingua} conceptual space common to all languages
+\end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{comp550/vauquois.png}
+    \caption{Vauquois Triangle}%
+    \label{fig:vauquois}
+\end{figure}
+
+
+
+\subsection{Statistical MT}%
+\label{sub:statistical_mt}
+
+\subsubsection{Word-level}%
+\label{ssub:word_level}
+
+\textbf{noisy channel model} $E^* = \argmax_E P(E) P(F|E)$
+\begin{itemize}
+    \item assume target language $F$ is noisy encoded source $E$
+    \item learn a language model $P(E)$ and translation model $P(F|E)$
+\end{itemize}
+
+MT as \textbf{alignment} between source and target sentence
+\begin{itemize}
+    \item get a parallel corpus e.g. novels, translated government docs
+    \item first \textbf{sentence alignment}
+        \begin{itemize}
+            \item define similarity function using heuristics: length, cognate words, common subsequence
+            \item search for optimal alignment using DP (e.g. edit distance $\to$ dynamic time warping)
+        \end{itemize}
+    \item then \textbf{word alignment}: plausibility, many-to-many mapping, word-order
+    \item represent alignment as transform indices
+\end{itemize}
+
+\subsubsection{IBM Models}%
+\label{ssub:ibm_models}
+
+\textbf{IBM Model 1} maps source to target + NULL, assumes
+\begin{itemize}
+    \item each source word aligned to 0 or 1 targets
+    \item don't model distortions of word order
+    \item don't model likelihood of \textbf{fertility} phrase-level translation e.g. ``take a walk''
+\end{itemize}
+
+Model 1 learn by marginalizing over alignment $P(F|E) = \sum_A P(F|E,A) P(A|E)$
+\begin{itemize}
+    \item uniform translation length $P(A)$
+    \item uniform probability of alignments $P(A|E)$
+    \item word-level $P(F|E,A) = \prod_j P(f_j|e_{a_j})$ e.g. prob of word translation
+\end{itemize}
+
+learn $P(A|E,F),P(f|e)$ without existing alignments using EM
+\begin{itemize}
+    \item initialize randomly (in practise, not uniform)
+    \item \textbf{E} use $P(f|e)$ params to compute $P(A|E,F) = \frac{P(F,A|E)}{\sum_A P(F,A|E)}$
+    \item \textbf{M} given $P(A|E,F)$ update $P(f|e) = \frac{\sum_A P(A|e,f)}{Count(e)}$ to maximize
+\end{itemize}
+
+\textbf{IBM Model 2-5}
+\begin{itemize}
+    \item 2 does not assume equiprobable alignments e.g. prior of no crossing
+    \item 3 models fertility (number of words needed to translate a word)
+    \item 4,5 makes alignments depend on each other e.g. $P(F,A|E)$ as HMM seq labelling
+\end{itemize}
+
+\subsubsection{Phrase-level}%
+\label{ssub:phrase_level}
+
+translate phrases as units
+\begin{itemize}
+    \item can account for \textbf{idioms} e.g. ``coup de foudre'' $\to$ ``love at first sight''
+    \item also benefits non-constituents e.g. ``Spass am'' $\to$ ``fun with the''
+    \item learn a \textbf{phrase table} by looking at word co-occurrence
+\end{itemize}
+
+phrase-based MT $P(F|E) = \prod_n P(fp_n|ep_n) d(dist_n)$
+\begin{enumerate}
+    \item split sentence into phrases $E = ep_1,ep_2 \ldots$
+    \item translate each phrase $P(fp | ep)$
+    \item reorder phrases with penalty $d(dist)$
+\end{enumerate}
+
+\textbf{Greedy Hill Climbing} (Germann et al, 2001) \textbf{decoding} to search for best translation
+\begin{enumerate}
+    \item create initial complete candidate translation
+    \item apply change operations to get a new candidate
+        \begin{itemize}
+            \item change translation of a word/phrase
+            \item combine two words into phrase
+            \item split up phrase into two sub-phrases
+            \item rearrange translation
+        \end{itemize}
+    \item evaluate $P(E)P(F,A|E)$ and choose better
+    \item iterate
+\end{enumerate}
+
+\subsection{Neural MT}%
+\label{sub:neural_machine_translation}
+
+\subsubsection{Neural Mechanisms}%
+\label{ssub:neural_mechanisms}
+
+\textbf{Neural Network Joint Models} (Delvin et al, 2014) replace components of statistical MT with neural
+\begin{itemize}
+    \item use traditional word alignment to get $\Sigma_i$ subsequence of $S$ useful for translating $t_i$
+    \item predict output translation given input and previous translation decisions $P(T|S) = \prod_i P(t_i | t_{i-1} \ldots t_{i-n+1},\Sigma_i)$
+    \item 2-layer FF + softmax predicts next word $t_i$
+\end{itemize}
+
+\textbf{Sequence-to-sequence} RNNs (Cho, 2014)
+\begin{itemize}
+    \item encode sequence with LSTM into $z$
+    \item decode $z$ with LSTM (greedy or beam) into translation sequence $w^(t) | w^(s)$
+\end{itemize}
+
+\subsubsection{Attention}%
+\label{ssub:attention}
+
+
+\textbf{Attention} (Bahadanau et al, 2015) translates and soft aligns simultaneously
+\begin{itemize}
+    \item during decoding, take weighted combination of \textit{encoder} hidden as input $c_i = \sum \alpha_{ij} h_j$
+    \item get energies $\alpha_{ij} = a(s_{i-1},h_j)$ using NN between decoder hidden and encoder hidden
+    \item softmax normalize energies to get \textit{attention} weights $\alpha_{ij} = softmax(e_{ij})$
+\end{itemize}
+
+General attention is a \textit{soft} retrieval using query and (key,value)
+\begin{itemize}
+    \item \textbf{query} what we're looking for (current hidden)
+    \item \textbf{key} representation of entry in memory (source word hidden)
+    \item \textbf{value} information (source word hidden)
+\end{itemize}
+
+\subsubsection{Modern Tricks}%
+\label{ssub:modern_tricks}
+
+words as main units have issues
+\begin{itemize}
+    \item OOV
+    \item morphologically rich e.g. Russian affix
+    \item languages with compound words e.g. German
+    \item named entities
+\end{itemize}
+
+character-level models lose semantic info and have very long sequence length
+
+\textbf{Byte-Pair Encoding} (Sennrich et al, 2016) uses subword units
+\begin{enumerate}
+    \item start with character set as vocabulary
+    \item compute frequency of vocab pairs
+    \item add most common pair as new vocab item
+    \item iterate
+\end{enumerate}
+
+\textbf{Backtranslation} (Sennrich et al, 2016) adds parallel training data from monolingual data
+\begin{enumerate}
+    \item use parallel to train a backward model from $T \to S$
+    \item use backward model to get synthetic translations from monolingual $T$
+    \item train full model on original + synthetic parallel $S \to T$
+\end{enumerate}
+
+
+
+
+
+
 \end{document}
