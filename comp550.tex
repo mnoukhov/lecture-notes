@@ -1865,4 +1865,435 @@ character-level models lose semantic info and have very long sequence length
 
 
 
+\section{Summarization}%
+\label{sec:summarization}
+
+\subsection{Overview}%
+\label{sub:automatic_summarization}
+
+\textbf{text summarization} shortening source text into a \textit{text} summary
+\begin{itemize}
+    \item news headline from article
+    \item movie reviews into critical consensus
+\end{itemize}
+
+purposes
+\begin{itemize}
+    \item \textbf{informative} replace source text (aggregate of reviews)
+    \item \textbf{indicative} help decide whether to read source text (news headline)
+    \item \textbf{critical} opinion of source text (movie summary to critical review)
+\end{itemize}
+
+methods
+\begin{itemize}
+    \item \textbf{extractive} copy and paste source text
+    \item \textbf{abstractive} generate novel text
+    \item \textbf{*pseudo-abstractive} combines extracts in novel ways
+\end{itemize}
+
+focus
+\begin{itemize}
+    \item \textbf{generic} no POV
+    \item \textbf{user/query-focused} reflects goals/priority of query/user
+\end{itemize}
+
+source
+\begin{itemize}
+    \item \textbf{single-document} is usually single-author/POV
+    \item \textbf{multi-document} has more issues between documents
+        \begin{itemize}
+            \item conflicting information
+            \item redundancy
+            \item combining information
+        \end{itemize}
+
+\end{itemize}
+
+level of reader background
+\begin{itemize}
+    \item \textbf{update summary} provides relative info
+\end{itemize}
+
+
+steps in summarization
+\begin{enumerate}
+    \item \textbf{analysis} of source text for important parts
+    \item \textbf{transformation} of common/contradictory points, new inferences
+    \item \textbf{synthesis} to make final summary
+\end{enumerate}
+
+\subsection{Evaluation}%
+\label{sub:sum_evaluation}
+
+evaluate
+\begin{itemize}
+    \item \textbf{summary content} accurate, covers important, non-redundant
+    \item \textbf{linguistic quality} grammaticality, coherence
+\end{itemize}
+
+
+common evaluations
+\begin{itemize}
+    \item human judgement
+        \begin{itemize}
+            \item[+] holistic, doesn't require gold standard
+            \item[-] expensive, not rigorous, not consistent, biased
+        \end{itemize}
+    \item \textbf{ROUGE} (Lin, 2004) recall of n-grams from gold standard summary
+    \item \textbf{Pyramid Method} (Nenkova and Passonneau, 2004)
+        \begin{enumerate}
+            \item break down summaries/gold into structured content units (SCUs)
+            \item match SCUs between output, gold
+        \end{enumerate}
+    \item extrinsic evaluation tests whether summaries are \textit{useful}
+        \begin{itemize}
+            \item improves learning i.e. quiz results (McCallum et al, 2012)
+            \item speed of identifying documents (Dorr et al, 2005)
+        \end{itemize}
+\end{itemize}
+
+
+\subsection{Single-document}%
+\label{sub:single_document}
+
+can be viewed as supervised ML with careful feature choices
+\begin{itemize}
+    \item lexical features like content words are not as important
+    \item discourse features like position, cues, structure are more important
+\end{itemize}
+
+Lin and Hovy (1998) trained a supervised method using position/discours cues
+\begin{itemize}
+    \item for each sentence in gold abstract, find position with highest similarity in source
+    \item different corpora use different positions (WSJ uses title, first sentence of first paragraph, first sentence of second paragraph \ldots)
+    \item \textbf{lead baseline} using first sentences is a strong baseline especially for news
+\end{itemize}
+
+\textbf{TFIDF} (Salton, 1988) term frequency inverse document frequency looks at words common in document, rare overall
+\begin{itemize}
+    \item TF is the count of th word
+    \item IDF is $\log \frac{\text{num docs in corpus}}{\text{num docs with term } t + 1}$
+\end{itemize}
+
+\textbf{topic signatures} Lin and Hovy (2000) compares term frequency $t_i$ for related $R$ (and unrelated $\neg R$) documents using binomial distribution
+
+\begin{table}[h]
+    \centering
+    \label{tab:label}
+    \begin{tabular}{c|c|c}
+                    & $R$       & $\neg R$ \\ \hline
+        $t_i$       & $O_{11}$  & $O_{12}$  \\ \hline
+        $\neg t_i$  & $O_{11}$  & $O_{12}$
+    \end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item characterize each row as a binomial distribution $b(k;n;\theta)$where success is related article
+    \item if $t_i$ is not important to domain then likelihood of data is \\ $L(H_1) = b(O_{11}; O_{11} + O_{12}, p) \cdot b(O_{21}; O_{21} + O_{22}, p)$
+    \item otherwise probability of $t_i$ varies between this domain and other \\
+    $L(H_1) = b(O_{11}; O_{11} + O_{12}, p_1) \cdot b(O_{21}; O_{21} + O_{22}, p_2)$
+\item likelihood ratio $- 2 \log \frac{L(H_1)}{L(H_2)} $ shows how important this term is to domain
+\end{itemize}
+
+\subsection{Multi-document}%
+\label{sub:multi_document}
+
+SumBasic (Nenkova and Vanderwende, 2005) uses redundancy to figure out important things and make sure summary is non-redundant
+\begin{enumerate}
+    \item compute unigram dist $p(w_i) = \frac{n_i}{N}$
+    \item[] \textit{repeat until summary length reached}
+    \item rank sentences by average word probability
+    \item pick highest scoring sentence $S^{best}$ and add to summary
+    \item downweight chosen words, for $w_j$ in $S^{best}$ update $p_{new}(w_j) = p_{old}(w_j)^2$
+\end{enumerate}
+
+improvements
+\begin{itemize}
+    \item global optimum set of sentences instead of greedy
+    \item account for similarities between bigrams
+    \item avoid pronouns (if those pronouns aren't described)
+    \item removing words from summary like ``therefore''
+    \item modelling coherence of summary
+\end{itemize}
+
+Conroy et al (2006) combines topic signature method, non-redundancy module, and removes extra phrases:
+\begin{itemize}
+    \item gerund clauses e.g. I went to the store, \textit{skipping on a leg}
+    \item restricted relative-clause appositives e.g. Bob, \textit{who is president}, disagreed
+    \item attribution in a sentence e.g. Don't go, \textit{she said}, to the store
+    \item lead adverbs e.g. \textit{Hopefully}, we find a solution
+\end{itemize}
+
+
+Neural methods made possible by large datasets of news and summaries (CNN, NYT, Newsroom) cast as a supervised learning problem or even RL optimizing ROUGE where actions are selecting summary sentences.
+
+\section{Natural Language Generation}%
+\label{sec:natural_language_generation}
+
+requires selecting
+\begin{itemize}
+    \item appropriate content
+    \item appropriate form to express it
+\end{itemize}
+
+generation
+\begin{itemize}
+    \item
+    \item \textbf{text-to-text}
+\end{itemize}
+
+\subsection{Data-to-Text}%
+\label{sub:data_to_text}
+
+\textbf{data-to-text} formal to NL (reverse of NLU)
+
+basic systems
+\begin{itemize}
+    \item \textbf{canned text} pre-written text at certain time
+    \item \textbf{template filling} pre-generated template with variable slots
+\end{itemize}
+
+\subsubsection{Components}%
+\label{ssub:components}
+
+\begin{enumerate}
+    \item \textbf{content selection} decide what to say
+        \begin{itemize}
+            \item application-specific doc analysis
+        \end{itemize}
+    \item \textbf{document structuring} how to structure output
+        \begin{itemize}
+            \item order of output (importance, coherence)
+            \item e.g. \textit{argumentation theory} (Carenini and Moore, 2006)
+        \end{itemize}
+    \item \textbf{microplanning} of specific text to output
+        \begin{itemize}
+            \item selecting lexical items
+            \item sentence planning of lexicals into clauses
+            \item generate referring expressions e.g. Justin, him, PM
+        \end{itemize}
+    \item \textbf{surface realization} convert specific plan to output form
+        \begin{itemize}
+            \item depends on how specified discourse plan is
+            \item e.g. \textbf{FUF/Surge} (Elhadad and Robin, 1996) cascade of deterministic rules from attrib-value matrix
+            \begin{enumerate}
+                \item map semantic to syntactic roles (agent $\to$ subject)
+                \item syntactic alternations (active/passive, dative)
+                \item fill in defaults for underspecification (NPs are definite)
+                \item handle closed-class words (personal pronoun, feminine $\to$ she)
+                \item order components (subject, verb, indirect object, direct object)
+                \item fill in inflections (he, to hand $\to$ he hands)
+                \item linearize the tree into the final string
+            \end{enumerate}
+        \end{itemize}
+\end{enumerate}
+
+
+\subsection{Text-to-Text}%
+\label{sub:text_to_text}
+
+generation changing something from source to target
+\begin{itemize}
+    \item language, MT
+    \item length, summarization
+    \item complexity, text simplification
+    \item style, style transfer
+\end{itemize}
+
+\subsubsection{Integer Linear Programming}%
+\label{ssub:integer_linear_programming}
+
+\textbf{sentence fusion} combines information from multiple sentences
+\begin{itemize}
+    \item equivalent to summarization
+\end{itemize}
+
+graph sentence fusion
+\begin{enumerate}
+    \item generate \textbf{sentence graph} (\ref{fig:sentence-graph}) merging sentences' dependency trees
+    \item select subset of nodes and extract a new sentence following constraints (important words, relations, output length \ldots)
+\end{enumerate}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\linewidth]{comp550/sentence-graph.png}
+    \caption{Sentence Graph (Filippova and Strube, 2008) for ``He studied science with pleasure''+``He studied math and physics with Bohr''}
+    \label{fig:sentence-graph}
+\end{figure}
+
+\textbf{integer linear programming} where all constraints, objectives are linear functions of integers
+\begin{itemize}
+    \item make binary selection variable $x_{hw}^{l}$ for each edge in sentence graph from $h$ to $w$ with label $l$
+    \item optimize $\sum_x x_{hw}^{l} P(l|h) I(w)$ with grammaticality $P$, importance $I$, and constraints
+    \item each word has at most one head $\forall w \in W, \sum x_{hw}^l \leq 1$
+    \item selected nodes form connected tree $\forall w \in W, \sum x_{hw}^l - \frac{1}{|W|}\sum x_{wu}^l \geq 0$
+\end{itemize}
+
+ILP can accomodate more constraints
+\begin{itemize}
+    \item allows \textbf{declaritive} spec of objectives/constraints
+    \item can be solved efficiently with off-the-shelf solvers
+\end{itemize}
+
+\subsubsection{Modern Methods}%
+\label{ssub:modern_methods}
+
+using condition language model $P(x^{t+1} | source, x^{1 \ldots t})$
+
+handling OOV, named entities
+\begin{itemize}
+    \item sub-word representations (e.g. WordPiece)
+    \item copy mechanism to copy from input sequence
+\end{itemize}
+
+correctness in generation
+\begin{itemize}
+    \item $\sim 30\%$ of neural generated text have factual errors
+    \item post-editing model to detect and correct errors (Cao et al, 2020)
+\end{itemize}
+
+controllable text generation
+\begin{itemize}
+    \item ensure output style, politeness, goal, etc.
+\end{itemize}
+
+
+\section{Evaluation}%
+\label{sec:evaluation}
+
+\subsection{Measures}%
+\label{sub:measures}
+\textbf{automatic} measures don't require human effort
+
+
+classes of measures
+\begin{itemize}
+    \item \textbf{intrinsic} pertains to the exact task we're solving (perplexity for LM)
+    \item \textbf{extrinsic} petrains to downstream task (MT for LM)
+\end{itemize}
+
+
+eval \textbf{validity} is whether improving the measure means real progress in our model
+\begin{itemize}
+    \item \textbf{internal validity} is study conclusion warranted?
+        \begin{itemize}
+            \item are comparisons fair? (training data, model size)
+            \item confounding factors
+        \end{itemize}
+    \item \textbf{external validity} do study conclusions generalize to other data/situations?
+        \begin{itemize}
+            \item size of the test data
+            \item is setup biased towards certain models?
+            \item \textbf{domain adaptation} generalizes across domains
+        \end{itemize}
+    \item \textbf{construct validity} do evaluations measure what they claims to?
+        \begin{itemize}
+            \item does ROUGE reflect usefulness of summaries?
+            \item does better PPL lead to lower word error rate in ASR?
+            \item does lower word error rate lead to better satisfaction with ASR systems?
+        \end{itemize}
+\end{itemize}
+
+We want cheap, automatic measures that correlate with gold standard (human) measures of NLP
+
+\subsection{Turing Test}%
+\label{sub:turing_test}
+
+Does a machine exhibit intelligent behaviour?
+\begin{itemize}
+    \item human interlocutor chats with an agents A and B through text interface
+    \item after 5 minutes must decide which is human and which is machine
+\end{itemize}
+
+Competitions organized to approximate
+\begin{itemize}
+    \item Loebner Prize annual competition copies format of TT
+    \item Reading University
+    \item Alexa Prize inspired by TT
+\end{itemize}
+
+Most winning systems do not approximate human intelligence but rather deceive their evaluators
+\begin{itemize}
+    \item Eugene Goostman 13 y/o Ukranian boy ???
+    \item Rose (Loebner 2014 winner)
+\end{itemize}
+
+\textbf{Goodhart's Law} once a measure of some quality is turned into a target to optimize, it is no longer a good measure of quality
+\begin{itemize}
+    \item some ``tricks'' do not represent genuine progress
+    \item for ROUGE: using entire word length, using more content words etc \ldots
+\end{itemize}
+
+\subsection{Winograd Schema Challenge}%
+\label{sub:winograd_schema_challenge}
+
+Issues with evaluation
+\begin{itemize}
+    \item uncommon, systematic issues can be ignored using standard test sets
+    \item \textbf{``cheap tricks''} of statistical systems can get the answer right for the wrong reason (Levesque, 2013)
+        \begin{itemize}
+            \item QA systems using regularities in patterns to retrieve memorized knowledge
+            \item Summarization using extraction and redundancy without understanding
+        \end{itemize}
+\end{itemize}
+
+\textbf{Winograd Schema Challenge} multiple-choice questions that require deeper understanding
+\begin{itemize}
+    \item Joan thanks Susan for all the help \textit{she} had given/received
+    \item Knowledge Hunting (Emami et al, 2018) parse, extract, search on web and find similar examples
+    \item Pretrained LM looking at which sentence is likelier for WSC (Trinh et al, 2018; Devlin et al, 2018)
+\end{itemize}
+
+Statistical workarounds still exist
+\begin{itemize}
+    \item predictable structure ``predicate because predicate``
+    \item limited test size (273)
+    \item associativity (``building'' closer to ``famous'' than ``map'')
+\end{itemize}
+
+Switch antecedents as a new evaluation protocol (Trichelair et al, 2019)
+\begin{itemize}
+    \item ``Emma/Janie'' did not pass the ball to ``Janie/Emma''
+    \item check whether models are consistent across switches!
+    \item models do better on associative subset
+\end{itemize}
+
+\subsection{Bias}%
+\label{sub:bias}
+
+Machine learning systems learn biases inherent in data
+\begin{itemize}
+    \item our \textit{world} has negative biases
+    \item learned methods can produce even more biased results than the data
+    \item training objectives incentivise systems to guess most common class when uncertain
+\end{itemize}
+
+General debiasing algorithms, RBA (Zhao et al, 2017)
+\begin{itemize}
+    \item identify axis of bias (e.g. gender, race, religion)
+    \item add optimization constraints to be within margin of desired bias
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \end{document}
