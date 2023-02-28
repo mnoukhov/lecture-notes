@@ -1,4 +1,4 @@
-# Intro
+## Intro
 
 What do you need for an avalanche?
 - snowpack
@@ -330,3 +330,111 @@ use systematic decision making
 7. reflect
     - create MIN report on avalanche.ca
     - 
+
+## Planning Exercise
+
+### Details
+
+### Overview
+
+factors in avalanche danger
+- 3 degrees c
+- cloudy 
+- 17cm of snow
+
+factors in pleasure
+- 40-70km/h winds
+- -19 degree windchill
+- visibility (snow + wind)
+
+terrain we can choose
+- simple @ alpine, treeline for S,W,N
+- chllenging @ below-treeline for all dirs
+
+*important note* the danger rating still applies even if you are avoiding the problem e.g. avoiding E, since the rating includes not just the risk but also the difficult of managing the risk
+
+## Search and Rescue
+
+recovering a person within 15 min gives you a 92% survival rate
+- the rest are trauma?
+
+### Equipment
+
+transciever
+- put just under top layer of clothing, turned to send
+- all transciever signals are the same
+- price difference shows up in *search* functionality i.e. direction, faster update, etc..
+
+probe
+- can include a transciever 
+- spiral pattern probing from closest transciever point
+
+shovel
+- handles
+    - D handle is more efficient
+    - T handle doesn't work with mitts
+- longer shaft is more effecient (lever)
+    - backcountry ski takes bigger, stronger shovel
+    - climbing may only require a smaller, lighter shovel
+
+airbag
+- the only equipment that increases your chance of survival
+- pull the tab, hopefully float to the surface
+- *battery type* is reusable but needs to be charged
+- *compressed air* doesn't require prep but might only be one use
+
+### Caught in an Avalanche
+
+1. yell avalanche
+2. head to escape
+    - grab trees
+    - ski towards escape route at 45 degrees
+3. stay on snow as long as possible
+4. get rid of skis, poles, large backpack
+5. if caught
+    - "swim" downstream
+    - push snow away from face
+    - try to stick your hand out of the snow
+    - stay calm
+
+### Search and Dig
+
+search is fast compared to digging
+
+transciever search
+- 1 person zig-zags
+- multiple people can run down keeping 20m distance
+
+probe in 25cm spiral
+
+excavation
+- **A**irway
+- **B**urial depth
+    - if < 1m, dig straight down
+    - if > 1m, dig 1.5x distance downhill
+- **C**lear snow to sides
+- **D**ig only once
+
+triage
+1. victim on surface
+    - apply life saving first aid
+
+2. buried victim
+    - dig out partially buried
+    - apply life saving first aid
+    - dig out buried victim
+
+### First steps
+
+1. appoint a leader
+2. check if its safe to search
+3. shift all transcievers to search and wait to make sure its working
+4. start your search
+
+### Lessons Learned
+
+- triage is awful, avoid multiple victims by only exposing one person at a time
+- search is fast, slow down after finding the victim and stop to think about next steps
+- communication is difficult, the leader must give specific clear instruction and clearly ask for specific useful information
+- panic causes mistakes, time is ticking but it is important to do things correctly rather than fast
+- an untrained person has a low chance of successfully rescuing, you might not be able to rely on your friends
