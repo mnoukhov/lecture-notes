@@ -7,6 +7,7 @@ They are not meant to be replacement for lectures/lecture notes/textbooks but ra
 ## McGill University and University of Montreal
 ### Fall 2020
 COMP550 Natural Language Processing (Jackie Cheung)
+
 IFT6268 Self-Supervised Representation Learning (Aaron Courville)
 
 ### Winter 2019
@@ -46,6 +47,8 @@ EDA040 Concurrency (Klass Nilsson)
 Latex + Markdown notes mainly from workshops
 
 Mila Writing Workshop 2023 (Glen Berseth)
+
 Avalanche Skills Training @ Attitude Montagne 2023
+
 Deep Learning Summer School 2018
 
