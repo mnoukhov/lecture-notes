@@ -268,32 +268,192 @@ for a learning algorithm:
     \item[random search] sample distribution of hyperparameters
 \end{description}
 
-\subsection{Optimization}%
+\subsection{First-Order Optimization}%
 \label{sub:optimization}
 
 \subsubsection{SGD}%
 \label{ssub:sgd}
 
-Training NN with SGD
+stochastic gradient descent
+\begin{enumerate}
+    \item sample a minibatch of $m$ examples
+    \item gradient estimate $\hat h \gets \frac{1}{m} \nabla_\theta \sum_i L(x_i, y_i; \theta)$
+    \item apply update $\theta \gets \theta - \epsilon \hat h$
+\end{enumerate}
+
+properties
 \begin{itemize}
     \item \textbf{non-convex} because there isn't a global optimum
     \item convergence if $\sum_{t=1}^\infty \alpha_t = \infty$ and $\sum_{t=1}^\infty \alpha_t^2 < \infty$
 \end{itemize}
-Tricks
+
+tricks
 \begin{description}
     \item[decaying learning rate] e.g. $ \frac{\alpha}{1 + \delta t}$
     \item[mini-batching] using $>1$ example for gradient computation
     \item[exponentially decaying] average of previous gradients
 \end{description}
 
+\subsubsection{Momentum}
+
+keep momentum of previous updates,
+\begin{enumerate}
+    \item[0.] momentum parameter $\alpha$
+    \item gradient estimate $h$
+    \item velocity update $v \gets \alpha v - \epsilon h$
+    \item update $\theta \gets \theta + v$
+\end{enumerate}
+
+properties
+\begin{itemize}
+    \item accelerate learning with small, consistent gradients
+    \item gradients that are consistently seen will accumulate
+    \item max step size (``terminal velocity'') $\frac{1}{1-\alpha} \epsilon ||g||$
+\end{itemize}
+
+\subsubsection{Nesterov Momentum}%
+\label{ssub:nesterov_momentum}
+
+Sutskever et al (2013) evaluate the gradient after an interim velocity update
+\begin{enumerate}
+    \item[0.] momentum parameter $\alpha$
+    \item apply interim velocity update $\tilde \theta \gets \theta + \alpha v$
+    \item gradient estimate $h$ at interim using $\tilde \theta$
+    \item velocity update $v \gets \alpha v - \epsilon h$
+    \item update $\theta \gets \theta + v$
+\end{enumerate}
+
+intuition
+\begin{itemize}
+    \item first make a big jump in previously accumulated gradient
+    \item measure gradient where you end up
+    \item make a correction jump
+\end{itemize}
+
+\subsubsection{Adagrad}%
+\label{ssub:adagrad}
+
+Duchi et al (2010) adapt the learning rate per parameter proportional to sum of squares of that gradient
+\begin{enumerate}
+    \item[0.] numerical stability const $\delta$
+    \item[0.] initialize gradient accumulation $r = 0$
+    \item gradient estimate $h$
+    \item accumulate squared gradient $r \gets r + h \odot h$
+    \item per-parameter update $\Delta \theta \gets - \frac{\epsilon}{\delta + \sqrt{r}} \odot h$
+    \item update $\theta \gets \theta + \Delta \theta$
+\end{enumerate}
+
+
+adapted learning rates
+\begin{enumerate}
+    \item makes later learning very slow
+    \item great for convex, not so much for NN
+\end{enumerate}
+
+\subsubsection{RMSProp}%
+\label{ssub:rmsprop}
+
+Hinton (2012?) modifies AdaGrad accumulation into exponentially moving average
+\begin{enumerate}
+    \item[0.] decay rate $\rho$, numerical stability const $\delta$
+    \item[0.] initialize gradient accumulation $r = 0$
+    \item gradient estimate $h$
+    \item accumulate squared gradient $r \gets \rho r + (1 - \rho) h \odot h$
+    \item per-parameter update $\Delta \theta \gets - \frac{\epsilon}{\delta + \sqrt{r}} \odot h$
+    \item update $\theta \gets \theta + \Delta \theta$
+\end{enumerate}
+
+you can add nesterov momentum $v \gets \alpha v - \frac{\epsilon}{\sqrt{r}} \odot h$ \hfill
+
+\vspace{1em}
+
+generally better with NNs
+\begin{itemize}
+    \item performs better in non-convex setting
+    \item decay $\rho$ allows control of length scale of EMA
+    \item effective with NNs but can be difficult to tune hyperparams
+\end{itemize}
+
+\subsubsection{Adam}%
+\label{ssub:adam}
+
+''Adaptive Moments'' (Kingma et al, 2014)
+\begin{enumerate}
+    \item[0.] step size $\epsilon$, default 0.001
+    \item[0.] decay rates for moment estimates $\rho_1, \rho_2$ defaults $0.9, 0.999$
+    \item[0.] numerical stability const $\delta$
+    \item[0.] initialize 1st and 2nd moment variables $s = 0, r = 0$
+    \item gradient estimate $h$
+    \item update biased 1st moment estimate $s \gets \rho_1 s + (1 - \rho_1) h$
+    \item update biased 2nd moment estimate $r \gets \rho_2 r + (1 - \rho_r) h \odot h$
+    \item correct bias in 1st moment $\hat s \gets \frac{s}{1 - \rho_1^t}$
+    \item correct bias in 2nd moment $\hat r \gets \frac{r}{1 - \rho_2^t}$
+    \item per-parameter update $\Delta \theta \gets - \epsilon \frac{\hat s}{\delta + \sqrt{\hat r}} \odot h$
+    \item update $\theta \gets \theta + \Delta \theta$
+\end{enumerate}
+
+
+variant of RMSProp + momentum with corrections
+\begin{itemize}
+    \item momentum incorporated directly as estimate of first order moment (with exponential weighting) of the gradient
+    \item bias corrections to estimates of first-order momentum (momentum) and second-order moment to account for init at origin
+\end{itemize}
+
+\subsubsection{AdamW}%
+\label{ssub:adamw}
+
+Loschilov and Hutter (2019) decouple weight decay from optimization wrt loss function
+\begin{enumerate}
+    \item
+\end{enumerate}
+
+in SGD, reparametrizing $L_2$ hyperparam $\lambda$ based on learning rate can make it equivalent to weight decay
+\begin{align*}
+    L_2 &= \frac{\lambda'}{2} || \theta ||^2_2 \\
+    \theta &\gets \theta - \epsilon \nabla_\theta (L + L_2) \\
+           &\gets \theta - \epsilon \nabla_\theta L - \epsilon \lambda' \theta \\
+           \intertext{set $\lambda' = \frac{\lambda}{\epsilon}$ }
+           &\gets (1 - \lambda) \theta - \epsilon \nabla_\theta L \text{ which is weight decay}
+\end{align*}
+
+but this equivalence may not work
+\begin{itemize}
+    \item it doesn't hold for adaptive methods like Adam
+    \item it requires you to set $\lambda' = \frac{\lambda}{\epsilon}$ which might not be the best
+\end{itemize}
+
+\subsection{Second-Order Optimization}%
+\label{sub:second-optimization}
+
 \subsubsection{Newton's Method}%
 \label{ssub:newton_s_method}
-locally approximate loss using Taylor Expansion, minimize by solving
+approximate loss $J(\theta)$ near some point $\theta_0$ using Taylor Expansion
 \begin{align*}
-    0 &= \nabla_\theta l(f(x;\theta^{(t)}),y) + (\nabla^2_\theta l(f(x;\theta^{(t)}),y)) ( \theta - \theta^{(t)}) \\
-    \theta^{(t+1)} &= \theta^{(t)} - (\nabla^2_\theta l(f(f;\theta^{(t)}),y))^{-1} (\nabla_\theta l(f(x;\theta^{(t)}),y))
+    J(\theta) &\approx J(\theta_0) + (\theta - \theta_0)^T \nabla_\theta J(\theta_0) + \frac{1}{2} (\theta - \theta_0)^T H(\theta - \theta_0)
+    \intertext{taking the gradient}
+    \nabla_\theta J(\theta) &\approx \nabla_\theta J(\theta_0) + H(\theta - \theta_0)
+    \intertext{and solving for the critical point $\nabla_\theta J(\theta) = 0$ }
+    \theta^* &= \theta_0 - H^{-1} \nabla_\theta J(\theta_0)
 \end{align*}
-but only practical if there are few parameters (to invert Hessian), and locally convex (invertible Hessian)
+this jumps directly to the minimum in a quadratic convex problem but as long as $H$ is positive definite, can be applied iteratively in non-quadratic.
 
+\begin{enumerate}
+    \item comute gradient $g$
+    \item compute Hessian $H$
+    \item compute inverse Hessian $H^{-1}$
+    \item apply update $\theta \gets \theta - H^{-1} g$
+\end{enumerate}
+but inverting is $O(n^3)$, memory is $O(n^2)$ and models are too large 
+
+\subsubsection{Conjugate Gradient}
+just use 2nd order info to find directions conjugate to previous using $\beta_t$, not undo progress
+
+\begin{enumerate}
+    \item comute gradient $g_t$
+    \item compute $\beta_t = \frac{(g_t - g_{t-1})^T g_t}{g_{t-1}^Tg_{t-1}} $
+    \item compute search direction $\rho_t = -g_t + \beta_t \rho_{t-1}$
+    \item perform line search and find $\epsilon^* = \argmin_\epsilon J(\theta_t + \epsilon \rho_t)$
+    \item apply update $\theta \gets \theta - \epsilon^* \rho_t$
+\end{enumerate}
 
 \end{document}
